@@ -850,6 +850,20 @@
             font-size: 1.2rem;
             color: var(--primary);
         }
+
+        /* Estilo para enlace de recuperación */
+        .forgot-link {
+            display: block;
+            text-align: right;
+            margin-top: 8px;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+        .forgot-link:hover {
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -899,13 +913,13 @@
     <div id="loadingMsg">Cargando datos desde la nube...</div>
     <div class="grid" id="localsGrid" style="display:none;"></div>
 
-    <!-- ===== MODALES (sin cambios) ===== -->
     <!-- ===== MODAL LOGIN ===== -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal">
             <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
             <label>Clave:</label>
             <input type="password" id="loginClave" placeholder="Ingrese clave">
+            <span class="forgot-link" id="forgotLink">¿Olvidaste tu clave?</span>
             <div class="btn-group">
                 <button class="btn-secondary" onclick="closeModal('loginModal')">Cancelar</button>
                 <button class="btn-primary" onclick="loginAdmin()">Ingresar</button>
@@ -940,7 +954,6 @@
 
     <!-- ===== MODAL AGREGAR/EDITAR LOCAL ===== -->
     <div class="modal-overlay" id="addLocalModal">
-        <!-- ... contenido igual ... -->
         <div class="modal">
             <h2 id="modalLocalTitle"><i class="fas fa-store"></i> Agregar Local</h2>
             <form id="localForm">
@@ -1194,6 +1207,9 @@
     const db = firebase.firestore();
     const docRef = db.collection('galeria').doc('datos');
 
+    // Código de recuperación de clave (cámbialo si quieres)
+    const CODIGO_RECUPERACION = 'reset123';
+
     // ============================================================
     //  DATA LAYER (Firestore + localStorage fallback)
     // ============================================================
@@ -1215,7 +1231,7 @@
     let isAdmin = false;
     let bannerIndex = 0;
     let bannerTimer = null;
-    let dataLoaded = false; // para saber si ya se cargaron los datos
+    let dataLoaded = false;
 
     function getDefaultData() {
         return {
@@ -1400,7 +1416,6 @@
             const doc = await docRef.get();
             if (doc.exists) {
                 const firestoreData = doc.data();
-                // Fusionar con datos por defecto para asegurar todas las propiedades
                 const defaultData = getDefaultData();
                 for (let key in defaultData) {
                     if (firestoreData[key] !== undefined) {
@@ -1409,10 +1424,8 @@
                         data[key] = defaultData[key];
                     }
                 }
-                // Guardar en localStorage como respaldo
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
-                // No existe documento, crear con datos por defecto
                 const defaultData = getDefaultData();
                 for (let key in defaultData) {
                     data[key] = defaultData[key];
@@ -1422,7 +1435,6 @@
             }
         } catch (error) {
             console.error('Error cargando desde Firestore:', error);
-            // Fallback: intentar cargar desde localStorage
             const stored = localStorage.getItem('galeriaData');
             if (stored) {
                 try {
@@ -1434,7 +1446,6 @@
                     console.error('Error al parsear localStorage:', e);
                 }
             } else {
-                // Si no hay nada, usar datos por defecto
                 const defaultData = getDefaultData();
                 for (let key in defaultData) {
                     data[key] = defaultData[key];
@@ -1442,48 +1453,57 @@
             }
         }
         dataLoaded = true;
-        // Ocultar mensaje de carga y mostrar grid
         document.getElementById('loadingMsg').style.display = 'none';
         document.getElementById('localsGrid').style.display = 'grid';
         renderAll();
-        // Aplicar tema
         if (data.autoTheme) checkAutoTheme();
         else applyTheme(data.theme);
     }
 
-    // Guardar datos en Firestore y también en localStorage
     async function saveData() {
         try {
             await docRef.set(data);
             localStorage.setItem('galeriaData', JSON.stringify(data));
         } catch (error) {
             console.error('Error guardando en Firestore:', error);
-            // Fallback a localStorage
             localStorage.setItem('galeriaData', JSON.stringify(data));
             showToast('Error de conexión: los datos se guardaron localmente');
         }
     }
 
     // ============================================================
-    //  FUNCIONES EXISTENTES (adaptadas para usar saveData/loadData)
+    //  RECUPERACIÓN DE CLAVE (NUEVO)
     // ============================================================
-    // Las funciones que modifican data deben llamar a saveData() después de cada cambio.
-    // Ya están escritas así, solo debemos asegurar que saveData sea async.
-    // Como todas las funciones que llaman a saveData son síncronas, podemos mantenerlas así
-    // y saveData se encarga de la asincronía. No necesitamos await en cada llamada,
-    // pero podemos hacer que las funciones que disparan guardado sean async si queremos.
-    // Para mantener la compatibilidad, dejamos las funciones síncronas y saveData maneja la promesa.
+    async function recuperarClave() {
+        const codigo = prompt('Ingrese el código de recuperación:');
+        if (codigo === null) return;
+        if (codigo !== CODIGO_RECUPERACION) {
+            showToast('Código incorrecto');
+            return;
+        }
+        const nueva = prompt('Ingrese la nueva clave de administrador:');
+        if (nueva === null) return;
+        if (nueva.length < 4) {
+            showToast('La clave debe tener al menos 4 caracteres');
+            return;
+        }
+        const confirmar = prompt('Confirme la nueva clave:');
+        if (confirmar === null) return;
+        if (nueva !== confirmar) {
+            showToast('Las claves no coinciden');
+            return;
+        }
+        data.adminClave = nueva;
+        await saveData();
+        showToast('Clave restablecida correctamente. Ahora puede iniciar sesión.');
+        // Limpiar campo de clave
+        document.getElementById('loginClave').value = '';
+    }
 
-    // Modificamos las funciones que usan saveData para que no bloqueen la UI.
-    // Las funciones como crearBackup, cambiarClave, etc. ya llaman a saveData.
-    // No es necesario usar await en todas, pero podemos hacerlo para manejar errores.
-
-    // Reescribimos las funciones principales que modifican data para que sean async y usen await saveData()
-    // Pero como el código es extenso, voy a sobrescribir solo las necesarias.
-
-    // Aquí van las funciones originales, pero con saveData modificado a async.
-    // Como son muchas, y el usuario no pidió reescribir todo, mantengo el código
-    // pero asegurando que saveData sea la función que guarda en Firestore.
+    // Asignar evento al enlace de olvido
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('forgotLink').addEventListener('click', recuperarClave);
+    });
 
     // ============================================================
     //  BACKUP FUNCTIONS
@@ -1537,7 +1557,6 @@
         data.galeriaNombre = backupData.galeriaNombre || 'Galería Cinerama';
         data.galeriaDireccion = backupData.galeriaDireccion || 'Colón 375';
         data.bannerInterval = backupData.bannerInterval || 4;
-        // No restauramos adminClave para no sobrescribir la actual
         await saveData();
         renderAll();
         closeModal('restoreModal');
@@ -1554,9 +1573,6 @@
         }
     }
 
-    // ============================================================
-    //  BACKUP AUTOMÁTICO SEMANAL
-    // ============================================================
     async function verificarBackupAutomatico() {
         if (!isAdmin) return;
         const ahora = new Date();
@@ -1627,7 +1643,7 @@
     }
 
     // ============================================================
-    //  CAMBIAR CLAVE
+    //  CAMBIAR CLAVE (normal, desde panel)
     // ============================================================
     async function cambiarClave() {
         if (!isAdmin) return;
@@ -1655,7 +1671,7 @@
     }
 
     // ============================================================
-    //  LOGIN (usa data.adminClave)
+    //  LOGIN
     // ============================================================
     async function loginAdmin() {
         const clave = document.getElementById('loginClave').value;
@@ -1675,7 +1691,7 @@
     }
 
     // ============================================================
-    //  BANNER CARRUSEL (con ajuste de imagen)
+    //  BANNER CARRUSEL
     // ============================================================
     function renderBannersCarousel() {
         const track = document.getElementById('bannerTrack');
@@ -1747,7 +1763,7 @@
         else if (theme === 'colorful') body.classList.add('colorful');
         else if (theme === 'festive') body.classList.add('festive');
         data.theme = theme;
-        saveData(); // no esperamos
+        saveData();
         document.getElementById('themeStatus').textContent = `Tema actual: ${theme}`;
     }
 
@@ -1948,7 +1964,7 @@
     }
 
     // ============================================================
-    //  ADMIN CRUD (locales) - adaptado para usar saveData
+    //  ADMIN CRUD (locales)
     // ============================================================
     function editLocal(id) {
         const local = data.locales.find(l => l.id === id);
@@ -1998,7 +2014,6 @@
         showToast('Local eliminado');
     }
 
-    // saveLocal es llamado por el submit del formulario, lo hacemos async
     document.getElementById('localForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const id = document.getElementById('editId').value;
@@ -2102,7 +2117,6 @@
         document.getElementById('inmobiliariaField').style.display = checked ? 'block' : 'none';
     }
 
-    // Sliders
     function updateSliderLabels() {
         const fotoX = document.getElementById('fFotoPosX');
         const fotoY = document.getElementById('fFotoPosY');
@@ -2223,7 +2237,7 @@
     }
 
     // ============================================================
-    //  BANNERS ADMIN (con edición y ajuste de imagen)
+    //  BANNERS ADMIN
     // ============================================================
     document.getElementById('bannerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -2360,7 +2374,7 @@
     });
 
     // ============================================================
-    //  TEMAS (en modal)
+    //  TEMAS
     // ============================================================
     function initThemeButtons() {
         document.querySelectorAll('.theme-btn').forEach(btn => {
@@ -2368,7 +2382,7 @@
                 const theme = this.dataset.theme;
                 data.autoTheme = false;
                 data.theme = theme;
-                saveData(); // no esperamos
+                saveData();
                 applyTheme(theme);
                 document.getElementById('themeStatus').textContent = `Tema actual: ${theme}`;
                 showToast(`Tema cambiado a ${theme}`);
@@ -2475,7 +2489,7 @@
     //  RENDER ALL
     // ============================================================
     function renderAll() {
-        if (!dataLoaded) return; // no renderizar hasta que los datos estén cargados
+        if (!dataLoaded) return;
         renderBannersCarousel();
         filterLocales();
         updateRubroSelectFilter();
@@ -2499,7 +2513,7 @@
     }
 
     // ============================================================
-    //  INYECTAR BOTÓN "CAMBIAR CLAVE" EN EL PANEL (sin modificar HTML)
+    //  INYECTAR BOTÓN "CAMBIAR CLAVE" EN EL PANEL
     // ============================================================
     function agregarBotonCambiarClave() {
         const panelDiv = document.querySelector('#adminMainModal .modal > div:nth-child(2)');
@@ -2518,16 +2532,13 @@
     //  INIT
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar eventos que no dependen de datos
         document.getElementById('searchNombre').addEventListener('input', filterLocales);
         document.getElementById('searchRubro').addEventListener('change', filterLocales);
         document.getElementById('searchNumero').addEventListener('change', filterLocales);
         document.getElementById('searchUbicacion').addEventListener('change', filterLocales);
         initOrderBtn();
         initThemeButtons();
-        // Cargar datos desde Firestore
         loadData().then(() => {
-            // Después de cargar, agregar botón cambiar clave
             agregarBotonCambiarClave();
             const observer = new MutationObserver(() => {
                 if (document.getElementById('adminMainModal').classList.contains('active')) {
@@ -2536,7 +2547,6 @@
             });
             observer.observe(document.getElementById('adminMainModal'), { attributes: true, attributeFilter: ['class'] });
         });
-        // Manejar logout
         document.getElementById('toggleAdminBtn').addEventListener('click', function() {
             if (isAdmin) openModal('adminMainModal');
             else {
@@ -2545,7 +2555,6 @@
             }
         });
         document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
-        // Cerrar modales al hacer clic en overlay
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', function(e) {
                 if (e.target === this) {
@@ -2553,9 +2562,9 @@
                 }
             });
         });
+        // Evento para recuperación de clave ya está asignado
     });
 
-    // Función logout
     function logoutAdmin() {
         isAdmin = false;
         document.getElementById('logoutBtn').style.display = 'none';
@@ -2565,7 +2574,7 @@
     }
 
     // ============================================================
-    //  ZOOM DE IMAGEN (se mantiene igual)
+    //  ZOOM DE IMAGEN
     // ============================================================
     function openImageZoom(src) {
         if (!src || src === '') return;
@@ -2587,7 +2596,7 @@
         }
     });
 
-    // Exponer funciones globalmente para los onclick de HTML
+    // Exponer funciones globales
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.loginAdmin = loginAdmin;
@@ -2606,6 +2615,7 @@
     window.updateBannerInterval = updateBannerInterval;
     window.shareLocal = shareLocal;
     window.openImageZoom = openImageZoom;
+    window.recuperarClave = recuperarClave;
 </script>
 
 </body>
