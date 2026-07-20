@@ -1233,6 +1233,9 @@
     let bannerTimer = null;
     let dataLoaded = false;
 
+    // NUEVA URL POR DEFECTO PARA FOTOS
+    const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
+
     function getDefaultData() {
         return {
             rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
@@ -1241,7 +1244,7 @@
                     id: 1,
                     nombre: "Librería El Saber",
                     rubro: "Librería",
-                    numeroLocal: 5,
+                    numeroLocal: "5",  // ahora es string
                     ubicacion: "Primer Piso",
                     enAlquiler: false,
                     inmobiliaria: "",
@@ -1272,7 +1275,7 @@
                     id: 2,
                     nombre: "Café Central",
                     rubro: "Gastronomía",
-                    numeroLocal: 12,
+                    numeroLocal: "12",
                     ubicacion: "Entrepiso",
                     enAlquiler: false,
                     inmobiliaria: "",
@@ -1303,7 +1306,7 @@
                     id: 3,
                     nombre: "Indumentaria Sport",
                     rubro: "Indumentaria",
-                    numeroLocal: 8,
+                    numeroLocal: "8",
                     ubicacion: "Subsuelo",
                     enAlquiler: true,
                     inmobiliaria: "5491134567890",
@@ -1334,7 +1337,7 @@
                     id: 4,
                     nombre: "Joyas D'Luz",
                     rubro: "Joyería",
-                    numeroLocal: 3,
+                    numeroLocal: "3",
                     ubicacion: "Primer Piso",
                     enAlquiler: false,
                     inmobiliaria: "",
@@ -1365,7 +1368,7 @@
                     id: 5,
                     nombre: "Tecno Store",
                     rubro: "Electrónica",
-                    numeroLocal: 20,
+                    numeroLocal: "20",
                     ubicacion: "Cochera",
                     enAlquiler: false,
                     inmobiliaria: "",
@@ -1424,6 +1427,10 @@
                         data[key] = defaultData[key];
                     }
                 }
+                // Asegurar que numeroLocal sea string
+                data.locales.forEach(l => {
+                    l.numeroLocal = String(l.numeroLocal);
+                });
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
                 const defaultData = getDefaultData();
@@ -1442,6 +1449,9 @@
                     for (let key in parsed) {
                         data[key] = parsed[key];
                     }
+                    data.locales.forEach(l => {
+                        l.numeroLocal = String(l.numeroLocal);
+                    });
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                 }
@@ -1472,7 +1482,7 @@
     }
 
     // ============================================================
-    //  RECUPERACIÓN DE CLAVE (NUEVO)
+    //  RECUPERACIÓN DE CLAVE
     // ============================================================
     async function recuperarClave() {
         const codigo = prompt('Ingrese el código de recuperación:');
@@ -1496,13 +1506,19 @@
         data.adminClave = nueva;
         await saveData();
         showToast('Clave restablecida correctamente. Ahora puede iniciar sesión.');
-        // Limpiar campo de clave
         document.getElementById('loginClave').value = '';
     }
 
-    // Asignar evento al enlace de olvido
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('forgotLink').addEventListener('click', recuperarClave);
+        // Cambiar el input de número a texto para permitir letras
+        const numInput = document.getElementById('fNumero');
+        if (numInput) {
+            numInput.type = 'text';
+            numInput.min = ''; // eliminar atributo min
+            numInput.removeAttribute('min');
+            numInput.removeAttribute('step');
+        }
     });
 
     // ============================================================
@@ -1557,6 +1573,10 @@
         data.galeriaNombre = backupData.galeriaNombre || 'Galería Cinerama';
         data.galeriaDireccion = backupData.galeriaDireccion || 'Colón 375';
         data.bannerInterval = backupData.bannerInterval || 4;
+        // Asegurar que numeroLocal sea string
+        data.locales.forEach(l => {
+            l.numeroLocal = String(l.numeroLocal);
+        });
         await saveData();
         renderAll();
         closeModal('restoreModal');
@@ -1630,6 +1650,9 @@
                 data.backups = backupsActuales;
                 data.lastBackupDate = lastBackup;
                 data.adminClave = adminClaveActual;
+                data.locales.forEach(l => {
+                    l.numeroLocal = String(l.numeroLocal);
+                });
                 await saveData();
                 renderAll();
                 showToast('Datos importados correctamente');
@@ -1643,7 +1666,7 @@
     }
 
     // ============================================================
-    //  CAMBIAR CLAVE (normal, desde panel)
+    //  CAMBIAR CLAVE
     // ============================================================
     async function cambiarClave() {
         if (!isAdmin) return;
@@ -1810,7 +1833,16 @@
             document.getElementById('bannerPosYVal').textContent = '50%';
             document.getElementById('bannerSubmitBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Banner';
         }
-        if (id === 'addLocalModal') updateRubroSelectInForm();
+        if (id === 'addLocalModal') {
+            updateRubroSelectInForm();
+            // Asegurar que el input de número sea texto (por si el DOM no se actualizó)
+            const numInput = document.getElementById('fNumero');
+            if (numInput && numInput.type !== 'text') {
+                numInput.type = 'text';
+                numInput.removeAttribute('min');
+                numInput.removeAttribute('step');
+            }
+        }
         if (id === 'adminMainModal') actualizarInfoBackup();
     }
 
@@ -1826,7 +1858,11 @@
         if (!filteredLocales) filteredLocales = data.locales;
 
         const orderAsc = document.getElementById('orderBtn').dataset.order === 'asc';
-        const sorted = [...filteredLocales].sort((a,b) => orderAsc ? a.numeroLocal - b.numeroLocal : b.numeroLocal - a.numeroLocal);
+        const sorted = [...filteredLocales].sort((a, b) => {
+            // Orden natural alfanumérico
+            return a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true });
+        });
+        if (!orderAsc) sorted.reverse();
 
         if (sorted.length === 0) {
             grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; background:var(--bg-card); border-radius:var(--radius);">No se encontraron locales.</p>`;
@@ -1882,7 +1918,8 @@
             }
 
             const logoUrl = local.logo || '';
-            const fotoUrl = local.foto || 'https://picsum.photos/seed/default/400/300';
+            // Usar nueva imagen por defecto
+            const fotoUrl = local.foto || DEFAULT_IMAGE_URL;
             const colorFondo = local.colorFondo || '#2563eb';
             const waNum = local.whatsapp ? local.whatsapp.replace(/\D/g,'') : '';
             const waLink = waNum ? `https://wa.me/${waNum}` : '#';
@@ -1915,7 +1952,7 @@
                 <div class="card">
                     ${adminButtons}
                     <div class="card-img-wrap">
-                        <img src="${fotoUrl}" alt="${local.nombre}" style="${fotoStyle}" onclick="openImageZoom('${fotoUrl}')" onerror="this.src='https://picsum.photos/seed/error/400/300'">
+                        <img src="${fotoUrl}" alt="${local.nombre}" style="${fotoStyle}" onclick="openImageZoom('${fotoUrl}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
                         <div class="card-img-overlay">
                             ${numeroHtml}
                             ${ubicacionHtml}
@@ -2019,7 +2056,7 @@
         const id = document.getElementById('editId').value;
         const nombre = document.getElementById('fNombre').value.trim();
         const rubro = document.getElementById('fRubro').value;
-        const numero = parseInt(document.getElementById('fNumero').value);
+        const numero = document.getElementById('fNumero').value.trim(); // ahora es texto
         const ubicacion = document.getElementById('fUbicacion').value;
         const enAlquiler = document.getElementById('fAlquiler').checked;
         const inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
@@ -2071,7 +2108,7 @@
                 id: id ? parseInt(id) : data.nextId++,
                 nombre,
                 rubro,
-                numeroLocal: numero,
+                numeroLocal: numero, // string
                 ubicacion,
                 enAlquiler,
                 inmobiliaria: enAlquiler ? inmobiliaria : '',
@@ -2079,7 +2116,7 @@
                 whatsapp: document.getElementById('fWhatsapp').value.trim(),
                 web: document.getElementById('fWeb').value.trim(),
                 colorFondo: document.getElementById('fColorFondo').value,
-                foto: fotoFinal || 'https://picsum.photos/seed/default/400/300',
+                foto: fotoFinal || DEFAULT_IMAGE_URL, // usar nueva default
                 logo: logoFinal || null,
                 fotoFit: document.getElementById('fFotoFit').value,
                 fotoPosX: parseInt(document.getElementById('fFotoPosX').value),
@@ -2231,7 +2268,7 @@
     function updateNumeroSelect() {
         const select = document.getElementById('searchNumero');
         const current = select.value;
-        const numeros = [...new Set(data.locales.map(l => l.numeroLocal))].sort((a,b) => a-b);
+        const numeros = [...new Set(data.locales.map(l => l.numeroLocal))].sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
         select.innerHTML = `<option value="">Todos los números</option>` + numeros.map(n => `<option value="${n}">${n}</option>`).join('');
         if (current) select.value = current;
     }
@@ -2447,7 +2484,7 @@
             let match = true;
             if (nombre && !l.nombre.toLowerCase().includes(nombre)) match = false;
             if (rubro && l.rubro !== rubro) match = false;
-            if (numero && l.numeroLocal !== parseInt(numero)) match = false;
+            if (numero && l.numeroLocal !== numero) match = false;
             if (ubicacion && l.ubicacion !== ubicacion) match = false;
             return match;
         });
@@ -2562,7 +2599,6 @@
                 }
             });
         });
-        // Evento para recuperación de clave ya está asignado
     });
 
     function logoutAdmin() {
