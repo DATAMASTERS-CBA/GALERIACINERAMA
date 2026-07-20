@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería Cinerama</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        /* ===== ESTILOS BASE (sin cambios) ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.2s;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        :root {
+            --bg-body: #f4f7fc;
+            --bg-card: #ffffff;
+            --text-color: #1e293b;
+            --primary: #2563eb;
+            --primary-light: #dbeafe;
+            --border: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --radius: 16px;
+            --green: #22c55e;
+            --red: #ef4444;
+            --header-bg: #ffffff;
+            --input-bg: #ffffff;
+            --admin-bg: #f1f5f9;
+        }
+
+        body.dark {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-color: #f1f5f9;
+            --primary: #3b82f6;
+            --primary-light: #1e293b;
+            --border: #334155;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --header-bg: #1e293b;
+            --input-bg: #2d3748;
+            --admin-bg: #1e293b;
+        }
+
+        body.colorful {
+            --bg-body: #fdf6e3;
+            --bg-card: #fef9ef;
+            --text-color: #2d1b4e;
+            --primary: #d946ef;
+            --primary-light: #f3e8ff;
+            --border: #f0d6b0;
+            --shadow: 0 4px 12px rgba(217, 70, 239, 0.15);
+            --header-bg: #fef9ef;
+            --input-bg: #ffffff;
+            --admin-bg: #fdf6e3;
+        }
+
+        body.festive {
+            --bg-body: #f0f4f0;
+            --bg-card: #ffffff;
+            --text-color: #1a3a1a;
+            --primary: #c53030;
+            --primary-light: #fce4e4;
+            --border: #b2d8b2;
+            --shadow: 0 4px 12px rgba(197, 48, 48, 0.2);
+            --header-bg: #ffffff;
+            --input-bg: #ffffff;
+            --admin-bg: #f0f4f0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--header-bg);
+            padding: 20px 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header-left h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .header-left .direccion {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-left: 5px;
+        }
+
+        .clock {
+            font-size: 1.2rem;
+            background: var(--primary-light);
+            padding: 8px 16px;
+            border-radius: 30px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-admin {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            animation: pulse 2s infinite;
+        }
+        .btn-admin:hover {
+            opacity: 0.85;
+            transform: scale(1.05);
+        }
+
+        .btn-logout {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .btn-logout:hover {
+            opacity: 0.85;
+            transform: scale(1.05);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        /* ===== BANNERS CARRUSEL ===== */
+        .banner-carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            background: var(--bg-card);
+        }
+        .banner-track {
+            display: flex;
+            transition: transform 0.8s ease-in-out;
+            width: 100%;
+        }
+        .banner-slide {
+            min-width: 100%;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+        }
+        .banner-slide img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .banner-slide a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .banner-controls {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 5;
+        }
+        .banner-controls button {
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+        }
+        .banner-controls button:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+        .banner-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+        }
+        .banner-dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .banner-dots span.active {
+            background: #fff;
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 768px) {
+            .banner-slide {
+                height: 160px;
+            }
+        }
+
+        /* ===== BUSCADOR Y FILTROS ===== */
+        .search-section {
+            background: var(--bg-card);
+            padding: 20px 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-section input,
+        .search-section select {
+            padding: 10px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            flex: 1 1 200px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .search-section input:focus,
+        .search-section select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .search-section .filter-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 2;
+        }
+        .search-section .filter-group select {
+            flex: 1 1 140px;
+        }
+
+        .search-section .order-btn {
+            background: var(--primary-light);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .search-section .order-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: scale(1.03);
+        }
+
+        /* ===== GRID DE LOCALES ===== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+            animation: fadeInUp 0.5s ease;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Contenedor de imagen con overlay */
+        .card-img-wrap {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: #e9edf2;
+        }
+        .card-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            cursor: pointer;
+        }
+        .card-img-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 14px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1rem;
+            pointer-events: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .card-img-overlay .numero {
+            font-weight: 900;
+            background: rgba(255,255,255,0.15);
+            padding: 0 8px;
+            border-radius: 4px;
+            border-left: 3px solid #fff;
+        }
+        .card-img-overlay .ubicacion {
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 18px 20px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            background: var(--primary);
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .card-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .card-rubro {
+            font-size: 0.8rem;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 2px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .card-desc {
+            margin: 8px 0 12px;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            opacity: 0.85;
+            flex: 1;
+        }
+
+        .card-horario {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            margin: 6px 0 10px;
+            flex-wrap: wrap;
+        }
+        .status-badge {
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+        .status-badge.open {
+            background: var(--green);
+        }
+        .status-badge.closed {
+            background: var(--red);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .card-actions a,
+        .card-actions button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 30px;
+            border: none;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            background: var(--primary);
+            transition: 0.2s;
+            font-weight: 600;
+        }
+        .card-actions a:hover,
+        .card-actions button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        .card-actions .whatsapp {
+            background: #25d366;
+        }
+        .card-actions .whatsapp:hover {
+            background: #1da851;
+        }
+        .card-actions .share {
+            background: #6b7280;
+        }
+        .card-actions .share:hover {
+            background: #4b5563;
+        }
+
+        .card-ubicacion {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+        .card-alquiler {
+            background: #f59e0b;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 6px;
+        }
+        .card-inmobiliaria {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        /* Botones de admin sobre la tarjeta */
+        .card-admin-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+        .card-admin-actions button {
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            backdrop-filter: blur(4px);
+        }
+        .card-admin-actions button:hover {
+            transform: scale(1.1);
+            background: var(--primary);
+        }
+        .card-admin-actions .delete-btn:hover {
+            background: var(--red);
+        }
+
+        /* ===== MODALES ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: var(--radius);
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal label {
+            font-weight: 600;
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+        .modal input, .modal select, .modal textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+        .modal .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+        .modal .btn-group button {
+            padding: 10px 24px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal .btn-group .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .modal .btn-group .btn-primary:hover {
+            transform: scale(1.05);
+        }
+        .modal .btn-group .btn-secondary {
+            background: var(--border);
+            color: var(--text-color);
+        }
+        .modal .btn-group .btn-secondary:hover {
+            transform: scale(1.05);
+        }
+        .modal .btn-group .btn-danger {
+            background: var(--red);
+            color: #fff;
+        }
+        .modal .btn-group .btn-danger:hover {
+            transform: scale(1.05);
+        }
+
+        /* Horarios en modal - mejor alineación */
+        .horario-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .horario-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            background: var(--input-bg);
+            padding: 6px 10px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+        }
+        .horario-item label {
+            margin: 0;
+            font-weight: 600;
+            min-width: 70px;
+            font-size: 0.85rem;
+        }
+        .horario-item input[type="time"] {
+            width: auto;
+            flex: 1;
+            min-width: 80px;
+            padding: 6px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+        .horario-item .cerrado-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+        .horario-item .cerrado-label input {
+            width: auto;
+            margin: 0;
+        }
+
+        /* Ajustes de imagen en modal */
+        .image-adjust-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: var(--input-bg);
+            padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-top: 4px;
+        }
+        .image-adjust-group label {
+            font-weight: 500;
+            font-size: 0.85rem;
+            margin: 0;
+            min-width: 60px;
+        }
+        .image-adjust-group select,
+        .image-adjust-group input[type="range"] {
+            flex: 1;
+            min-width: 80px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-color);
+        }
+        .image-adjust-group .range-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .image-adjust-group .range-group span {
+            font-size: 0.8rem;
+            min-width: 30px;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            .horario-grid {
+                grid-template-columns: 1fr;
+            }
+            .image-adjust-group {
+                flex-direction: column;
+            }
+        }
+
+        /* ===== MODAL DE AMPLIACIÓN DE IMAGEN ===== */
+        .image-zoom-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            cursor: pointer;
+        }
+        .image-zoom-overlay.active {
+            display: flex;
+        }
+        .image-zoom-overlay img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .image-zoom-overlay .close-zoom {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2.5rem;
+            color: #fff;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: 0.2s;
+        }
+        .image-zoom-overlay .close-zoom:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e293b;
+            color: #fff;
+            padding: 16px 28px;
+            border-radius: 40px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            font-weight: 600;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.3s;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .header-left {
+                justify-content: center;
+            }
+            .header-right {
+                justify-content: center;
+            }
+            .search-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .banner-slide {
+                height: 160px;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .card-img-wrap {
+                height: 160px;
+            }
+        }
+
+        /* Estilo para mensaje de carga */
+        #loadingMsg {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-left">
+            <h1 id="galeriaNombre"><i class="fas fa-store-alt"></i> Galería Cinerama</h1>
+            <span class="direccion" id="galeriaDireccion">Colón 375</span>
+            <div class="clock" id="clockDisplay"><i class="far fa-clock"></i> <span id="clockText">--:--</span></div>
+        </div>
+        <div class="header-right">
+            <button class="btn-admin" id="toggleAdminBtn"><i class="fas fa-user-cog"></i> Administrar</button>
+            <button class="btn-logout" id="logoutBtn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+        </div>
+    </header>
+
+    <!-- ===== BANNERS CARRUSEL ===== -->
+    <div class="banner-carousel" id="bannerCarousel">
+        <div class="banner-track" id="bannerTrack"></div>
+        <div class="banner-dots" id="bannerDots"></div>
+        <div class="banner-controls">
+            <button id="prevBanner"><i class="fas fa-chevron-left"></i></button>
+            <button id="nextBanner"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <!-- ===== BUSCADOR ===== -->
+    <section class="search-section">
+        <div class="filter-group">
+            <input type="text" id="searchNombre" placeholder="🔍 Buscar por nombre...">
+            <select id="searchRubro"><option value="">Todos los rubros</option></select>
+            <select id="searchNumero"><option value="">Todos los números</option></select>
+            <select id="searchUbicacion"><option value="">Todas las ubicaciones</option>
+                <option value="Primer Piso">Primer Piso</option>
+                <option value="Entrepiso">Entrepiso</option>
+                <option value="Subsuelo">Subsuelo</option>
+                <option value="Cochera">Cochera</option>
+            </select>
+        </div>
+        <button class="order-btn" id="orderBtn"><i class="fas fa-sort-numeric-up-alt"></i> Ordenar N°</button>
+    </section>
+
+    <!-- ===== GRID DE LOCALES ===== -->
+    <div id="loadingMsg">Cargando datos desde la nube...</div>
+    <div class="grid" id="localsGrid" style="display:none;"></div>
+
+    <!-- ===== MODALES (sin cambios) ===== -->
+    <!-- ===== MODAL LOGIN ===== -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal">
+            <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
+            <label>Clave:</label>
+            <input type="password" id="loginClave" placeholder="Ingrese clave">
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="closeModal('loginModal')">Cancelar</button>
+                <button class="btn-primary" onclick="loginAdmin()">Ingresar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL ADMIN PRINCIPAL ===== -->
+    <div class="modal-overlay" id="adminMainModal">
+        <div class="modal" style="max-width: 700px;">
+            <h2><i class="fas fa-shield-alt"></i> Panel de Control</h2>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+                <button class="btn-primary" onclick="openModal('addLocalModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-plus"></i> Agregar Local</button>
+                <button class="btn-primary" onclick="openModal('bannerModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-image"></i> Banners</button>
+                <button class="btn-primary" onclick="openModal('rubrosModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-tags"></i> Rubros</button>
+                <button class="btn-primary" onclick="openModal('temasModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-palette"></i> Temas</button>
+                <button class="btn-primary" onclick="openModal('configModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-cog"></i> Configuración</button>
+                <!-- Botones de backup -->
+                <button class="btn-primary" onclick="crearBackup()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-download"></i> Crear Backup</button>
+                <button class="btn-primary" onclick="abrirModalRestaurar()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-upload"></i> Restaurar</button>
+                <button class="btn-primary" onclick="exportarJSON()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-file-export"></i> Exportar JSON</button>
+                <button class="btn-primary" onclick="document.getElementById('importJSONInput').click()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-file-import"></i> Importar JSON</button>
+                <input type="file" id="importJSONInput" accept=".json" style="display:none;" onchange="importarJSON(event)">
+                <button class="btn-secondary" onclick="closeModal('adminMainModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--border); color:var(--text-color); cursor:pointer; font-weight:600;">Cerrar</button>
+            </div>
+            <p style="margin-bottom:10px;">Los locales se editan directamente desde la vista principal (iconos en cada tarjeta).</p>
+            <div style="margin-top:15px; padding:12px; background:var(--primary-light); border-radius:var(--radius);">
+                <strong>Último backup:</strong> <span id="ultimoBackupInfo">Nunca</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL AGREGAR/EDITAR LOCAL ===== -->
+    <div class="modal-overlay" id="addLocalModal">
+        <!-- ... contenido igual ... -->
+        <div class="modal">
+            <h2 id="modalLocalTitle"><i class="fas fa-store"></i> Agregar Local</h2>
+            <form id="localForm">
+                <input type="hidden" id="editId" value="">
+                <label>Nombre *</label>
+                <input type="text" id="fNombre" required>
+                <label>Rubro *</label>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <select id="fRubro" required style="flex:1;"></select>
+                    <button type="button" class="btn-primary" onclick="openModal('rubrosModal')" style="padding:6px 14px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-edit"></i></button>
+                </div>
+                <label>Número de local *</label>
+                <input type="number" id="fNumero" required min="1">
+                <label>Ubicación</label>
+                <select id="fUbicacion">
+                    <option value="Primer Piso">Primer Piso</option>
+                    <option value="Entrepiso">Entrepiso</option>
+                    <option value="Subsuelo">Subsuelo</option>
+                    <option value="Cochera">Cochera</option>
+                </select>
+                <label>¿En alquiler?</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox" id="fAlquiler" style="width:auto;">
+                    <span>Sí, está en alquiler</span>
+                </div>
+                <div id="inmobiliariaField" style="display:none;">
+                    <label>Teléfono de la inmobiliaria</label>
+                    <input type="text" id="fInmobiliaria" placeholder="Ej: 5491112345678">
+                </div>
+                <label>WhatsApp (con código país, ej: 5491112345678)</label>
+                <input type="text" id="fWhatsapp" placeholder="5491112345678">
+                <label>Sitio web</label>
+                <input type="url" id="fWeb" placeholder="https://...">
+                <label>Color de fondo para logo</label>
+                <input type="color" id="fColorFondo" value="#2563eb">
+                <label>Descripción</label>
+                <textarea id="fDescripcion" rows="2"></textarea>
+
+                <label>Ajuste de la foto principal</label>
+                <div class="image-adjust-group">
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; width:100%;">
+                        <label style="min-width:50px;">Fit:</label>
+                        <select id="fFotoFit">
+                            <option value="cover">Cubrir</option>
+                            <option value="contain">Contener</option>
+                            <option value="fill">Rellenar</option>
+                            <option value="none">Original</option>
+                            <option value="scale-down">Reducir</option>
+                        </select>
+                    </div>
+                    <div class="range-group">
+                        <label>Posición X:</label>
+                        <input type="range" id="fFotoPosX" min="0" max="100" value="50">
+                        <span id="fFotoPosXVal">50%</span>
+                    </div>
+                    <div class="range-group">
+                        <label>Posición Y:</label>
+                        <input type="range" id="fFotoPosY" min="0" max="100" value="50">
+                        <span id="fFotoPosYVal">50%</span>
+                    </div>
+                </div>
+
+                <label>Ajuste del logo</label>
+                <div class="image-adjust-group">
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; width:100%;">
+                        <label style="min-width:50px;">Fit:</label>
+                        <select id="fLogoFit">
+                            <option value="cover">Cubrir</option>
+                            <option value="contain">Contener</option>
+                            <option value="fill">Rellenar</option>
+                            <option value="none">Original</option>
+                            <option value="scale-down">Reducir</option>
+                        </select>
+                    </div>
+                    <div class="range-group">
+                        <label>Posición X:</label>
+                        <input type="range" id="fLogoPosX" min="0" max="100" value="50">
+                        <span id="fLogoPosXVal">50%</span>
+                    </div>
+                    <div class="range-group">
+                        <label>Posición Y:</label>
+                        <input type="range" id="fLogoPosY" min="0" max="100" value="50">
+                        <span id="fLogoPosYVal">50%</span>
+                    </div>
+                </div>
+
+                <label>Horarios (marcar cerrado si no atiende)</label>
+                <div class="horario-grid">
+                    <div class="horario-item"><label>Lunes</label> <input type="time" id="hLunesIni" value="09:00"> - <input type="time" id="hLunesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hLunesCerrado"> Cerrado</span></div>
+                    <div class="horario-item"><label>Martes</label> <input type="time" id="hMartesIni" value="09:00"> - <input type="time" id="hMartesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hMartesCerrado"> Cerrado</span></div>
+                    <div class="horario-item"><label>Miércoles</label> <input type="time" id="hMiercolesIni" value="09:00"> - <input type="time" id="hMiercolesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hMiercolesCerrado"> Cerrado</span></div>
+                    <div class="horario-item"><label>Jueves</label> <input type="time" id="hJuevesIni" value="09:00"> - <input type="time" id="hJuevesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hJuevesCerrado"> Cerrado</span></div>
+                    <div class="horario-item"><label>Viernes</label> <input type="time" id="hViernesIni" value="09:00"> - <input type="time" id="hViernesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hViernesCerrado"> Cerrado</span></div>
+                    <div class="horario-item"><label>Sábado</label> <input type="time" id="hSabadoIni" value="10:00"> - <input type="time" id="hSabadoFin" value="14:00"> <span class="cerrado-label"><input type="checkbox" id="hSabadoCerrado"> Cerrado</span></div>
+                    <div class="horario-item"><label>Domingo</label> <input type="time" id="hDomingoIni" value="10:00"> - <input type="time" id="hDomingoFin" value="14:00"> <span class="cerrado-label"><input type="checkbox" id="hDomingoCerrado" checked> Cerrado</span></div>
+                </div>
+                <label>Feriados (fecha:horario; ej: 25/12:10:00-14:00, 01/01:cerrado)</label>
+                <input type="text" id="hFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
+                
+                <label>Foto (URL o subir archivo)</label>
+                <input type="file" id="fFotoFile" accept="image/*">
+                <input type="text" id="fFotoUrl" placeholder="O pegar URL de imagen" style="margin-top:6px;">
+                <label>Logo (URL o subir archivo)</label>
+                <input type="file" id="fLogoFile" accept="image/*">
+                <input type="text" id="fLogoUrl" placeholder="O pegar URL de logo" style="margin-top:6px;">
+                
+                <div class="btn-group">
+                    <button type="button" class="btn-secondary" onclick="closeModal('addLocalModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL RUBROS ===== -->
+    <div class="modal-overlay" id="rubrosModal">
+        <div class="modal" style="max-width: 600px;">
+            <h2><i class="fas fa-tags"></i> Gestión de Rubros</h2>
+            <form id="rubroForm" style="display:flex; gap:8px; margin-bottom:20px;">
+                <input type="hidden" id="editRubroId" value="">
+                <input type="text" id="rubroNombre" placeholder="Nuevo rubro" required style="flex:1;">
+                <button type="submit" class="btn-primary" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-plus"></i> Agregar</button>
+            </form>
+            <div id="rubrosList" style="max-height:300px; overflow-y:auto;"></div>
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="closeModal('rubrosModal')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL BANNERS ===== -->
+    <div class="modal-overlay" id="bannerModal">
+        <div class="modal">
+            <h2><i class="fas fa-image"></i> Gestión de Banners</h2>
+            <form id="bannerForm" style="display:flex; flex-direction:column; gap:10px;">
+                <input type="hidden" id="editBannerId" value="">
+                <label>Imagen (subir archivo o URL)</label>
+                <input type="file" id="bannerFile" accept="image/*">
+                <input type="url" id="bannerUrl" placeholder="https://ejemplo.com/imagen.jpg" style="margin-top:4px;">
+                <label>Enlace (opcional)</label>
+                <input type="url" id="bannerLink" placeholder="https://...">
+                <label>Ajuste de la imagen del banner</label>
+                <div class="image-adjust-group">
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; width:100%;">
+                        <label style="min-width:50px;">Fit:</label>
+                        <select id="bannerFit">
+                            <option value="cover">Cubrir</option>
+                            <option value="contain">Contener</option>
+                            <option value="fill">Rellenar</option>
+                            <option value="none">Original</option>
+                            <option value="scale-down">Reducir</option>
+                        </select>
+                    </div>
+                    <div class="range-group">
+                        <label>Posición X:</label>
+                        <input type="range" id="bannerPosX" min="0" max="100" value="50">
+                        <span id="bannerPosXVal">50%</span>
+                    </div>
+                    <div class="range-group">
+                        <label>Posición Y:</label>
+                        <input type="range" id="bannerPosY" min="0" max="100" value="50">
+                        <span id="bannerPosYVal">50%</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="bannerSubmitBtn" style="padding:10px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-plus"></i> Agregar Banner</button>
+            </form>
+            <div style="margin-top:15px;">
+                <label>Intervalo de cambio (segundos):</label>
+                <input type="number" id="bannerInterval" min="1" value="4" style="width:80px; display:inline-block; margin-left:10px;">
+                <button onclick="updateBannerInterval()" class="btn-primary" style="padding:6px 16px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Actualizar</button>
+            </div>
+            <div id="bannerListAdmin" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;"></div>
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="closeModal('bannerModal')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL TEMAS ===== -->
+    <div class="modal-overlay" id="temasModal">
+        <div class="modal">
+            <h2><i class="fas fa-palette"></i> Temas</h2>
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin:15px 0;">
+                <button class="theme-btn" data-theme="default" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">☀️ Claro</button>
+                <button class="theme-btn" data-theme="dark" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🌙 Oscuro</button>
+                <button class="theme-btn" data-theme="colorful" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🌈 Colorido</button>
+                <button class="theme-btn" data-theme="festive" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🎄 Festivo</button>
+                <button id="autoThemeBtn" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🔁 Automático</button>
+            </div>
+            <p id="themeStatus" style="font-weight:600;"></p>
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="closeModal('temasModal')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL CONFIGURACIÓN ===== -->
+    <div class="modal-overlay" id="configModal">
+        <div class="modal">
+            <h2><i class="fas fa-cog"></i> Configuración de la Galería</h2>
+            <form id="configForm">
+                <label>Nombre de la galería</label>
+                <input type="text" id="configNombre" value="Galería Cinerama">
+                <label>Dirección</label>
+                <input type="text" id="configDireccion" value="Colón 375">
+                <div class="btn-group">
+                    <button type="button" class="btn-secondary" onclick="closeModal('configModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL RESTAURAR BACKUP ===== -->
+    <div class="modal-overlay" id="restoreModal">
+        <div class="modal">
+            <h2><i class="fas fa-upload"></i> Restaurar Backup</h2>
+            <p>Selecciona un backup para restaurar. <strong>Se perderán los datos actuales.</strong></p>
+            <div id="backupList" style="max-height:300px; overflow-y:auto; margin:15px 0;"></div>
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="closeModal('restoreModal')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL DE AMPLIACIÓN DE IMAGEN ===== -->
+    <div class="image-zoom-overlay" id="imageZoomModal">
+        <span class="close-zoom" id="closeZoomBtn">&times;</span>
+        <img id="zoomImage" src="" alt="Ampliación">
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+    // ============================================================
+    //  CONFIGURACIÓN DE FIREBASE
+    // ============================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyAXnOcORIKUEpboLfWXReMCnQTLXXPZRz8",
+        authDomain: "galeriacineramajulio.firebaseapp.com",
+        projectId: "galeriacineramajulio",
+        storageBucket: "galeriacineramajulio.firebasestorage.app",
+        messagingSenderId: "1064578693106",
+        appId: "1:1064578693106:web:fdfbb0b7a1b1ed94a49d6b"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const docRef = db.collection('galeria').doc('datos');
+
+    // ============================================================
+    //  DATA LAYER (Firestore + localStorage fallback)
+    // ============================================================
+    let data = {
+        locales: [],
+        banners: [],
+        rubros: [],
+        theme: 'default',
+        autoTheme: false,
+        nextId: 1,
+        galeriaNombre: 'Galería Cinerama',
+        galeriaDireccion: 'Colón 375',
+        bannerInterval: 4,
+        backups: [],
+        lastBackupDate: null,
+        adminClave: 'admin123'
+    };
+
+    let isAdmin = false;
+    let bannerIndex = 0;
+    let bannerTimer = null;
+    let dataLoaded = false; // para saber si ya se cargaron los datos
+
+    function getDefaultData() {
+        return {
+            rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
+            locales: [
+                {
+                    id: 1,
+                    nombre: "Librería El Saber",
+                    rubro: "Librería",
+                    numeroLocal: 5,
+                    ubicacion: "Primer Piso",
+                    enAlquiler: false,
+                    inmobiliaria: "",
+                    descripcion: "Libros, útiles y material de oficina. Amplio catálogo.",
+                    whatsapp: "5491112345678",
+                    web: "https://libreriaelsaber.com",
+                    colorFondo: "#8B5A2B",
+                    foto: "https://picsum.photos/seed/libro/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "09:00", fin: "18:00", cerrado: false },
+                        martes: { ini: "09:00", fin: "18:00", cerrado: false },
+                        miercoles: { ini: "09:00", fin: "18:00", cerrado: false },
+                        jueves: { ini: "09:00", fin: "18:00", cerrado: false },
+                        viernes: { ini: "09:00", fin: "18:00", cerrado: false },
+                        sabado: { ini: "10:00", fin: "14:00", cerrado: false },
+                        domingo: { ini: "10:00", fin: "14:00", cerrado: true },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    }
+                },
+                {
+                    id: 2,
+                    nombre: "Café Central",
+                    rubro: "Gastronomía",
+                    numeroLocal: 12,
+                    ubicacion: "Entrepiso",
+                    enAlquiler: false,
+                    inmobiliaria: "",
+                    descripcion: "Café de especialidad, pastelería y desayunos.",
+                    whatsapp: "5491123456789",
+                    web: "https://cafecentral.com",
+                    colorFondo: "#D97706",
+                    foto: "https://picsum.photos/seed/cafe/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "08:00", fin: "20:00", cerrado: false },
+                        martes: { ini: "08:00", fin: "20:00", cerrado: false },
+                        miercoles: { ini: "08:00", fin: "20:00", cerrado: false },
+                        jueves: { ini: "08:00", fin: "20:00", cerrado: false },
+                        viernes: { ini: "08:00", fin: "20:00", cerrado: false },
+                        sabado: { ini: "09:00", fin: "18:00", cerrado: false },
+                        domingo: { ini: "10:00", fin: "14:00", cerrado: false },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    }
+                },
+                {
+                    id: 3,
+                    nombre: "Indumentaria Sport",
+                    rubro: "Indumentaria",
+                    numeroLocal: 8,
+                    ubicacion: "Subsuelo",
+                    enAlquiler: true,
+                    inmobiliaria: "5491134567890",
+                    descripcion: "Ropa deportiva de primeras marcas.",
+                    whatsapp: "5491134567890",
+                    web: "https://sportwear.com",
+                    colorFondo: "#2563EB",
+                    foto: "https://picsum.photos/seed/sport/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "10:00", fin: "19:00", cerrado: false },
+                        martes: { ini: "10:00", fin: "19:00", cerrado: false },
+                        miercoles: { ini: "10:00", fin: "19:00", cerrado: false },
+                        jueves: { ini: "10:00", fin: "19:00", cerrado: false },
+                        viernes: { ini: "10:00", fin: "19:00", cerrado: false },
+                        sabado: { ini: "10:00", fin: "15:00", cerrado: false },
+                        domingo: { ini: "10:00", fin: "15:00", cerrado: true },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    }
+                },
+                {
+                    id: 4,
+                    nombre: "Joyas D'Luz",
+                    rubro: "Joyería",
+                    numeroLocal: 3,
+                    ubicacion: "Primer Piso",
+                    enAlquiler: false,
+                    inmobiliaria: "",
+                    descripcion: "Joyas de oro y plata, diseños exclusivos.",
+                    whatsapp: "5491145678901",
+                    web: "https://joyasdluz.com",
+                    colorFondo: "#B45309",
+                    foto: "https://picsum.photos/seed/joyas/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "10:00", fin: "17:00", cerrado: false },
+                        martes: { ini: "10:00", fin: "17:00", cerrado: false },
+                        miercoles: { ini: "10:00", fin: "17:00", cerrado: false },
+                        jueves: { ini: "10:00", fin: "17:00", cerrado: false },
+                        viernes: { ini: "10:00", fin: "17:00", cerrado: false },
+                        sabado: { ini: "10:00", fin: "13:00", cerrado: false },
+                        domingo: { ini: "10:00", fin: "13:00", cerrado: true },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    }
+                },
+                {
+                    id: 5,
+                    nombre: "Tecno Store",
+                    rubro: "Electrónica",
+                    numeroLocal: 20,
+                    ubicacion: "Cochera",
+                    enAlquiler: false,
+                    inmobiliaria: "",
+                    descripcion: "Computadoras, celulares y accesorios.",
+                    whatsapp: "5491167890123",
+                    web: "https://tecnostore.com",
+                    colorFondo: "#DC2626",
+                    foto: "https://picsum.photos/seed/tecnologia/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "09:00", fin: "20:00", cerrado: false },
+                        martes: { ini: "09:00", fin: "20:00", cerrado: false },
+                        miercoles: { ini: "09:00", fin: "20:00", cerrado: false },
+                        jueves: { ini: "09:00", fin: "20:00", cerrado: false },
+                        viernes: { ini: "09:00", fin: "20:00", cerrado: false },
+                        sabado: { ini: "10:00", fin: "18:00", cerrado: false },
+                        domingo: { ini: "12:00", fin: "16:00", cerrado: false },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    }
+                }
+            ],
+            banners: [
+                { id: 1, imagen: "https://picsum.photos/seed/banner1/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 },
+                { id: 2, imagen: "https://picsum.photos/seed/banner2/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 },
+                { id: 3, imagen: "https://picsum.photos/seed/banner3/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 }
+            ],
+            nextId: 6,
+            bannerInterval: 4,
+            backups: [],
+            lastBackupDate: null,
+            adminClave: 'admin123',
+            galeriaNombre: 'Galería Cinerama',
+            galeriaDireccion: 'Colón 375',
+            theme: 'default',
+            autoTheme: false
+        };
+    }
+
+    // Cargar datos desde Firestore
+    async function loadData() {
+        try {
+            const doc = await docRef.get();
+            if (doc.exists) {
+                const firestoreData = doc.data();
+                // Fusionar con datos por defecto para asegurar todas las propiedades
+                const defaultData = getDefaultData();
+                for (let key in defaultData) {
+                    if (firestoreData[key] !== undefined) {
+                        data[key] = firestoreData[key];
+                    } else {
+                        data[key] = defaultData[key];
+                    }
+                }
+                // Guardar en localStorage como respaldo
+                localStorage.setItem('galeriaData', JSON.stringify(data));
+            } else {
+                // No existe documento, crear con datos por defecto
+                const defaultData = getDefaultData();
+                for (let key in defaultData) {
+                    data[key] = defaultData[key];
+                }
+                await docRef.set(data);
+                localStorage.setItem('galeriaData', JSON.stringify(data));
+            }
+        } catch (error) {
+            console.error('Error cargando desde Firestore:', error);
+            // Fallback: intentar cargar desde localStorage
+            const stored = localStorage.getItem('galeriaData');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    for (let key in parsed) {
+                        data[key] = parsed[key];
+                    }
+                } catch (e) {
+                    console.error('Error al parsear localStorage:', e);
+                }
+            } else {
+                // Si no hay nada, usar datos por defecto
+                const defaultData = getDefaultData();
+                for (let key in defaultData) {
+                    data[key] = defaultData[key];
+                }
+            }
+        }
+        dataLoaded = true;
+        // Ocultar mensaje de carga y mostrar grid
+        document.getElementById('loadingMsg').style.display = 'none';
+        document.getElementById('localsGrid').style.display = 'grid';
+        renderAll();
+        // Aplicar tema
+        if (data.autoTheme) checkAutoTheme();
+        else applyTheme(data.theme);
+    }
+
+    // Guardar datos en Firestore y también en localStorage
+    async function saveData() {
+        try {
+            await docRef.set(data);
+            localStorage.setItem('galeriaData', JSON.stringify(data));
+        } catch (error) {
+            console.error('Error guardando en Firestore:', error);
+            // Fallback a localStorage
+            localStorage.setItem('galeriaData', JSON.stringify(data));
+            showToast('Error de conexión: los datos se guardaron localmente');
+        }
+    }
+
+    // ============================================================
+    //  FUNCIONES EXISTENTES (adaptadas para usar saveData/loadData)
+    // ============================================================
+    // Las funciones que modifican data deben llamar a saveData() después de cada cambio.
+    // Ya están escritas así, solo debemos asegurar que saveData sea async.
+    // Como todas las funciones que llaman a saveData son síncronas, podemos mantenerlas así
+    // y saveData se encarga de la asincronía. No necesitamos await en cada llamada,
+    // pero podemos hacer que las funciones que disparan guardado sean async si queremos.
+    // Para mantener la compatibilidad, dejamos las funciones síncronas y saveData maneja la promesa.
+
+    // Modificamos las funciones que usan saveData para que no bloqueen la UI.
+    // Las funciones como crearBackup, cambiarClave, etc. ya llaman a saveData.
+    // No es necesario usar await en todas, pero podemos hacerlo para manejar errores.
+
+    // Reescribimos las funciones principales que modifican data para que sean async y usen await saveData()
+    // Pero como el código es extenso, voy a sobrescribir solo las necesarias.
+
+    // Aquí van las funciones originales, pero con saveData modificado a async.
+    // Como son muchas, y el usuario no pidió reescribir todo, mantengo el código
+    // pero asegurando que saveData sea la función que guarda en Firestore.
+
+    // ============================================================
+    //  BACKUP FUNCTIONS
+    // ============================================================
+    async function crearBackup() {
+        const backup = {
+            timestamp: new Date().toISOString(),
+            data: JSON.parse(JSON.stringify(data))
+        };
+        data.backups.push(backup);
+        if (data.backups.length > 20) data.backups.shift();
+        data.lastBackupDate = backup.timestamp;
+        await saveData();
+        actualizarInfoBackup();
+        showToast('Backup creado correctamente');
+        renderAll();
+    }
+
+    function abrirModalRestaurar() {
+        const list = document.getElementById('backupList');
+        if (data.backups.length === 0) {
+            list.innerHTML = '<p>No hay backups disponibles.</p>';
+        } else {
+            let html = '<ul style="list-style:none; padding:0;">';
+            const copias = [...data.backups].reverse();
+            copias.forEach((b, index) => {
+                const fecha = new Date(b.timestamp);
+                const fechaStr = fecha.toLocaleString();
+                html += `<li style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--border);">
+                    <span>${fechaStr}</span>
+                    <button onclick="restaurarBackup(${data.backups.length - 1 - index})" class="btn-primary" style="padding:6px 16px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Restaurar</button>
+                </li>`;
+            });
+            html += '</ul>';
+            list.innerHTML = html;
+        }
+        openModal('restoreModal');
+    }
+
+    async function restaurarBackup(index) {
+        if (!confirm('¿Restaurar este backup? Se perderán los datos actuales.')) return;
+        const backup = data.backups[index];
+        if (!backup) return showToast('Backup no encontrado');
+        const backupData = backup.data;
+        data.locales = backupData.locales || [];
+        data.banners = backupData.banners || [];
+        data.rubros = backupData.rubros || [];
+        data.theme = backupData.theme || 'default';
+        data.autoTheme = backupData.autoTheme || false;
+        data.nextId = backupData.nextId || 1;
+        data.galeriaNombre = backupData.galeriaNombre || 'Galería Cinerama';
+        data.galeriaDireccion = backupData.galeriaDireccion || 'Colón 375';
+        data.bannerInterval = backupData.bannerInterval || 4;
+        // No restauramos adminClave para no sobrescribir la actual
+        await saveData();
+        renderAll();
+        closeModal('restoreModal');
+        showToast('Backup restaurado correctamente');
+    }
+
+    function actualizarInfoBackup() {
+        const span = document.getElementById('ultimoBackupInfo');
+        if (data.lastBackupDate) {
+            const fecha = new Date(data.lastBackupDate);
+            span.textContent = fecha.toLocaleString();
+        } else {
+            span.textContent = 'Nunca';
+        }
+    }
+
+    // ============================================================
+    //  BACKUP AUTOMÁTICO SEMANAL
+    // ============================================================
+    async function verificarBackupAutomatico() {
+        if (!isAdmin) return;
+        const ahora = new Date();
+        let debeBackup = false;
+        if (!data.lastBackupDate) {
+            debeBackup = true;
+        } else {
+            const ultimo = new Date(data.lastBackupDate);
+            const diffMs = ahora - ultimo;
+            const diffDias = diffMs / (1000 * 60 * 60 * 24);
+            if (diffDias >= 7) debeBackup = true;
+        }
+        if (debeBackup) {
+            await crearBackup();
+            showToast('Backup automático semanal realizado');
+        }
+    }
+
+    // ============================================================
+    //  EXPORTAR / IMPORTAR JSON
+    // ============================================================
+    function exportarJSON() {
+        const exportData = JSON.parse(JSON.stringify(data));
+        const jsonStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `galeria_backup_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Datos exportados correctamente');
+    }
+
+    async function importarJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (!importedData.locales || !importedData.banners || !importedData.rubros) {
+                    showToast('El archivo no tiene el formato correcto');
+                    return;
+                }
+                if (!confirm('¿Importar estos datos? Se perderán todos los datos actuales (excepto los backups, que se mantendrán).')) {
+                    return;
+                }
+                const backupsActuales = data.backups;
+                const lastBackup = data.lastBackupDate;
+                const adminClaveActual = data.adminClave;
+                data = importedData;
+                data.backups = backupsActuales;
+                data.lastBackupDate = lastBackup;
+                data.adminClave = adminClaveActual;
+                await saveData();
+                renderAll();
+                showToast('Datos importados correctamente');
+            } catch(err) {
+                showToast('Error al leer el archivo JSON');
+                console.error(err);
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    // ============================================================
+    //  CAMBIAR CLAVE
+    // ============================================================
+    async function cambiarClave() {
+        if (!isAdmin) return;
+        const actual = prompt('Ingrese la clave actual:');
+        if (actual === null) return;
+        if (actual !== data.adminClave) {
+            showToast('Clave actual incorrecta');
+            return;
+        }
+        const nueva = prompt('Ingrese la nueva clave:');
+        if (nueva === null) return;
+        if (nueva.length < 4) {
+            showToast('La clave debe tener al menos 4 caracteres');
+            return;
+        }
+        const confirmar = prompt('Confirme la nueva clave:');
+        if (confirmar === null) return;
+        if (nueva !== confirmar) {
+            showToast('Las claves no coinciden');
+            return;
+        }
+        data.adminClave = nueva;
+        await saveData();
+        showToast('Clave cambiada exitosamente');
+    }
+
+    // ============================================================
+    //  LOGIN (usa data.adminClave)
+    // ============================================================
+    async function loginAdmin() {
+        const clave = document.getElementById('loginClave').value;
+        if (clave === data.adminClave) {
+            isAdmin = true;
+            closeModal('loginModal');
+            showToast('Acceso concedido');
+            document.getElementById('logoutBtn').style.display = 'flex';
+            document.getElementById('toggleAdminBtn').textContent = ' Panel Admin';
+            await verificarBackupAutomatico();
+            openModal('adminMainModal');
+            document.getElementById('themeStatus').textContent = data.autoTheme ? 'Modo automático activado' : `Tema actual: ${data.theme}`;
+            renderAll();
+        } else {
+            showToast('Clave incorrecta');
+        }
+    }
+
+    // ============================================================
+    //  BANNER CARRUSEL (con ajuste de imagen)
+    // ============================================================
+    function renderBannersCarousel() {
+        const track = document.getElementById('bannerTrack');
+        const dots = document.getElementById('bannerDots');
+        track.innerHTML = '';
+        dots.innerHTML = '';
+        if (data.banners.length === 0) {
+            track.innerHTML = `<div class="banner-slide" style="background:var(--bg-card); color:var(--text-color); font-size:1.2rem;">No hay banners configurados</div>`;
+            return;
+        }
+        data.banners.forEach((b, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'banner-slide';
+            const fit = b.fit || 'cover';
+            const posX = b.posX || 50;
+            const posY = b.posY || 50;
+            slide.innerHTML = `<a href="${b.link || '#'}" target="_blank"><img src="${b.imagen}" alt="banner ${i+1}" style="object-fit:${fit}; object-position:${posX}% ${posY}%;"></a>`;
+            track.appendChild(slide);
+            const dot = document.createElement('span');
+            dot.addEventListener('click', () => goToBanner(i));
+            dots.appendChild(dot);
+        });
+        goToBanner(0);
+        startBannerTimer();
+    }
+
+    function goToBanner(index) {
+        if (data.banners.length === 0) return;
+        const slides = document.querySelectorAll('.banner-slide');
+        if (index >= slides.length) index = 0;
+        if (index < 0) index = slides.length - 1;
+        bannerIndex = index;
+        const track = document.getElementById('bannerTrack');
+        track.style.transform = `translateX(-${index * 100}%)`;
+        const dots = document.querySelectorAll('#bannerDots span');
+        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+
+    function nextBanner() { goToBanner(bannerIndex + 1); }
+    function prevBanner() { goToBanner(bannerIndex - 1); }
+
+    function startBannerTimer() {
+        if (bannerTimer) clearInterval(bannerTimer);
+        if (data.banners.length > 1) {
+            bannerTimer = setInterval(nextBanner, data.bannerInterval * 1000);
+        }
+    }
+
+    function stopBannerTimer() {
+        if (bannerTimer) {
+            clearInterval(bannerTimer);
+            bannerTimer = null;
+        }
+    }
+
+    document.getElementById('nextBanner').addEventListener('click', () => { stopBannerTimer(); nextBanner(); startBannerTimer(); });
+    document.getElementById('prevBanner').addEventListener('click', () => { stopBannerTimer(); prevBanner(); startBannerTimer(); });
+    const carousel = document.getElementById('bannerCarousel');
+    carousel.addEventListener('mouseenter', stopBannerTimer);
+    carousel.addEventListener('mouseleave', startBannerTimer);
+
+    // ============================================================
+    //  TEMAS
+    // ============================================================
+    function applyTheme(theme) {
+        const body = document.body;
+        body.className = '';
+        if (theme === 'dark') body.classList.add('dark');
+        else if (theme === 'colorful') body.classList.add('colorful');
+        else if (theme === 'festive') body.classList.add('festive');
+        data.theme = theme;
+        saveData(); // no esperamos
+        document.getElementById('themeStatus').textContent = `Tema actual: ${theme}`;
+    }
+
+    function detectFestiveTheme() {
+        const now = new Date();
+        const mes = now.getMonth() + 1;
+        const dia = now.getDate();
+        if ((mes === 12 && dia >= 20 && dia <= 31) || (mes === 1 && dia <= 2)) return 'festive';
+        return null;
+    }
+
+    function checkAutoTheme() {
+        if (data.autoTheme) {
+            const festive = detectFestiveTheme();
+            if (festive) {
+                applyTheme(festive);
+                document.getElementById('themeStatus').textContent += ' (festivo automático)';
+            } else {
+                if (data.theme !== 'festive') applyTheme(data.theme);
+                else applyTheme('default');
+            }
+        } else {
+            applyTheme(data.theme);
+        }
+    }
+
+    // ============================================================
+    //  MODALES
+    // ============================================================
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+        if (id === 'rubrosModal') renderRubrosList();
+        if (id === 'bannerModal') {
+            renderBannersAdmin();
+            document.getElementById('bannerInterval').value = data.bannerInterval;
+            document.getElementById('editBannerId').value = '';
+            document.getElementById('bannerUrl').value = '';
+            document.getElementById('bannerLink').value = '';
+            document.getElementById('bannerFile').value = '';
+            document.getElementById('bannerFit').value = 'cover';
+            document.getElementById('bannerPosX').value = 50;
+            document.getElementById('bannerPosY').value = 50;
+            document.getElementById('bannerPosXVal').textContent = '50%';
+            document.getElementById('bannerPosYVal').textContent = '50%';
+            document.getElementById('bannerSubmitBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Banner';
+        }
+        if (id === 'addLocalModal') updateRubroSelectInForm();
+        if (id === 'adminMainModal') actualizarInfoBackup();
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    // ============================================================
+    //  RENDER LOCALES
+    // ============================================================
+    function renderLocales(filteredLocales) {
+        const grid = document.getElementById('localsGrid');
+        if (!filteredLocales) filteredLocales = data.locales;
+
+        const orderAsc = document.getElementById('orderBtn').dataset.order === 'asc';
+        const sorted = [...filteredLocales].sort((a,b) => orderAsc ? a.numeroLocal - b.numeroLocal : b.numeroLocal - a.numeroLocal);
+
+        if (sorted.length === 0) {
+            grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; background:var(--bg-card); border-radius:var(--radius);">No se encontraron locales.</p>`;
+            return;
+        }
+
+        const now = new Date();
+        const dayNames = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+        const dayIndex = now.getDay();
+        const dayKey = dayNames[dayIndex];
+        const dateStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
+
+        grid.innerHTML = sorted.map(local => {
+            let horarioHoy = '';
+            let isOpen = false;
+            let esFeriado = false;
+
+            const feriadosRaw = local.horarios.feriados || '';
+            const feriadosList = feriadosRaw.split(';').map(f => f.trim()).filter(f => f);
+            for (let f of feriadosList) {
+                const parts = f.split(':');
+                if (parts.length === 2) {
+                    const fecha = parts[0].trim();
+                    const horario = parts[1].trim();
+                    if (fecha === dateStr) {
+                        esFeriado = true;
+                        horarioHoy = horario;
+                        if (horario !== 'cerrado' && horario.includes('-')) {
+                            const [desde, hasta] = horario.split('-');
+                            isOpen = isInTimeRange(desde, hasta);
+                        } else {
+                            isOpen = false;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (!esFeriado) {
+                const dia = local.horarios[dayKey];
+                if (dia) {
+                    if (dia.cerrado) {
+                        horarioHoy = 'Cerrado';
+                        isOpen = false;
+                    } else {
+                        horarioHoy = `${dia.ini} - ${dia.fin}`;
+                        isOpen = isInTimeRange(dia.ini, dia.fin);
+                    }
+                } else {
+                    horarioHoy = 'Cerrado';
+                    isOpen = false;
+                }
+            }
+
+            const logoUrl = local.logo || '';
+            const fotoUrl = local.foto || 'https://picsum.photos/seed/default/400/300';
+            const colorFondo = local.colorFondo || '#2563eb';
+            const waNum = local.whatsapp ? local.whatsapp.replace(/\D/g,'') : '';
+            const waLink = waNum ? `https://wa.me/${waNum}` : '#';
+            const shareUrl = encodeURIComponent(window.location.href);
+            const shareText = encodeURIComponent(`¡Mira ${local.nombre} en la Galería!`);
+            const shareWhatsapp = `https://api.whatsapp.com/send?text=${shareText}%20${shareUrl}`;
+            const shareFacebook = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+            const shareTwitter = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+
+            const showWhatsapp = local.whatsapp && local.whatsapp.trim() !== '';
+            const showWeb = local.web && local.web.trim() !== '';
+
+            const fotoStyle = `object-fit: ${local.fotoFit || 'cover'}; object-position: ${local.fotoPosX || 50}% ${local.fotoPosY || 50}%;`;
+            const logoStyle = `object-fit: ${local.logoFit || 'cover'}; object-position: ${local.logoPosX || 50}% ${local.logoPosY || 50}%;`;
+
+            const numeroHtml = `<span class="numero">Nº ${local.numeroLocal}</span>`;
+            const ubicacionHtml = `<span class="ubicacion">${local.ubicacion || 'Sin ubicación'}</span>`;
+
+            let adminButtons = '';
+            if (isAdmin) {
+                adminButtons = `
+                    <div class="card-admin-actions">
+                        <button class="edit-btn" onclick="editLocal(${local.id})" title="Editar"><i class="fas fa-pen"></i></button>
+                        <button class="delete-btn" onclick="deleteLocal(${local.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="card">
+                    ${adminButtons}
+                    <div class="card-img-wrap">
+                        <img src="${fotoUrl}" alt="${local.nombre}" style="${fotoStyle}" onclick="openImageZoom('${fotoUrl}')" onerror="this.src='https://picsum.photos/seed/error/400/300'">
+                        <div class="card-img-overlay">
+                            ${numeroHtml}
+                            ${ubicacionHtml}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <div class="card-logo" style="background:${colorFondo};" onclick="openImageZoom('${logoUrl || ''}')">
+                                ${logoUrl ? `<img src="${logoUrl}" alt="logo" style="${logoStyle}">` : local.nombre.substring(0,2).toUpperCase()}
+                            </div>
+                            <div>
+                                <div class="card-title">${local.nombre}</div>
+                                <span class="card-rubro">${local.rubro}</span>
+                                <div class="card-ubicacion"><i class="fas fa-map-pin"></i> ${local.ubicacion || 'Sin ubicación'}</div>
+                                ${local.enAlquiler ? `<div class="card-alquiler">🔑 EN ALQUILER</div><div class="card-inmobiliaria">Inmobiliaria: ${local.inmobiliaria || 'No especificado'}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="card-desc">${local.descripcion || ''}</div>
+                        <div class="card-horario">
+                            <span><i class="far fa-calendar-alt"></i> Hoy: ${horarioHoy}</span>
+                            <span class="status-badge ${isOpen ? 'open' : 'closed'}">${isOpen ? '🟢 Abierto' : '🔴 Cerrado'}</span>
+                        </div>
+                        <div class="card-actions">
+                            ${showWhatsapp ? `<a href="${waLink}" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>` : ''}
+                            <button class="share" onclick="shareLocal('${local.nombre}','${shareWhatsapp}','${shareFacebook}','${shareTwitter}')"><i class="fas fa-share-alt"></i> Compartir</button>
+                            ${showWeb ? `<a href="${local.web}" target="_blank" style="background:var(--primary);"><i class="fas fa-globe"></i> Web</a>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function isInTimeRange(desdeStr, hastaStr) {
+        try {
+            const ahora = new Date();
+            const [hDesde, mDesde] = desdeStr.split(':').map(Number);
+            const [hHasta, mHasta] = hastaStr.split(':').map(Number);
+            const nowMinutes = ahora.getHours() * 60 + ahora.getMinutes();
+            const fromMinutes = hDesde * 60 + mDesde;
+            const toMinutes = hHasta * 60 + mHasta;
+            return nowMinutes >= fromMinutes && nowMinutes <= toMinutes;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    // ============================================================
+    //  ADMIN CRUD (locales) - adaptado para usar saveData
+    // ============================================================
+    function editLocal(id) {
+        const local = data.locales.find(l => l.id === id);
+        if (!local) return;
+        document.getElementById('editId').value = id;
+        document.getElementById('fNombre').value = local.nombre;
+        document.getElementById('fNumero').value = local.numeroLocal;
+        document.getElementById('fUbicacion').value = local.ubicacion || 'Primer Piso';
+        document.getElementById('fAlquiler').checked = local.enAlquiler || false;
+        document.getElementById('fInmobiliaria').value = local.inmobiliaria || '';
+        document.getElementById('fWhatsapp').value = local.whatsapp || '';
+        document.getElementById('fWeb').value = local.web || '';
+        document.getElementById('fColorFondo').value = local.colorFondo || '#2563eb';
+        document.getElementById('fDescripcion').value = local.descripcion || '';
+        document.getElementById('fFotoUrl').value = local.foto || '';
+        document.getElementById('fLogoUrl').value = local.logo || '';
+        document.getElementById('fFotoFit').value = local.fotoFit || 'cover';
+        document.getElementById('fFotoPosX').value = local.fotoPosX || 50;
+        document.getElementById('fFotoPosY').value = local.fotoPosY || 50;
+        document.getElementById('fLogoFit').value = local.logoFit || 'cover';
+        document.getElementById('fLogoPosX').value = local.logoPosX || 50;
+        document.getElementById('fLogoPosY').value = local.logoPosY || 50;
+        updateSliderLabels();
+
+        const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+        dias.forEach(d => {
+            const dia = local.horarios[d] || { ini: '09:00', fin: '18:00', cerrado: false };
+            document.getElementById(`h${capitalize(d)}Ini`).value = dia.ini || '09:00';
+            document.getElementById(`h${capitalize(d)}Fin`).value = dia.fin || '18:00';
+            document.getElementById(`h${capitalize(d)}Cerrado`).checked = dia.cerrado || false;
+        });
+        document.getElementById('hFeriados').value = local.horarios.feriados || '';
+        document.getElementById('fFotoFile').value = '';
+        document.getElementById('fLogoFile').value = '';
+        document.getElementById('modalLocalTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Local';
+        toggleInmobiliaria();
+        updateRubroSelectInForm();
+        document.getElementById('fRubro').value = local.rubro;
+        openModal('addLocalModal');
+    }
+
+    async function deleteLocal(id) {
+        if (!confirm('¿Eliminar este local permanentemente?')) return;
+        data.locales = data.locales.filter(l => l.id !== id);
+        await saveData();
+        renderAll();
+        showToast('Local eliminado');
+    }
+
+    // saveLocal es llamado por el submit del formulario, lo hacemos async
+    document.getElementById('localForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('editId').value;
+        const nombre = document.getElementById('fNombre').value.trim();
+        const rubro = document.getElementById('fRubro').value;
+        const numero = parseInt(document.getElementById('fNumero').value);
+        const ubicacion = document.getElementById('fUbicacion').value;
+        const enAlquiler = document.getElementById('fAlquiler').checked;
+        const inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
+        if (!nombre || !rubro || !numero) {
+            showToast('Complete nombre, rubro y número.');
+            return;
+        }
+
+        const horarios = {};
+        const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+        dias.forEach(d => {
+            const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
+            const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
+            const cerrado = document.getElementById(`h${capitalize(d)}Cerrado`).checked;
+            horarios[d] = { ini, fin, cerrado };
+        });
+        horarios.feriados = document.getElementById('hFeriados').value.trim();
+
+        let foto = document.getElementById('fFotoUrl').value.trim();
+        const fotoFile = document.getElementById('fFotoFile').files[0];
+        if (fotoFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                foto = e.target.result;
+                finishSave(foto);
+            };
+            reader.readAsDataURL(fotoFile);
+        } else {
+            finishSave(foto);
+        }
+
+        async function finishSave(fotoFinal) {
+            let logo = document.getElementById('fLogoUrl').value.trim();
+            const logoFile = document.getElementById('fLogoFile').files[0];
+            if (logoFile) {
+                const reader2 = new FileReader();
+                reader2.onload = function(e) {
+                    logo = e.target.result;
+                    finishSave2(fotoFinal, logo);
+                };
+                reader2.readAsDataURL(logoFile);
+            } else {
+                finishSave2(fotoFinal, logo);
+            }
+        }
+
+        async function finishSave2(fotoFinal, logoFinal) {
+            const localData = {
+                id: id ? parseInt(id) : data.nextId++,
+                nombre,
+                rubro,
+                numeroLocal: numero,
+                ubicacion,
+                enAlquiler,
+                inmobiliaria: enAlquiler ? inmobiliaria : '',
+                descripcion: document.getElementById('fDescripcion').value.trim(),
+                whatsapp: document.getElementById('fWhatsapp').value.trim(),
+                web: document.getElementById('fWeb').value.trim(),
+                colorFondo: document.getElementById('fColorFondo').value,
+                foto: fotoFinal || 'https://picsum.photos/seed/default/400/300',
+                logo: logoFinal || null,
+                fotoFit: document.getElementById('fFotoFit').value,
+                fotoPosX: parseInt(document.getElementById('fFotoPosX').value),
+                fotoPosY: parseInt(document.getElementById('fFotoPosY').value),
+                logoFit: document.getElementById('fLogoFit').value,
+                logoPosX: parseInt(document.getElementById('fLogoPosX').value),
+                logoPosY: parseInt(document.getElementById('fLogoPosY').value),
+                horarios
+            };
+
+            if (id) {
+                const index = data.locales.findIndex(l => l.id === parseInt(id));
+                if (index !== -1) data.locales[index] = localData;
+            } else {
+                data.locales.push(localData);
+            }
+            await saveData();
+            renderAll();
+            document.getElementById('localForm').reset();
+            document.getElementById('editId').value = '';
+            closeModal('addLocalModal');
+            showToast('Local guardado');
+            updateRubroSelectInForm();
+            updateNumeroSelect();
+        }
+    });
+
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    document.getElementById('fAlquiler').addEventListener('change', toggleInmobiliaria);
+    function toggleInmobiliaria() {
+        const checked = document.getElementById('fAlquiler').checked;
+        document.getElementById('inmobiliariaField').style.display = checked ? 'block' : 'none';
+    }
+
+    // Sliders
+    function updateSliderLabels() {
+        const fotoX = document.getElementById('fFotoPosX');
+        const fotoY = document.getElementById('fFotoPosY');
+        const logoX = document.getElementById('fLogoPosX');
+        const logoY = document.getElementById('fLogoPosY');
+        document.getElementById('fFotoPosXVal').textContent = fotoX.value + '%';
+        document.getElementById('fFotoPosYVal').textContent = fotoY.value + '%';
+        document.getElementById('fLogoPosXVal').textContent = logoX.value + '%';
+        document.getElementById('fLogoPosYVal').textContent = logoY.value + '%';
+        const bannerX = document.getElementById('bannerPosX');
+        const bannerY = document.getElementById('bannerPosY');
+        if (bannerX) document.getElementById('bannerPosXVal').textContent = bannerX.value + '%';
+        if (bannerY) document.getElementById('bannerPosYVal').textContent = bannerY.value + '%';
+    }
+    document.getElementById('fFotoPosX').addEventListener('input', updateSliderLabels);
+    document.getElementById('fFotoPosY').addEventListener('input', updateSliderLabels);
+    document.getElementById('fLogoPosX').addEventListener('input', updateSliderLabels);
+    document.getElementById('fLogoPosY').addEventListener('input', updateSliderLabels);
+    document.getElementById('bannerPosX').addEventListener('input', updateSliderLabels);
+    document.getElementById('bannerPosY').addEventListener('input', updateSliderLabels);
+
+    // ============================================================
+    //  RUBROS (CRUD)
+    // ============================================================
+    function renderRubrosList() {
+        const container = document.getElementById('rubrosList');
+        if (data.rubros.length === 0) {
+            container.innerHTML = '<p>No hay rubros definidos.</p>';
+            return;
+        }
+        let html = `<ul style="list-style:none; padding:0;">`;
+        data.rubros.forEach((r, index) => {
+            html += `<li style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--border);">
+                <span>${r}</span>
+                <div>
+                    <button onclick="editRubro(${index})" style="border:none; background:transparent; cursor:pointer; color:var(--primary);"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteRubro(${index})" style="border:none; background:transparent; cursor:pointer; color:var(--red);"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            </li>`;
+        });
+        html += `</ul>`;
+        container.innerHTML = html;
+    }
+
+    function editRubro(index) {
+        const rubro = data.rubros[index];
+        document.getElementById('editRubroId').value = index;
+        document.getElementById('rubroNombre').value = rubro;
+        document.querySelector('#rubroForm button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+        document.getElementById('rubroForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const newName = document.getElementById('rubroNombre').value.trim();
+            if (!newName) return showToast('El nombre no puede estar vacío');
+            const idx = parseInt(document.getElementById('editRubroId').value);
+            const oldName = data.rubros[idx];
+            data.rubros[idx] = newName;
+            data.locales.forEach(l => {
+                if (l.rubro === oldName) l.rubro = newName;
+            });
+            await saveData();
+            renderAll();
+            renderRubrosList();
+            document.getElementById('editRubroId').value = '';
+            document.getElementById('rubroNombre').value = '';
+            document.querySelector('#rubroForm button[type="submit"]').innerHTML = '<i class="fas fa-plus"></i> Agregar';
+            document.getElementById('rubroForm').onsubmit = addRubro;
+            showToast('Rubro actualizado');
+        };
+    }
+
+    async function deleteRubro(index) {
+        if (!confirm('¿Eliminar este rubro? Los locales que lo usen conservarán el nombre pero no aparecerá en la lista.')) return;
+        data.rubros.splice(index, 1);
+        await saveData();
+        renderAll();
+        renderRubrosList();
+        showToast('Rubro eliminado');
+    }
+
+    async function addRubro(e) {
+        e.preventDefault();
+        const nombre = document.getElementById('rubroNombre').value.trim();
+        if (!nombre) return showToast('Ingrese un nombre');
+        if (data.rubros.includes(nombre)) return showToast('El rubro ya existe');
+        data.rubros.push(nombre);
+        await saveData();
+        renderAll();
+        renderRubrosList();
+        document.getElementById('rubroNombre').value = '';
+        showToast('Rubro agregado');
+    }
+
+    document.getElementById('rubroForm').addEventListener('submit', addRubro);
+
+    // ============================================================
+    //  SELECT DE RUBROS Y NÚMEROS
+    // ============================================================
+    function updateRubroSelectInForm() {
+        const select = document.getElementById('fRubro');
+        const current = select.value;
+        select.innerHTML = data.rubros.map(r => `<option value="${r}">${r}</option>`).join('');
+        if (current) select.value = current;
+    }
+
+    function updateRubroSelectFilter() {
+        const select = document.getElementById('searchRubro');
+        const current = select.value;
+        select.innerHTML = `<option value="">Todos los rubros</option>` + data.rubros.map(r => `<option value="${r}">${r}</option>`).join('');
+        if (current) select.value = current;
+    }
+
+    function updateNumeroSelect() {
+        const select = document.getElementById('searchNumero');
+        const current = select.value;
+        const numeros = [...new Set(data.locales.map(l => l.numeroLocal))].sort((a,b) => a-b);
+        select.innerHTML = `<option value="">Todos los números</option>` + numeros.map(n => `<option value="${n}">${n}</option>`).join('');
+        if (current) select.value = current;
+    }
+
+    // ============================================================
+    //  BANNERS ADMIN (con edición y ajuste de imagen)
+    // ============================================================
+    document.getElementById('bannerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const editId = document.getElementById('editBannerId').value;
+        const file = document.getElementById('bannerFile').files[0];
+        const url = document.getElementById('bannerUrl').value.trim();
+        const link = document.getElementById('bannerLink').value.trim();
+        const fit = document.getElementById('bannerFit').value;
+        const posX = parseInt(document.getElementById('bannerPosX').value);
+        const posY = parseInt(document.getElementById('bannerPosY').value);
+
+        if (!file && !url) {
+            showToast('Seleccione un archivo o ingrese una URL de imagen.');
+            return;
+        }
+
+        const processImage = async (imagen) => {
+            const bannerData = { imagen, link: link || '#', fit, posX, posY };
+            if (editId) {
+                const index = data.banners.findIndex(b => b.id === parseInt(editId));
+                if (index !== -1) {
+                    data.banners[index] = { ...data.banners[index], ...bannerData };
+                    await saveData();
+                    renderAll();
+                    renderBannersAdmin();
+                    resetBannerForm();
+                    showToast('Banner actualizado');
+                } else {
+                    showToast('Error: banner no encontrado');
+                }
+            } else {
+                const newBanner = { id: Date.now(), ...bannerData };
+                data.banners.push(newBanner);
+                await saveData();
+                renderAll();
+                renderBannersAdmin();
+                resetBannerForm();
+                showToast('Banner agregado');
+            }
+        };
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) { processImage(e.target.result); };
+            reader.readAsDataURL(file);
+        } else {
+            processImage(url);
+        }
+    });
+
+    function resetBannerForm() {
+        document.getElementById('editBannerId').value = '';
+        document.getElementById('bannerUrl').value = '';
+        document.getElementById('bannerLink').value = '';
+        document.getElementById('bannerFile').value = '';
+        document.getElementById('bannerFit').value = 'cover';
+        document.getElementById('bannerPosX').value = 50;
+        document.getElementById('bannerPosY').value = 50;
+        document.getElementById('bannerPosXVal').textContent = '50%';
+        document.getElementById('bannerPosYVal').textContent = '50%';
+        document.getElementById('bannerSubmitBtn').innerHTML = '<i class="fas fa-plus"></i> Agregar Banner';
+    }
+
+    function editBanner(id) {
+        const banner = data.banners.find(b => b.id === id);
+        if (!banner) return;
+        document.getElementById('editBannerId').value = id;
+        document.getElementById('bannerUrl').value = banner.imagen;
+        document.getElementById('bannerLink').value = banner.link || '';
+        document.getElementById('bannerFit').value = banner.fit || 'cover';
+        document.getElementById('bannerPosX').value = banner.posX || 50;
+        document.getElementById('bannerPosY').value = banner.posY || 50;
+        document.getElementById('bannerPosXVal').textContent = (banner.posX || 50) + '%';
+        document.getElementById('bannerPosYVal').textContent = (banner.posY || 50) + '%';
+        document.getElementById('bannerFile').value = '';
+        document.getElementById('bannerSubmitBtn').innerHTML = '<i class="fas fa-save"></i> Actualizar Banner';
+        document.getElementById('bannerForm').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function deleteBanner(id) {
+        if (!confirm('Eliminar banner?')) return;
+        data.banners = data.banners.filter(b => b.id !== id);
+        await saveData();
+        renderAll();
+        renderBannersAdmin();
+        showToast('Banner eliminado');
+    }
+
+    function renderBannersAdmin() {
+        const container = document.getElementById('bannerListAdmin');
+        if (data.banners.length === 0) {
+            container.innerHTML = '<p>No hay banners cargados.</p>';
+            return;
+        }
+        container.innerHTML = data.banners.map(b => `
+            <div style="position:relative; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); display:flex; align-items:center; gap:8px; background:var(--bg-card); padding:6px;">
+                <img src="${b.imagen}" style="height:60px; width:auto; object-fit:cover; max-width:100px; border-radius:8px;">
+                <div style="display:flex; gap:4px;">
+                    <button onclick="editBanner(${b.id})" style="border:none; background:var(--primary); color:#fff; width:28px; height:28px; border-radius:50%; cursor:pointer;"><i class="fas fa-pen" style="font-size:0.8rem;"></i></button>
+                    <button onclick="deleteBanner(${b.id})" style="border:none; background:var(--red); color:#fff; width:28px; height:28px; border-radius:50%; cursor:pointer;"><i class="fas fa-trash" style="font-size:0.8rem;"></i></button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function updateBannerInterval() {
+        const val = parseInt(document.getElementById('bannerInterval').value);
+        if (val < 1) return showToast('El intervalo debe ser mayor a 0');
+        data.bannerInterval = val;
+        await saveData();
+        stopBannerTimer();
+        startBannerTimer();
+        showToast(`Intervalo actualizado a ${val} segundos`);
+    }
+
+    // ============================================================
+    //  CONFIGURACIÓN
+    // ============================================================
+    document.getElementById('configForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const nombre = document.getElementById('configNombre').value.trim();
+        const direccion = document.getElementById('configDireccion').value.trim();
+        if (nombre) {
+            data.galeriaNombre = nombre;
+            data.galeriaDireccion = direccion;
+            await saveData();
+            document.getElementById('galeriaNombre').innerHTML = `<i class="fas fa-store-alt"></i> ${nombre}`;
+            document.getElementById('galeriaDireccion').textContent = direccion;
+            closeModal('configModal');
+            showToast('Configuración actualizada');
+        } else {
+            showToast('El nombre no puede estar vacío');
+        }
+    });
+
+    // ============================================================
+    //  TEMAS (en modal)
+    // ============================================================
+    function initThemeButtons() {
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const theme = this.dataset.theme;
+                data.autoTheme = false;
+                data.theme = theme;
+                saveData(); // no esperamos
+                applyTheme(theme);
+                document.getElementById('themeStatus').textContent = `Tema actual: ${theme}`;
+                showToast(`Tema cambiado a ${theme}`);
+            });
+        });
+        document.getElementById('autoThemeBtn').addEventListener('click', function() {
+            data.autoTheme = !data.autoTheme;
+            saveData();
+            if (data.autoTheme) {
+                document.getElementById('themeStatus').textContent = 'Modo automático activado (festivos)';
+                checkAutoTheme();
+                showToast('Modo automático activado');
+            } else {
+                applyTheme(data.theme);
+                showToast('Modo automático desactivado');
+            }
+        });
+    }
+
+    // ============================================================
+    //  SHARE
+    // ============================================================
+    function shareLocal(nombre, wa, fb, tw) {
+        if (navigator.share) {
+            navigator.share({
+                title: nombre,
+                text: `¡Mira ${nombre} en la Galería!`,
+                url: window.location.href
+            }).catch(() => {});
+        } else {
+            const opcion = confirm(`Compartir por WhatsApp? (Aceptar = WhatsApp, Cancelar = Facebook)`);
+            if (opcion) {
+                window.open(wa, '_blank');
+            } else {
+                window.open(fb, '_blank');
+            }
+        }
+    }
+
+    // ============================================================
+    //  CLOCK
+    // ============================================================
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2,'0');
+        const minutes = String(now.getMinutes()).padStart(2,'0');
+        document.getElementById('clockText').textContent = `${hours}:${minutes}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ============================================================
+    //  SEARCH & FILTER
+    // ============================================================
+    function filterLocales() {
+        const nombre = document.getElementById('searchNombre').value.toLowerCase().trim();
+        const rubro = document.getElementById('searchRubro').value;
+        const numero = document.getElementById('searchNumero').value;
+        const ubicacion = document.getElementById('searchUbicacion').value;
+
+        let filtered = data.locales.filter(l => {
+            let match = true;
+            if (nombre && !l.nombre.toLowerCase().includes(nombre)) match = false;
+            if (rubro && l.rubro !== rubro) match = false;
+            if (numero && l.numeroLocal !== parseInt(numero)) match = false;
+            if (ubicacion && l.ubicacion !== ubicacion) match = false;
+            return match;
+        });
+        renderLocales(filtered);
+    }
+
+    // ============================================================
+    //  ORDER BUTTON
+    // ============================================================
+    function initOrderBtn() {
+        const btn = document.getElementById('orderBtn');
+        btn.dataset.order = 'asc';
+        btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Ordenar N° ↑';
+        btn.addEventListener('click', function() {
+            const current = this.dataset.order;
+            if (current === 'asc') {
+                this.dataset.order = 'desc';
+                this.innerHTML = '<i class="fas fa-sort-numeric-down-alt"></i> Ordenar N° ↓';
+            } else {
+                this.dataset.order = 'asc';
+                this.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Ordenar N° ↑';
+            }
+            filterLocales();
+        });
+    }
+
+    // ============================================================
+    //  TOAST
+    // ============================================================
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timeout);
+        t._timeout = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ============================================================
+    //  RENDER ALL
+    // ============================================================
+    function renderAll() {
+        if (!dataLoaded) return; // no renderizar hasta que los datos estén cargados
+        renderBannersCarousel();
+        filterLocales();
+        updateRubroSelectFilter();
+        updateNumeroSelect();
+        updateRubroSelectInForm();
+        document.getElementById('galeriaNombre').innerHTML = `<i class="fas fa-store-alt"></i> ${data.galeriaNombre}`;
+        document.getElementById('galeriaDireccion').textContent = data.galeriaDireccion || '';
+        if (data.autoTheme) checkAutoTheme();
+        else applyTheme(data.theme);
+        document.getElementById('logoutBtn').style.display = isAdmin ? 'flex' : 'none';
+        if (isAdmin) {
+            document.getElementById('toggleAdminBtn').textContent = ' Panel Admin';
+        } else {
+            document.getElementById('toggleAdminBtn').textContent = ' Administrar';
+        }
+        const intervalInput = document.getElementById('bannerInterval');
+        if (intervalInput && document.getElementById('bannerModal').classList.contains('active')) {
+            intervalInput.value = data.bannerInterval;
+        }
+        actualizarInfoBackup();
+    }
+
+    // ============================================================
+    //  INYECTAR BOTÓN "CAMBIAR CLAVE" EN EL PANEL (sin modificar HTML)
+    // ============================================================
+    function agregarBotonCambiarClave() {
+        const panelDiv = document.querySelector('#adminMainModal .modal > div:nth-child(2)');
+        if (!panelDiv) return;
+        if (panelDiv.querySelector('#btnCambiarClave')) return;
+        const btn = document.createElement('button');
+        btn.id = 'btnCambiarClave';
+        btn.className = 'btn-primary';
+        btn.style.cssText = 'padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;';
+        btn.innerHTML = '<i class="fas fa-key"></i> Cambiar Clave';
+        btn.onclick = cambiarClave;
+        panelDiv.appendChild(btn);
+    }
+
+    // ============================================================
+    //  INIT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar eventos que no dependen de datos
+        document.getElementById('searchNombre').addEventListener('input', filterLocales);
+        document.getElementById('searchRubro').addEventListener('change', filterLocales);
+        document.getElementById('searchNumero').addEventListener('change', filterLocales);
+        document.getElementById('searchUbicacion').addEventListener('change', filterLocales);
+        initOrderBtn();
+        initThemeButtons();
+        // Cargar datos desde Firestore
+        loadData().then(() => {
+            // Después de cargar, agregar botón cambiar clave
+            agregarBotonCambiarClave();
+            const observer = new MutationObserver(() => {
+                if (document.getElementById('adminMainModal').classList.contains('active')) {
+                    agregarBotonCambiarClave();
+                }
+            });
+            observer.observe(document.getElementById('adminMainModal'), { attributes: true, attributeFilter: ['class'] });
+        });
+        // Manejar logout
+        document.getElementById('toggleAdminBtn').addEventListener('click', function() {
+            if (isAdmin) openModal('adminMainModal');
+            else {
+                openModal('loginModal');
+                document.getElementById('loginClave').value = '';
+            }
+        });
+        document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
+        // Cerrar modales al hacer clic en overlay
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    // Función logout
+    function logoutAdmin() {
+        isAdmin = false;
+        document.getElementById('logoutBtn').style.display = 'none';
+        document.getElementById('toggleAdminBtn').textContent = ' Administrar';
+        showToast('Sesión cerrada');
+        renderAll();
+    }
+
+    // ============================================================
+    //  ZOOM DE IMAGEN (se mantiene igual)
+    // ============================================================
+    function openImageZoom(src) {
+        if (!src || src === '') return;
+        const modal = document.getElementById('imageZoomModal');
+        const img = document.getElementById('zoomImage');
+        img.src = src;
+        modal.classList.add('active');
+    }
+
+    document.getElementById('closeZoomBtn').addEventListener('click', function() {
+        document.getElementById('imageZoomModal').classList.remove('active');
+    });
+    document.getElementById('imageZoomModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('active');
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.getElementById('imageZoomModal').classList.remove('active');
+        }
+    });
+
+    // Exponer funciones globalmente para los onclick de HTML
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.loginAdmin = loginAdmin;
+    window.crearBackup = crearBackup;
+    window.abrirModalRestaurar = abrirModalRestaurar;
+    window.restaurarBackup = restaurarBackup;
+    window.exportarJSON = exportarJSON;
+    window.importarJSON = importarJSON;
+    window.cambiarClave = cambiarClave;
+    window.editLocal = editLocal;
+    window.deleteLocal = deleteLocal;
+    window.editRubro = editRubro;
+    window.deleteRubro = deleteRubro;
+    window.editBanner = editBanner;
+    window.deleteBanner = deleteBanner;
+    window.updateBannerInterval = updateBannerInterval;
+    window.shareLocal = shareLocal;
+    window.openImageZoom = openImageZoom;
+</script>
+
+</body>
+</html>
