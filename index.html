@@ -1519,6 +1519,11 @@
             numInput.removeAttribute('min');
             numInput.removeAttribute('step');
         }
+        // Cambiar placeholder del buscador para reflejar búsqueda en descripción
+        const searchInput = document.getElementById('searchNombre');
+        if (searchInput) {
+            searchInput.placeholder = '🔍 Buscar por nombre o descripción...';
+        }
     });
 
     // ============================================================
@@ -2472,17 +2477,21 @@
     updateClock();
 
     // ============================================================
-    //  SEARCH & FILTER
+    //  SEARCH & FILTER (MODIFICADO: busca en nombre Y descripción)
     // ============================================================
     function filterLocales() {
-        const nombre = document.getElementById('searchNombre').value.toLowerCase().trim();
+        const texto = document.getElementById('searchNombre').value.toLowerCase().trim();
         const rubro = document.getElementById('searchRubro').value;
         const numero = document.getElementById('searchNumero').value;
         const ubicacion = document.getElementById('searchUbicacion').value;
 
         let filtered = data.locales.filter(l => {
             let match = true;
-            if (nombre && !l.nombre.toLowerCase().includes(nombre)) match = false;
+            if (texto) {
+                const nombreMatch = l.nombre.toLowerCase().includes(texto);
+                const descMatch = l.descripcion ? l.descripcion.toLowerCase().includes(texto) : false;
+                if (!nombreMatch && !descMatch) match = false;
+            }
             if (rubro && l.rubro !== rubro) match = false;
             if (numero && l.numeroLocal !== numero) match = false;
             if (ubicacion && l.ubicacion !== ubicacion) match = false;
