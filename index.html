@@ -898,6 +898,51 @@
             border-radius: 20px;
             font-weight: 700;
         }
+
+        /* ===== CONTADOR GLOBAL ANIMADO ===== */
+        .visit-counter {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-light);
+            padding: 4px 14px 4px 10px;
+            border-radius: 30px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1rem;
+            gap: 6px;
+            white-space: nowrap;
+            border: 1px solid var(--border);
+        }
+        .visit-counter i {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        .visit-counter .number {
+            display: inline-block;
+            min-width: 40px;
+            text-align: center;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+            transition: transform 0.15s ease;
+        }
+        .visit-counter .number.animate {
+            animation: flipNumber 0.4s ease;
+        }
+        @keyframes flipNumber {
+            0% { transform: rotateX(0deg) scale(1); }
+            40% { transform: rotateX(-30deg) scale(1.1); }
+            70% { transform: rotateX(10deg) scale(0.95); }
+            100% { transform: rotateX(0deg) scale(1); }
+        }
+        @media (max-width: 768px) {
+            .visit-counter {
+                font-size: 0.8rem;
+                padding: 2px 10px 2px 6px;
+            }
+            .visit-counter .number {
+                min-width: 30px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1242,7 +1287,7 @@
     const db = firebase.firestore();
     const docRef = db.collection('galeria').doc('datos');
 
-    // Código de recuperación de clave (cámbialo si quieres)
+    // Código de recuperación de clave
     const CODIGO_RECUPERACION = 'reset123';
 
     // ============================================================
@@ -1260,7 +1305,8 @@
         bannerInterval: 4,
         backups: [],
         lastBackupDate: null,
-        adminClave: 'admin123'
+        adminClave: 'admin123',
+        visitasTotales: 0   // NUEVO: contador global de visitas
     };
 
     let isAdmin = false;
@@ -1269,7 +1315,7 @@
     let dataLoaded = false;
     let ordenCriterio = 'visitas'; // 'visitas' o 'numero'
 
-    // NUEVA URL POR DEFECTO PARA FOTOS
+    // URL por defecto para fotos
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
     function getDefaultData() {
@@ -1450,7 +1496,8 @@
             galeriaNombre: 'Galería Cinerama',
             galeriaDireccion: 'Colón 375',
             theme: 'default',
-            autoTheme: false
+            autoTheme: false,
+            visitasTotales: 0
         };
     }
 
@@ -1468,11 +1515,12 @@
                         data[key] = defaultData[key];
                     }
                 }
-                // Asegurar que numeroLocal sea string
+                // Asegurar que numeroLocal sea string y visitas exista
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
                 });
+                if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
                 const defaultData = getDefaultData();
@@ -1495,6 +1543,7 @@
                         l.numeroLocal = String(l.numeroLocal);
                         if (l.visitas === undefined) l.visitas = 0;
                     });
+                    if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                 }
@@ -1511,6 +1560,12 @@
         renderAll();
         if (data.autoTheme) checkAutoTheme();
         else applyTheme(data.theme);
+        // Inicializar contador de visitas global
+        initVisitCounter();
+        // Contar visita de apertura de página
+        incrementarVisitaGlobal(true);
+        // Escuchar clics en elementos que deben contar como visita
+        initGlobalVisitListeners();
     }
 
     async function saveData() {
@@ -1522,6 +1577,129 @@
             localStorage.setItem('galeriaData', JSON.stringify(data));
             showToast('Error de conexión: los datos se guardaron localmente');
         }
+    }
+
+    // ============================================================
+    //  CONTADOR GLOBAL DE VISITAS (animado)
+    // ============================================================
+    function initVisitCounter() {
+        // Inyectar el contador en el header-left, después del reloj
+        const headerLeft = document.querySelector('.header-left');
+        if (!headerLeft) return;
+        // Evitar duplicados
+        if (document.getElementById('visitCounter')) return;
+        const counterDiv = document.createElement('div');
+        counterDiv.id = 'visitCounter';
+        counterDiv.className = 'visit-counter';
+        counterDiv.innerHTML = `
+            <i class="fas fa-user"></i>
+            <span>Visitante n°:</span>
+            <span class="number" id="visitNumber">0</span>
+        `;
+        // Insertar después del reloj
+        const clock = document.getElementById('clockDisplay');
+        if (clock) {
+            clock.parentNode.insertBefore(counterDiv, clock.nextSibling);
+        } else {
+            headerLeft.appendChild(counterDiv);
+        }
+        actualizarNumeroVisitante(data.visitasTotales, false);
+    }
+
+    function actualizarNumeroVisitante(nuevoValor, animar = true) {
+        const span = document.getElementById('visitNumber');
+        if (!span) return;
+        span.textContent = nuevoValor;
+        if (animar) {
+            span.classList.remove('animate');
+            // Forzar reflow para reiniciar animación
+            void span.offsetWidth;
+            span.classList.add('animate');
+        }
+    }
+
+    async function incrementarVisitaGlobal(esApertura = false) {
+        // Incrementar el contador global
+        data.visitasTotales = (data.visitasTotales || 0) + 1;
+        await saveData();
+        actualizarNumeroVisitante(data.visitasTotales, true);
+        // Si es apertura de página, no mostrar toast
+        if (!esApertura) {
+            showToast('¡+1 visita!');
+        }
+    }
+
+    // ============================================================
+    //  LISTENERS PARA CLICS QUE CUENTAN COMO VISITA
+    // ============================================================
+    function initGlobalVisitListeners() {
+        // Delegación de eventos en el contenedor principal
+        const container = document.getElementById('app');
+        if (!container) return;
+
+        // Clic en enlaces de banner (dentro de .banner-slide a)
+        container.addEventListener('click', function(e) {
+            const target = e.target.closest('.banner-slide a');
+            if (target) {
+                e.stopPropagation(); // evitar que se propague a otros listeners
+                incrementarVisitaGlobal(false);
+                // Dejar que el navegador siga el enlace
+                return;
+            }
+        });
+
+        // Clic en botón de compartir
+        container.addEventListener('click', function(e) {
+            const target = e.target.closest('.card-actions .share');
+            if (target) {
+                e.stopPropagation();
+                incrementarVisitaGlobal(false);
+                // El evento de clic del botón ya maneja el compartir
+                return;
+            }
+        });
+
+        // Clic en enlace de WhatsApp
+        container.addEventListener('click', function(e) {
+            const target = e.target.closest('.card-actions .whatsapp');
+            if (target) {
+                e.stopPropagation();
+                incrementarVisitaGlobal(false);
+                return;
+            }
+        });
+
+        // Clic en enlace web (cualquier a dentro de .card-actions que no sea whatsapp)
+        container.addEventListener('click', function(e) {
+            const target = e.target.closest('.card-actions a:not(.whatsapp)');
+            if (target) {
+                e.stopPropagation();
+                incrementarVisitaGlobal(false);
+                return;
+            }
+        });
+
+        // Clic en imagen de la tarjeta (dentro de .card-img-wrap img)
+        container.addEventListener('click', function(e) {
+            const target = e.target.closest('.card-img-wrap img');
+            if (target) {
+                e.stopPropagation();
+                incrementarVisitaGlobal(false);
+                // La imagen ya tiene su propio onclick para abrir zoom
+                return;
+            }
+        });
+
+        // Clic en logo (dentro de .card-logo)
+        container.addEventListener('click', function(e) {
+            const target = e.target.closest('.card-logo');
+            if (target) {
+                e.stopPropagation();
+                incrementarVisitaGlobal(false);
+                // El logo ya tiene su propio onclick para abrir zoom
+                return;
+            }
+        });
     }
 
     // ============================================================
@@ -1558,7 +1736,7 @@
         const numInput = document.getElementById('fNumero');
         if (numInput) {
             numInput.type = 'text';
-            numInput.min = ''; // eliminar atributo min
+            numInput.min = '';
             numInput.removeAttribute('min');
             numInput.removeAttribute('step');
         }
@@ -1621,7 +1799,7 @@
         data.galeriaNombre = backupData.galeriaNombre || 'Galería Cinerama';
         data.galeriaDireccion = backupData.galeriaDireccion || 'Colón 375';
         data.bannerInterval = backupData.bannerInterval || 4;
-        // Asegurar que numeroLocal sea string
+        data.visitasTotales = backupData.visitasTotales || 0;
         data.locales.forEach(l => {
             l.numeroLocal = String(l.numeroLocal);
             if (l.visitas === undefined) l.visitas = 0;
@@ -1630,6 +1808,7 @@
         renderAll();
         closeModal('restoreModal');
         showToast('Backup restaurado correctamente');
+        actualizarNumeroVisitante(data.visitasTotales, false);
     }
 
     function actualizarInfoBackup() {
@@ -1703,9 +1882,11 @@
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
                 });
+                if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 await saveData();
                 renderAll();
                 showToast('Datos importados correctamente');
+                actualizarNumeroVisitante(data.visitasTotales, false);
             } catch(err) {
                 showToast('Error al leer el archivo JSON');
                 console.error(err);
@@ -1909,7 +2090,6 @@
         const grid = document.getElementById('localsGrid');
         if (!filteredLocales) filteredLocales = data.locales;
 
-        // Ordenar según criterio
         let sorted = [...filteredLocales];
         if (ordenCriterio === 'visitas') {
             sorted.sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
@@ -2177,13 +2357,12 @@
                 logoPosX: parseInt(document.getElementById('fLogoPosX').value),
                 logoPosY: parseInt(document.getElementById('fLogoPosY').value),
                 horarios,
-                visitas: 0 // siempre se inicializa en 0
+                visitas: 0
             };
 
             if (id) {
                 const index = data.locales.findIndex(l => l.id === parseInt(id));
                 if (index !== -1) {
-                    // Conservar las visitas existentes
                     localData.visitas = data.locales[index].visitas || 0;
                     data.locales[index] = localData;
                 }
@@ -2529,7 +2708,7 @@
     updateClock();
 
     // ============================================================
-    //  SEARCH & FILTER (con orden según criterio)
+    //  SEARCH & FILTER
     // ============================================================
     function filterLocales() {
         const texto = document.getElementById('searchNombre').value.toLowerCase().trim();
@@ -2553,7 +2732,7 @@
     }
 
     // ============================================================
-    //  ORDER BUTTON (alterna entre número y visitas)
+    //  ORDER BUTTON
     // ============================================================
     function initOrderBtn() {
         const btn = document.getElementById('orderBtn');
@@ -2580,14 +2759,13 @@
     }
 
     // ============================================================
-    //  VISITAS: incrementar al hacer clic en la tarjeta
+    //  VISITAS POR LOCAL (al hacer clic en la tarjeta)
     // ============================================================
     function initVisitasListener() {
         const grid = document.getElementById('localsGrid');
         grid.addEventListener('click', function(e) {
             const card = e.target.closest('.card');
             if (!card) return;
-            // No contar si se hizo clic en un botón o enlace
             if (e.target.closest('button') || e.target.closest('a')) return;
             const id = parseInt(card.dataset.id);
             if (!id) return;
@@ -2595,11 +2773,9 @@
             if (local) {
                 local.visitas = (local.visitas || 0) + 1;
                 saveData();
-                // Actualizar el panel de visitas si está abierto
                 if (document.getElementById('adminMainModal').classList.contains('active')) {
                     renderVisitasPanel();
                 }
-                // Si el orden actual es por visitas, refrescar la lista
                 if (ordenCriterio === 'visitas') {
                     filterLocales();
                 }
@@ -2608,13 +2784,12 @@
     }
 
     // ============================================================
-    //  PANEL DE VISITAS (se inyecta en el modal de admin)
+    //  PANEL DE VISITAS (en el modal de admin)
     // ============================================================
     function renderVisitasPanel() {
         const modal = document.getElementById('adminMainModal');
         let container = document.getElementById('visitasContainer');
         if (!container) {
-            // Crear el contenedor después del div de backup
             const backupDiv = modal.querySelector('.modal > div:last-child');
             if (!backupDiv) return;
             container = document.createElement('div');
@@ -2622,7 +2797,6 @@
             container.className = 'visitas-container';
             backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
         }
-        // Ordenar locales por visitas descendente
         const sorted = [...data.locales].sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
         if (sorted.length === 0) {
             container.innerHTML = `<h3><i class="fas fa-chart-line"></i> Seguimiento de ingresos</h3><p>No hay locales cargados.</p>`;
@@ -2676,13 +2850,15 @@
             intervalInput.value = data.bannerInterval;
         }
         actualizarInfoBackup();
-        // Actualizar el panel de visitas si el modal está abierto
         if (document.getElementById('adminMainModal').classList.contains('active')) {
             renderVisitasPanel();
         }
-        // Actualizar texto del botón de orden según criterio
         const btn = document.getElementById('orderBtn');
         if (btn) actualizarTextoBotonOrden(btn);
+        // Asegurar que el contador se muestre con el valor actual
+        if (document.getElementById('visitNumber')) {
+            actualizarNumeroVisitante(data.visitasTotales || 0, false);
+        }
     }
 
     // ============================================================
