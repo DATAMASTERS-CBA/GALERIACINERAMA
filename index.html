@@ -342,6 +342,7 @@
             border: 1px solid var(--border);
             animation: fadeInUp 0.5s ease;
             position: relative;
+            cursor: pointer;
         }
         .card:hover {
             transform: translateY(-6px) scale(1.01);
@@ -864,6 +865,39 @@
         .forgot-link:hover {
             opacity: 0.7;
         }
+
+        /* Estilos para la sección de visitas en el panel */
+        .visitas-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--input-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        .visitas-container h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        .visitas-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .visitas-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .visitas-item .nombre {
+            font-weight: 600;
+        }
+        .visitas-item .contador {
+            background: var(--primary);
+            color: #fff;
+            padding: 0 12px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -949,6 +983,7 @@
             <div style="margin-top:15px; padding:12px; background:var(--primary-light); border-radius:var(--radius);">
                 <strong>Último backup:</strong> <span id="ultimoBackupInfo">Nunca</span>
             </div>
+            <!-- Sección de visitas se inyectará aquí mediante JavaScript -->
         </div>
     </div>
 
@@ -1232,6 +1267,7 @@
     let bannerIndex = 0;
     let bannerTimer = null;
     let dataLoaded = false;
+    let ordenCriterio = 'visitas'; // 'visitas' o 'numero'
 
     // NUEVA URL POR DEFECTO PARA FOTOS
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
@@ -1244,7 +1280,7 @@
                     id: 1,
                     nombre: "Librería El Saber",
                     rubro: "Librería",
-                    numeroLocal: "5",  // ahora es string
+                    numeroLocal: "5",
                     ubicacion: "Primer Piso",
                     enAlquiler: false,
                     inmobiliaria: "",
@@ -1269,7 +1305,8 @@
                         sabado: { ini: "10:00", fin: "14:00", cerrado: false },
                         domingo: { ini: "10:00", fin: "14:00", cerrado: true },
                         feriados: "25/12:cerrado; 01/01:cerrado"
-                    }
+                    },
+                    visitas: 0
                 },
                 {
                     id: 2,
@@ -1300,7 +1337,8 @@
                         sabado: { ini: "09:00", fin: "18:00", cerrado: false },
                         domingo: { ini: "10:00", fin: "14:00", cerrado: false },
                         feriados: "25/12:cerrado; 01/01:cerrado"
-                    }
+                    },
+                    visitas: 0
                 },
                 {
                     id: 3,
@@ -1331,7 +1369,8 @@
                         sabado: { ini: "10:00", fin: "15:00", cerrado: false },
                         domingo: { ini: "10:00", fin: "15:00", cerrado: true },
                         feriados: "25/12:cerrado; 01/01:cerrado"
-                    }
+                    },
+                    visitas: 0
                 },
                 {
                     id: 4,
@@ -1362,7 +1401,8 @@
                         sabado: { ini: "10:00", fin: "13:00", cerrado: false },
                         domingo: { ini: "10:00", fin: "13:00", cerrado: true },
                         feriados: "25/12:cerrado; 01/01:cerrado"
-                    }
+                    },
+                    visitas: 0
                 },
                 {
                     id: 5,
@@ -1393,7 +1433,8 @@
                         sabado: { ini: "10:00", fin: "18:00", cerrado: false },
                         domingo: { ini: "12:00", fin: "16:00", cerrado: false },
                         feriados: "25/12:cerrado; 01/01:cerrado"
-                    }
+                    },
+                    visitas: 0
                 }
             ],
             banners: [
@@ -1430,6 +1471,7 @@
                 // Asegurar que numeroLocal sea string
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
+                    if (l.visitas === undefined) l.visitas = 0;
                 });
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
@@ -1451,6 +1493,7 @@
                     }
                     data.locales.forEach(l => {
                         l.numeroLocal = String(l.numeroLocal);
+                        if (l.visitas === undefined) l.visitas = 0;
                     });
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
@@ -1581,6 +1624,7 @@
         // Asegurar que numeroLocal sea string
         data.locales.forEach(l => {
             l.numeroLocal = String(l.numeroLocal);
+            if (l.visitas === undefined) l.visitas = 0;
         });
         await saveData();
         renderAll();
@@ -1657,6 +1701,7 @@
                 data.adminClave = adminClaveActual;
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
+                    if (l.visitas === undefined) l.visitas = 0;
                 });
                 await saveData();
                 renderAll();
@@ -1840,7 +1885,6 @@
         }
         if (id === 'addLocalModal') {
             updateRubroSelectInForm();
-            // Asegurar que el input de número sea texto (por si el DOM no se actualizó)
             const numInput = document.getElementById('fNumero');
             if (numInput && numInput.type !== 'text') {
                 numInput.type = 'text';
@@ -1848,7 +1892,10 @@
                 numInput.removeAttribute('step');
             }
         }
-        if (id === 'adminMainModal') actualizarInfoBackup();
+        if (id === 'adminMainModal') {
+            actualizarInfoBackup();
+            renderVisitasPanel();
+        }
     }
 
     function closeModal(id) {
@@ -1856,18 +1903,19 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES
+    //  RENDER LOCALES (con orden por visitas o número)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
         if (!filteredLocales) filteredLocales = data.locales;
 
-        const orderAsc = document.getElementById('orderBtn').dataset.order === 'asc';
-        const sorted = [...filteredLocales].sort((a, b) => {
-            // Orden natural alfanumérico
-            return a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true });
-        });
-        if (!orderAsc) sorted.reverse();
+        // Ordenar según criterio
+        let sorted = [...filteredLocales];
+        if (ordenCriterio === 'visitas') {
+            sorted.sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
+        } else {
+            sorted.sort((a, b) => a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true }));
+        }
 
         if (sorted.length === 0) {
             grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; background:var(--bg-card); border-radius:var(--radius);">No se encontraron locales.</p>`;
@@ -1923,7 +1971,6 @@
             }
 
             const logoUrl = local.logo || '';
-            // Usar nueva imagen por defecto
             const fotoUrl = local.foto || DEFAULT_IMAGE_URL;
             const colorFondo = local.colorFondo || '#2563eb';
             const waNum = local.whatsapp ? local.whatsapp.replace(/\D/g,'') : '';
@@ -1954,10 +2001,10 @@
             }
 
             return `
-                <div class="card">
+                <div class="card" data-id="${local.id}">
                     ${adminButtons}
                     <div class="card-img-wrap">
-                        <img src="${fotoUrl}" alt="${local.nombre}" style="${fotoStyle}" onclick="openImageZoom('${fotoUrl}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
+                        <img src="${fotoUrl}" alt="${local.nombre}" style="${fotoStyle}" onclick="event.stopPropagation(); openImageZoom('${fotoUrl}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
                         <div class="card-img-overlay">
                             ${numeroHtml}
                             ${ubicacionHtml}
@@ -1965,7 +2012,7 @@
                     </div>
                     <div class="card-body">
                         <div class="card-header">
-                            <div class="card-logo" style="background:${colorFondo};" onclick="openImageZoom('${logoUrl || ''}')">
+                            <div class="card-logo" style="background:${colorFondo};" onclick="event.stopPropagation(); openImageZoom('${logoUrl || ''}')">
                                 ${logoUrl ? `<img src="${logoUrl}" alt="logo" style="${logoStyle}">` : local.nombre.substring(0,2).toUpperCase()}
                             </div>
                             <div>
@@ -1981,9 +2028,9 @@
                             <span class="status-badge ${isOpen ? 'open' : 'closed'}">${isOpen ? '🟢 Abierto' : '🔴 Cerrado'}</span>
                         </div>
                         <div class="card-actions">
-                            ${showWhatsapp ? `<a href="${waLink}" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>` : ''}
-                            <button class="share" onclick="shareLocal('${local.nombre}','${shareWhatsapp}','${shareFacebook}','${shareTwitter}')"><i class="fas fa-share-alt"></i> Compartir</button>
-                            ${showWeb ? `<a href="${local.web}" target="_blank" style="background:var(--primary);"><i class="fas fa-globe"></i> Web</a>` : ''}
+                            ${showWhatsapp ? `<a href="${waLink}" target="_blank" class="whatsapp" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> WhatsApp</a>` : ''}
+                            <button class="share" onclick="event.stopPropagation(); shareLocal('${local.nombre}','${shareWhatsapp}','${shareFacebook}','${shareTwitter}')"><i class="fas fa-share-alt"></i> Compartir</button>
+                            ${showWeb ? `<a href="${local.web}" target="_blank" style="background:var(--primary);" onclick="event.stopPropagation();"><i class="fas fa-globe"></i> Web</a>` : ''}
                         </div>
                     </div>
                 </div>
@@ -2061,7 +2108,7 @@
         const id = document.getElementById('editId').value;
         const nombre = document.getElementById('fNombre').value.trim();
         const rubro = document.getElementById('fRubro').value;
-        const numero = document.getElementById('fNumero').value.trim(); // ahora es texto
+        const numero = document.getElementById('fNumero').value.trim();
         const ubicacion = document.getElementById('fUbicacion').value;
         const enAlquiler = document.getElementById('fAlquiler').checked;
         const inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
@@ -2113,7 +2160,7 @@
                 id: id ? parseInt(id) : data.nextId++,
                 nombre,
                 rubro,
-                numeroLocal: numero, // string
+                numeroLocal: numero,
                 ubicacion,
                 enAlquiler,
                 inmobiliaria: enAlquiler ? inmobiliaria : '',
@@ -2121,7 +2168,7 @@
                 whatsapp: document.getElementById('fWhatsapp').value.trim(),
                 web: document.getElementById('fWeb').value.trim(),
                 colorFondo: document.getElementById('fColorFondo').value,
-                foto: fotoFinal || DEFAULT_IMAGE_URL, // usar nueva default
+                foto: fotoFinal || DEFAULT_IMAGE_URL,
                 logo: logoFinal || null,
                 fotoFit: document.getElementById('fFotoFit').value,
                 fotoPosX: parseInt(document.getElementById('fFotoPosX').value),
@@ -2129,12 +2176,17 @@
                 logoFit: document.getElementById('fLogoFit').value,
                 logoPosX: parseInt(document.getElementById('fLogoPosX').value),
                 logoPosY: parseInt(document.getElementById('fLogoPosY').value),
-                horarios
+                horarios,
+                visitas: 0 // siempre se inicializa en 0
             };
 
             if (id) {
                 const index = data.locales.findIndex(l => l.id === parseInt(id));
-                if (index !== -1) data.locales[index] = localData;
+                if (index !== -1) {
+                    // Conservar las visitas existentes
+                    localData.visitas = data.locales[index].visitas || 0;
+                    data.locales[index] = localData;
+                }
             } else {
                 data.locales.push(localData);
             }
@@ -2477,7 +2529,7 @@
     updateClock();
 
     // ============================================================
-    //  SEARCH & FILTER (MODIFICADO: busca en nombre Y descripción)
+    //  SEARCH & FILTER (con orden según criterio)
     // ============================================================
     function filterLocales() {
         const texto = document.getElementById('searchNombre').value.toLowerCase().trim();
@@ -2501,23 +2553,91 @@
     }
 
     // ============================================================
-    //  ORDER BUTTON
+    //  ORDER BUTTON (alterna entre número y visitas)
     // ============================================================
     function initOrderBtn() {
         const btn = document.getElementById('orderBtn');
-        btn.dataset.order = 'asc';
-        btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Ordenar N° ↑';
+        actualizarTextoBotonOrden(btn);
         btn.addEventListener('click', function() {
-            const current = this.dataset.order;
-            if (current === 'asc') {
-                this.dataset.order = 'desc';
-                this.innerHTML = '<i class="fas fa-sort-numeric-down-alt"></i> Ordenar N° ↓';
+            if (ordenCriterio === 'visitas') {
+                ordenCriterio = 'numero';
             } else {
-                this.dataset.order = 'asc';
-                this.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Ordenar N° ↑';
+                ordenCriterio = 'visitas';
             }
+            actualizarTextoBotonOrden(btn);
             filterLocales();
         });
+    }
+
+    function actualizarTextoBotonOrden(btn) {
+        if (ordenCriterio === 'visitas') {
+            btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Ordenar por visitas ↓';
+            btn.dataset.order = 'desc';
+        } else {
+            btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Ordenar N° ↑';
+            btn.dataset.order = 'asc';
+        }
+    }
+
+    // ============================================================
+    //  VISITAS: incrementar al hacer clic en la tarjeta
+    // ============================================================
+    function initVisitasListener() {
+        const grid = document.getElementById('localsGrid');
+        grid.addEventListener('click', function(e) {
+            const card = e.target.closest('.card');
+            if (!card) return;
+            // No contar si se hizo clic en un botón o enlace
+            if (e.target.closest('button') || e.target.closest('a')) return;
+            const id = parseInt(card.dataset.id);
+            if (!id) return;
+            const local = data.locales.find(l => l.id === id);
+            if (local) {
+                local.visitas = (local.visitas || 0) + 1;
+                saveData();
+                // Actualizar el panel de visitas si está abierto
+                if (document.getElementById('adminMainModal').classList.contains('active')) {
+                    renderVisitasPanel();
+                }
+                // Si el orden actual es por visitas, refrescar la lista
+                if (ordenCriterio === 'visitas') {
+                    filterLocales();
+                }
+            }
+        });
+    }
+
+    // ============================================================
+    //  PANEL DE VISITAS (se inyecta en el modal de admin)
+    // ============================================================
+    function renderVisitasPanel() {
+        const modal = document.getElementById('adminMainModal');
+        let container = document.getElementById('visitasContainer');
+        if (!container) {
+            // Crear el contenedor después del div de backup
+            const backupDiv = modal.querySelector('.modal > div:last-child');
+            if (!backupDiv) return;
+            container = document.createElement('div');
+            container.id = 'visitasContainer';
+            container.className = 'visitas-container';
+            backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
+        }
+        // Ordenar locales por visitas descendente
+        const sorted = [...data.locales].sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
+        if (sorted.length === 0) {
+            container.innerHTML = `<h3><i class="fas fa-chart-line"></i> Seguimiento de ingresos</h3><p>No hay locales cargados.</p>`;
+            return;
+        }
+        let html = `<h3><i class="fas fa-chart-line"></i> Seguimiento de ingresos</h3><div class="visitas-list">`;
+        sorted.forEach(local => {
+            const visitas = local.visitas || 0;
+            html += `<div class="visitas-item">
+                <span class="nombre">${local.nombre} (N° ${local.numeroLocal})</span>
+                <span class="contador">${visitas} ${visitas === 1 ? 'visita' : 'visitas'}</span>
+            </div>`;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
     }
 
     // ============================================================
@@ -2556,6 +2676,13 @@
             intervalInput.value = data.bannerInterval;
         }
         actualizarInfoBackup();
+        // Actualizar el panel de visitas si el modal está abierto
+        if (document.getElementById('adminMainModal').classList.contains('active')) {
+            renderVisitasPanel();
+        }
+        // Actualizar texto del botón de orden según criterio
+        const btn = document.getElementById('orderBtn');
+        if (btn) actualizarTextoBotonOrden(btn);
     }
 
     // ============================================================
@@ -2584,11 +2711,13 @@
         document.getElementById('searchUbicacion').addEventListener('change', filterLocales);
         initOrderBtn();
         initThemeButtons();
+        initVisitasListener();
         loadData().then(() => {
             agregarBotonCambiarClave();
             const observer = new MutationObserver(() => {
                 if (document.getElementById('adminMainModal').classList.contains('active')) {
                     agregarBotonCambiarClave();
+                    renderVisitasPanel();
                 }
             });
             observer.observe(document.getElementById('adminMainModal'), { attributes: true, attributeFilter: ['class'] });
