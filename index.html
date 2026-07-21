@@ -944,31 +944,46 @@
             }
         }
 
-        /* Estilos para el modal de comunicados (se inyectan dinámicamente) */
+        /* ===== ESTILOS MEJORADOS PARA EL MODAL DE COMUNICADOS ===== */
+        #comunicadosModal .modal {
+            max-width: 600px;
+        }
         .comunicados-lista {
-            max-height: 200px;
-            overflow-y: auto;
-            margin: 10px 0;
-            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            padding: 10px 8px;
+            background: var(--input-bg);
             border-radius: var(--radius);
-            padding: 5px 10px;
+            border: 1px solid var(--border);
+            max-height: 220px;
+            overflow-y: auto;
         }
         .comunicados-item {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 4px 0;
-            border-bottom: 1px solid var(--border);
+            gap: 6px;
+            width: auto;
+            padding: 4px 12px 4px 8px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .comunicados-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
         }
         .comunicados-item label {
             margin: 0;
             font-weight: normal;
             cursor: pointer;
-            flex: 1;
+            display: inline;
         }
         .comunicados-item .numero-wa {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             opacity: 0.7;
+            margin-left: 2px;
         }
         .comunicados-actions {
             display: flex;
@@ -1006,6 +1021,17 @@
         }
         .comunicados-actions .btn-send:hover {
             background: #1da851;
+        }
+
+        @media (max-width: 600px) {
+            #comunicadosModal .modal {
+                max-width: 100%;
+                padding: 15px;
+            }
+            .comunicados-item {
+                padding: 3px 10px 3px 6px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -2118,7 +2144,6 @@
         if (id === 'adminMainModal') {
             actualizarInfoBackup();
             renderVisitasPanel();
-            // Asegurar que los botones extra estén presentes
             agregarBotonCambiarClave();
             agregarBotonComunicados();
         }
@@ -2149,7 +2174,6 @@
         // Construir el arreglo final: Data Masters primero, luego el resto
         let sorted = [];
         if (dataMasters.length > 0) {
-            // Tomamos solo el primer Data Masters (por si hay más de uno)
             sorted.push(dataMasters[0]);
         }
         sorted = sorted.concat(otros);
@@ -2872,17 +2896,16 @@
     }
 
     // ============================================================
-    //  COMUNICADOS (WhatsApp en cadena)
+    //  COMUNICADOS (WhatsApp en cadena) - Mejorada la vista de la agenda
     // ============================================================
     function crearModalComunicados() {
-        // Si ya existe, no crear de nuevo
         if (document.getElementById('comunicadosModal')) return;
 
         const overlay = document.createElement('div');
         overlay.id = 'comunicadosModal';
         overlay.className = 'modal-overlay';
         overlay.innerHTML = `
-            <div class="modal" style="max-width:700px;">
+            <div class="modal" style="max-width:600px;">
                 <h2><i class="fas fa-bullhorn"></i> Comunicados</h2>
                 <p>Envía un mensaje por WhatsApp a los locales seleccionados.</p>
                 <label>Mensaje:</label>
@@ -2901,7 +2924,6 @@
             </div>
         `;
         document.body.appendChild(overlay);
-        // Añadir evento para cerrar al hacer clic fuera
         overlay.addEventListener('click', function(e) {
             if (e.target === this) closeModal('comunicadosModal');
         });
@@ -2913,7 +2935,6 @@
             return;
         }
         crearModalComunicados();
-        // Poblar lista de contactos
         const lista = document.getElementById('comunicadosLista');
         if (!lista) return;
         const localesConWhatsApp = data.locales.filter(l => l.whatsapp && l.whatsapp.trim() !== '');
@@ -2932,7 +2953,6 @@
             });
             lista.innerHTML = html;
         }
-        // Limpiar mensaje anterior
         document.getElementById('comunicadosMensaje').value = '';
         openModal('comunicadosModal');
     }
@@ -2951,7 +2971,6 @@
         navigator.clipboard.writeText(msg).then(() => {
             showToast('Mensaje copiado al portapapeles');
         }).catch(() => {
-            // Fallback
             const textarea = document.getElementById('comunicadosMensaje');
             textarea.select();
             document.execCommand('copy');
@@ -2979,7 +2998,6 @@
             showToast('No hay números válidos seleccionados.');
             return;
         }
-        // Abrir WhatsApp para cada número seleccionado (con un pequeño retraso para evitar bloqueos)
         const texto = encodeURIComponent(msg);
         numeros.forEach((num, index) => {
             setTimeout(() => {
