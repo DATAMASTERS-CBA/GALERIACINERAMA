@@ -943,6 +943,70 @@
                 min-width: 30px;
             }
         }
+
+        /* Estilos para el modal de comunicados (se inyectan dinámicamente) */
+        .comunicados-lista {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 5px 10px;
+        }
+        .comunicados-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .comunicados-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+            flex: 1;
+        }
+        .comunicados-item .numero-wa {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        .comunicados-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .comunicados-actions button {
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .comunicados-actions .btn-select-all {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .comunicados-actions .btn-select-all:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .comunicados-actions .btn-copy-msg {
+            background: var(--border);
+            color: var(--text-color);
+        }
+        .comunicados-actions .btn-copy-msg:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .comunicados-actions .btn-send {
+            background: #25d366;
+            color: #fff;
+        }
+        .comunicados-actions .btn-send:hover {
+            background: #1da851;
+        }
     </style>
 </head>
 <body>
@@ -1306,7 +1370,7 @@
         backups: [],
         lastBackupDate: null,
         adminClave: 'admin123',
-        visitasTotales: 0   // NUEVO: contador global de visitas
+        visitasTotales: 0
     };
 
     let isAdmin = false;
@@ -1560,11 +1624,8 @@
         renderAll();
         if (data.autoTheme) checkAutoTheme();
         else applyTheme(data.theme);
-        // Inicializar contador de visitas global
         initVisitCounter();
-        // Contar visita de apertura de página
         incrementarVisitaGlobal(true);
-        // Escuchar clics en elementos que deben contar como visita
         initGlobalVisitListeners();
     }
 
@@ -1583,10 +1644,8 @@
     //  CONTADOR GLOBAL DE VISITAS (animado)
     // ============================================================
     function initVisitCounter() {
-        // Inyectar el contador en el header-left, después del reloj
         const headerLeft = document.querySelector('.header-left');
         if (!headerLeft) return;
-        // Evitar duplicados
         if (document.getElementById('visitCounter')) return;
         const counterDiv = document.createElement('div');
         counterDiv.id = 'visitCounter';
@@ -1596,7 +1655,6 @@
             <span>Visitante n°:</span>
             <span class="number" id="visitNumber">0</span>
         `;
-        // Insertar después del reloj
         const clock = document.getElementById('clockDisplay');
         if (clock) {
             clock.parentNode.insertBefore(counterDiv, clock.nextSibling);
@@ -1612,18 +1670,15 @@
         span.textContent = nuevoValor;
         if (animar) {
             span.classList.remove('animate');
-            // Forzar reflow para reiniciar animación
             void span.offsetWidth;
             span.classList.add('animate');
         }
     }
 
     async function incrementarVisitaGlobal(esApertura = false) {
-        // Incrementar el contador global
         data.visitasTotales = (data.visitasTotales || 0) + 1;
         await saveData();
         actualizarNumeroVisitante(data.visitasTotales, true);
-        // Si es apertura de página, no mostrar toast
         if (!esApertura) {
             showToast('¡+1 visita!');
         }
@@ -1633,33 +1688,27 @@
     //  LISTENERS PARA CLICS QUE CUENTAN COMO VISITA
     // ============================================================
     function initGlobalVisitListeners() {
-        // Delegación de eventos en el contenedor principal
         const container = document.getElementById('app');
         if (!container) return;
 
-        // Clic en enlaces de banner (dentro de .banner-slide a)
         container.addEventListener('click', function(e) {
             const target = e.target.closest('.banner-slide a');
             if (target) {
-                e.stopPropagation(); // evitar que se propague a otros listeners
+                e.stopPropagation();
                 incrementarVisitaGlobal(false);
-                // Dejar que el navegador siga el enlace
                 return;
             }
         });
 
-        // Clic en botón de compartir
         container.addEventListener('click', function(e) {
             const target = e.target.closest('.card-actions .share');
             if (target) {
                 e.stopPropagation();
                 incrementarVisitaGlobal(false);
-                // El evento de clic del botón ya maneja el compartir
                 return;
             }
         });
 
-        // Clic en enlace de WhatsApp
         container.addEventListener('click', function(e) {
             const target = e.target.closest('.card-actions .whatsapp');
             if (target) {
@@ -1669,7 +1718,6 @@
             }
         });
 
-        // Clic en enlace web (cualquier a dentro de .card-actions que no sea whatsapp)
         container.addEventListener('click', function(e) {
             const target = e.target.closest('.card-actions a:not(.whatsapp)');
             if (target) {
@@ -1679,24 +1727,20 @@
             }
         });
 
-        // Clic en imagen de la tarjeta (dentro de .card-img-wrap img)
         container.addEventListener('click', function(e) {
             const target = e.target.closest('.card-img-wrap img');
             if (target) {
                 e.stopPropagation();
                 incrementarVisitaGlobal(false);
-                // La imagen ya tiene su propio onclick para abrir zoom
                 return;
             }
         });
 
-        // Clic en logo (dentro de .card-logo)
         container.addEventListener('click', function(e) {
             const target = e.target.closest('.card-logo');
             if (target) {
                 e.stopPropagation();
                 incrementarVisitaGlobal(false);
-                // El logo ya tiene su propio onclick para abrir zoom
                 return;
             }
         });
@@ -1732,7 +1776,6 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('forgotLink').addEventListener('click', recuperarClave);
-        // Cambiar el input de número a texto para permitir letras
         const numInput = document.getElementById('fNumero');
         if (numInput) {
             numInput.type = 'text';
@@ -1740,7 +1783,6 @@
             numInput.removeAttribute('min');
             numInput.removeAttribute('step');
         }
-        // Cambiar placeholder del buscador para reflejar búsqueda en descripción
         const searchInput = document.getElementById('searchNombre');
         if (searchInput) {
             searchInput.placeholder = '🔍 Buscar por nombre o descripción...';
@@ -2076,6 +2118,9 @@
         if (id === 'adminMainModal') {
             actualizarInfoBackup();
             renderVisitasPanel();
+            // Asegurar que los botones extra estén presentes
+            agregarBotonCambiarClave();
+            agregarBotonComunicados();
         }
     }
 
@@ -2084,18 +2129,30 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES (con orden por visitas o número)
+    //  RENDER LOCALES (con orden por visitas o número y Data Masters primero)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
         if (!filteredLocales) filteredLocales = data.locales;
 
-        let sorted = [...filteredLocales];
+        // Separar Data Masters si existe
+        const dataMasters = filteredLocales.filter(l => l.nombre.trim().toLowerCase() === 'data masters');
+        const otros = filteredLocales.filter(l => l.nombre.trim().toLowerCase() !== 'data masters');
+
+        // Ordenar los otros según criterio
         if (ordenCriterio === 'visitas') {
-            sorted.sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
+            otros.sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
         } else {
-            sorted.sort((a, b) => a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true }));
+            otros.sort((a, b) => a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true }));
         }
+
+        // Construir el arreglo final: Data Masters primero, luego el resto
+        let sorted = [];
+        if (dataMasters.length > 0) {
+            // Tomamos solo el primer Data Masters (por si hay más de uno)
+            sorted.push(dataMasters[0]);
+        }
+        sorted = sorted.concat(otros);
 
         if (sorted.length === 0) {
             grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; background:var(--bg-card); border-radius:var(--radius);">No se encontraron locales.</p>`;
@@ -2815,6 +2872,153 @@
     }
 
     // ============================================================
+    //  COMUNICADOS (WhatsApp en cadena)
+    // ============================================================
+    function crearModalComunicados() {
+        // Si ya existe, no crear de nuevo
+        if (document.getElementById('comunicadosModal')) return;
+
+        const overlay = document.createElement('div');
+        overlay.id = 'comunicadosModal';
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal" style="max-width:700px;">
+                <h2><i class="fas fa-bullhorn"></i> Comunicados</h2>
+                <p>Envía un mensaje por WhatsApp a los locales seleccionados.</p>
+                <label>Mensaje:</label>
+                <textarea id="comunicadosMensaje" rows="4" style="width:100%; padding:10px; border-radius:30px; border:1px solid var(--border); background:var(--input-bg); color:var(--text-color); resize:vertical;" placeholder="Escribe el mensaje que deseas enviar..."></textarea>
+                <div class="comunicados-actions">
+                    <button class="btn-select-all" onclick="seleccionarTodosComunicados(true)"><i class="fas fa-check-double"></i> Seleccionar todos</button>
+                    <button class="btn-select-all" onclick="seleccionarTodosComunicados(false)"><i class="fas fa-times"></i> Deseleccionar todos</button>
+                    <button class="btn-copy-msg" onclick="copiarMensajeComunicados()"><i class="fas fa-copy"></i> Copiar mensaje</button>
+                </div>
+                <label>Selecciona los contactos:</label>
+                <div id="comunicadosLista" class="comunicados-lista"></div>
+                <div class="btn-group" style="justify-content:space-between;">
+                    <button class="btn-secondary" onclick="closeModal('comunicadosModal')">Cerrar</button>
+                    <button class="btn-send" onclick="enviarWhatsAppComunicados()"><i class="fab fa-whatsapp"></i> Enviar a seleccionados</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        // Añadir evento para cerrar al hacer clic fuera
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) closeModal('comunicadosModal');
+        });
+    }
+
+    function abrirModalComunicados() {
+        if (!isAdmin) {
+            showToast('Debes ser administrador');
+            return;
+        }
+        crearModalComunicados();
+        // Poblar lista de contactos
+        const lista = document.getElementById('comunicadosLista');
+        if (!lista) return;
+        const localesConWhatsApp = data.locales.filter(l => l.whatsapp && l.whatsapp.trim() !== '');
+        if (localesConWhatsApp.length === 0) {
+            lista.innerHTML = '<p>No hay locales con WhatsApp registrado.</p>';
+        } else {
+            let html = '';
+            localesConWhatsApp.forEach(l => {
+                const numero = l.whatsapp.replace(/\D/g,'');
+                html += `
+                    <div class="comunicados-item">
+                        <input type="checkbox" id="wa_${l.id}" value="${numero}" data-id="${l.id}">
+                        <label for="wa_${l.id}"><strong>${l.nombre}</strong> <span class="numero-wa">(${numero})</span></label>
+                    </div>
+                `;
+            });
+            lista.innerHTML = html;
+        }
+        // Limpiar mensaje anterior
+        document.getElementById('comunicadosMensaje').value = '';
+        openModal('comunicadosModal');
+    }
+
+    function seleccionarTodosComunicados(seleccionar) {
+        const checkboxes = document.querySelectorAll('#comunicadosLista input[type="checkbox"]');
+        checkboxes.forEach(cb => cb.checked = seleccionar);
+    }
+
+    function copiarMensajeComunicados() {
+        const msg = document.getElementById('comunicadosMensaje').value;
+        if (!msg) {
+            showToast('Escribe un mensaje primero.');
+            return;
+        }
+        navigator.clipboard.writeText(msg).then(() => {
+            showToast('Mensaje copiado al portapapeles');
+        }).catch(() => {
+            // Fallback
+            const textarea = document.getElementById('comunicadosMensaje');
+            textarea.select();
+            document.execCommand('copy');
+            showToast('Mensaje copiado');
+        });
+    }
+
+    function enviarWhatsAppComunicados() {
+        const msg = document.getElementById('comunicadosMensaje').value.trim();
+        if (!msg) {
+            showToast('Escribe un mensaje primero.');
+            return;
+        }
+        const checkboxes = document.querySelectorAll('#comunicadosLista input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) {
+            showToast('Selecciona al menos un contacto.');
+            return;
+        }
+        const numeros = [];
+        checkboxes.forEach(cb => {
+            const num = cb.value;
+            if (num) numeros.push(num);
+        });
+        if (numeros.length === 0) {
+            showToast('No hay números válidos seleccionados.');
+            return;
+        }
+        // Abrir WhatsApp para cada número seleccionado (con un pequeño retraso para evitar bloqueos)
+        const texto = encodeURIComponent(msg);
+        numeros.forEach((num, index) => {
+            setTimeout(() => {
+                window.open(`https://wa.me/${num}?text=${texto}`, '_blank');
+            }, index * 500);
+        });
+        showToast(`Abriendo WhatsApp para ${numeros.length} contacto(s).`);
+    }
+
+    // ============================================================
+    //  INYECTAR BOTONES EN EL PANEL DE ADMIN
+    // ============================================================
+    function agregarBotonCambiarClave() {
+        const panelDiv = document.querySelector('#adminMainModal .modal > div:nth-child(2)');
+        if (!panelDiv) return;
+        if (panelDiv.querySelector('#btnCambiarClave')) return;
+        const btn = document.createElement('button');
+        btn.id = 'btnCambiarClave';
+        btn.className = 'btn-primary';
+        btn.style.cssText = 'padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;';
+        btn.innerHTML = '<i class="fas fa-key"></i> Cambiar Clave';
+        btn.onclick = cambiarClave;
+        panelDiv.appendChild(btn);
+    }
+
+    function agregarBotonComunicados() {
+        const panelDiv = document.querySelector('#adminMainModal .modal > div:nth-child(2)');
+        if (!panelDiv) return;
+        if (panelDiv.querySelector('#btnComunicados')) return;
+        const btn = document.createElement('button');
+        btn.id = 'btnComunicados';
+        btn.className = 'btn-primary';
+        btn.style.cssText = 'padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;';
+        btn.innerHTML = '<i class="fas fa-bullhorn"></i> Comunicados';
+        btn.onclick = abrirModalComunicados;
+        panelDiv.appendChild(btn);
+    }
+
+    // ============================================================
     //  TOAST
     // ============================================================
     function showToast(msg) {
@@ -2852,29 +3056,14 @@
         actualizarInfoBackup();
         if (document.getElementById('adminMainModal').classList.contains('active')) {
             renderVisitasPanel();
+            agregarBotonCambiarClave();
+            agregarBotonComunicados();
         }
         const btn = document.getElementById('orderBtn');
         if (btn) actualizarTextoBotonOrden(btn);
-        // Asegurar que el contador se muestre con el valor actual
         if (document.getElementById('visitNumber')) {
             actualizarNumeroVisitante(data.visitasTotales || 0, false);
         }
-    }
-
-    // ============================================================
-    //  INYECTAR BOTÓN "CAMBIAR CLAVE" EN EL PANEL
-    // ============================================================
-    function agregarBotonCambiarClave() {
-        const panelDiv = document.querySelector('#adminMainModal .modal > div:nth-child(2)');
-        if (!panelDiv) return;
-        if (panelDiv.querySelector('#btnCambiarClave')) return;
-        const btn = document.createElement('button');
-        btn.id = 'btnCambiarClave';
-        btn.className = 'btn-primary';
-        btn.style.cssText = 'padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;';
-        btn.innerHTML = '<i class="fas fa-key"></i> Cambiar Clave';
-        btn.onclick = cambiarClave;
-        panelDiv.appendChild(btn);
     }
 
     // ============================================================
@@ -2893,6 +3082,7 @@
             const observer = new MutationObserver(() => {
                 if (document.getElementById('adminMainModal').classList.contains('active')) {
                     agregarBotonCambiarClave();
+                    agregarBotonComunicados();
                     renderVisitasPanel();
                 }
             });
@@ -2966,6 +3156,11 @@
     window.shareLocal = shareLocal;
     window.openImageZoom = openImageZoom;
     window.recuperarClave = recuperarClave;
+    // Comunicados
+    window.abrirModalComunicados = abrirModalComunicados;
+    window.seleccionarTodosComunicados = seleccionarTodosComunicados;
+    window.copiarMensajeComunicados = copiarMensajeComunicados;
+    window.enviarWhatsAppComunicados = enviarWhatsAppComunicados;
 </script>
 
 </body>
