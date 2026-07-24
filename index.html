@@ -2154,35 +2154,118 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES (con orden por visitas o número y Data Masters primero)
+    //  FUNCIÓN AUXILIAR PARA ESTADO DEL LOCAL (abierto/cerrado)
+    // ============================================================
+    function getLocalStatus(local) {
+        const now = new Date();
+        const dayNames = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+        const dayIndex = now.getDay();
+        const dayKey = dayNames[dayIndex];
+        const dateStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
+
+        let horarioHoy = '';
+        let isOpen = false;
+        let esFeriado = false;
+
+        const feriadosRaw = local.horarios.feriados || '';
+        const feriadosList = feriadosRaw.split(';').map(f => f.trim()).filter(f => f);
+        for (let f of feriadosList) {
+            const parts = f.split(':');
+            if (parts.length === 2) {
+                const fecha = parts[0].trim();
+                const horario = parts[1].trim();
+                if (fecha === dateStr) {
+                    esFeriado = true;
+                    horarioHoy = horario;
+                    if (horario !== 'cerrado' && horario.includes('-')) {
+                        const [desde, hasta] = horario.split('-');
+                        isOpen = isInTimeRange(desde, hasta);
+                    } else {
+                        isOpen = false;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (!esFeriado) {
+            const dia = local.horarios[dayKey];
+            if (dia) {
+                if (dia.cerrado) {
+                    horarioHoy = 'Cerrado';
+                    isOpen = false;
+                } else {
+                    horarioHoy = `${dia.ini} - ${dia.fin}`;
+                    isOpen = isInTimeRange(dia.ini, dia.fin);
+                }
+            } else {
+                horarioHoy = 'Cerrado';
+                isOpen = false;
+            }
+        }
+
+        return { isOpen, horarioHoy, esFeriado };
+    }
+
+    function isInTimeRange(desdeStr, hastaStr) {
+        try {
+            const ahora = new Date();
+            const [hDesde, mDesde] = desdeStr.split(':').map(Number);
+            const [hHasta, mHasta] = hastaStr.split(':').map(Number);
+            const nowMinutes = ahora.getHours() * 60 + ahora.getMinutes();
+            const fromMinutes = hDesde * 60 + mDesde;
+            const toMinutes = hHasta * 60 + mHasta;
+            return nowMinutes >= fromMinutes && nowMinutes <= toMinutes;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    // ============================================================
+    //  RENDER LOCALES (con orden: abiertos primero, luego cerrados)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
         if (!filteredLocales) filteredLocales = data.locales;
 
-        // Separar Data Masters si existe
+        // Separar Data Masters
         const dataMasters = filteredLocales.filter(l => l.nombre.trim().toLowerCase() === 'data masters');
         const otros = filteredLocales.filter(l => l.nombre.trim().toLowerCase() !== 'data masters');
 
-        // Ordenar los otros según criterio
-        if (ordenCriterio === 'visitas') {
-            otros.sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
-        } else {
-            otros.sort((a, b) => a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true }));
-        }
+        // Construir array con estado
+        const otrosConEstado = otros.map(local => {
+            const status = getLocalStatus(local);
+            return { ...local, _isOpen: status.isOpen, _horarioHoy: status.horarioHoy };
+        });
 
-        // Construir el arreglo final: Data Masters primero, luego el resto
+        // Ordenar: primero abiertos (true) luego cerrados, y dentro de cada grupo según criterio
+        otrosConEstado.sort((a, b) => {
+            // Primero por estado (abiertos primero)
+            if (a._isOpen !== b._isOpen) {
+                return a._isOpen ? -1 : 1;
+            }
+            // Luego por criterio
+            if (ordenCriterio === 'visitas') {
+                return (b.visitas || 0) - (a.visitas || 0);
+            } else { // numero
+                return a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true });
+            }
+        });
+
+        // Reconstruir el arreglo final: Data Masters primero, luego el resto ordenado
         let sorted = [];
         if (dataMasters.length > 0) {
+            // Data Masters también podrían tener estado, pero los dejamos al inicio sin importar
             sorted.push(dataMasters[0]);
         }
-        sorted = sorted.concat(otros);
+        sorted = sorted.concat(otrosConEstado);
 
         if (sorted.length === 0) {
             grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; background:var(--bg-card); border-radius:var(--radius);">No se encontraron locales.</p>`;
             return;
         }
 
+        // Renderizar
         const now = new Date();
         const dayNames = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
         const dayIndex = now.getDay();
@@ -2190,45 +2273,13 @@
         const dateStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
 
         grid.innerHTML = sorted.map(local => {
-            let horarioHoy = '';
-            let isOpen = false;
-            let esFeriado = false;
-
-            const feriadosRaw = local.horarios.feriados || '';
-            const feriadosList = feriadosRaw.split(';').map(f => f.trim()).filter(f => f);
-            for (let f of feriadosList) {
-                const parts = f.split(':');
-                if (parts.length === 2) {
-                    const fecha = parts[0].trim();
-                    const horario = parts[1].trim();
-                    if (fecha === dateStr) {
-                        esFeriado = true;
-                        horarioHoy = horario;
-                        if (horario !== 'cerrado' && horario.includes('-')) {
-                            const [desde, hasta] = horario.split('-');
-                            isOpen = isInTimeRange(desde, hasta);
-                        } else {
-                            isOpen = false;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            if (!esFeriado) {
-                const dia = local.horarios[dayKey];
-                if (dia) {
-                    if (dia.cerrado) {
-                        horarioHoy = 'Cerrado';
-                        isOpen = false;
-                    } else {
-                        horarioHoy = `${dia.ini} - ${dia.fin}`;
-                        isOpen = isInTimeRange(dia.ini, dia.fin);
-                    }
-                } else {
-                    horarioHoy = 'Cerrado';
-                    isOpen = false;
-                }
+            // Usar estado ya calculado (si es Data Masters, puede que no tenga _isOpen)
+            let horarioHoy = local._horarioHoy || '';
+            let isOpen = local._isOpen || false;
+            if (local._isOpen === undefined) {
+                const status = getLocalStatus(local);
+                horarioHoy = status.horarioHoy;
+                isOpen = status.isOpen;
             }
 
             const logoUrl = local.logo || '';
@@ -2297,20 +2348,6 @@
                 </div>
             `;
         }).join('');
-    }
-
-    function isInTimeRange(desdeStr, hastaStr) {
-        try {
-            const ahora = new Date();
-            const [hDesde, mDesde] = desdeStr.split(':').map(Number);
-            const [hHasta, mHasta] = hastaStr.split(':').map(Number);
-            const nowMinutes = ahora.getHours() * 60 + ahora.getMinutes();
-            const fromMinutes = hDesde * 60 + mDesde;
-            const toMinutes = hHasta * 60 + mHasta;
-            return nowMinutes >= fromMinutes && nowMinutes <= toMinutes;
-        } catch(e) {
-            return false;
-        }
     }
 
     // ============================================================
