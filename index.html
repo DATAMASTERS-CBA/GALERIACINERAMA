@@ -288,6 +288,7 @@
             flex: 1 1 200px;
             outline: none;
             transition: 0.2s;
+            min-width: 0; /* Evita desbordes */
         }
         .search-section input:focus,
         .search-section select:focus {
@@ -300,9 +301,11 @@
             gap: 10px;
             flex-wrap: wrap;
             flex: 2;
+            min-width: 0;
         }
         .search-section .filter-group select {
             flex: 1 1 140px;
+            min-width: 0;
         }
 
         .search-section .order-btn {
@@ -317,6 +320,7 @@
             align-items: center;
             gap: 6px;
             transition: 0.2s;
+            flex-shrink: 0;
         }
         .search-section .order-btn:hover {
             background: var(--primary);
@@ -461,6 +465,16 @@
             font-size: 0.9rem;
             margin: 6px 0 10px;
             flex-wrap: wrap;
+        }
+        .card-horario .horario-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .card-horario .horario-text i {
+            color: var(--primary);
+            font-size: 1.1rem;
         }
         .status-badge {
             padding: 4px 14px;
@@ -830,6 +844,14 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+            .search-section .filter-group {
+                flex-direction: column;
+            }
+            .search-section .filter-group select,
+            .search-section input {
+                flex: 1 1 auto;
+                width: 100%;
+            }
             .grid {
                 grid-template-columns: 1fr;
             }
@@ -1032,6 +1054,34 @@
                 padding: 3px 10px 3px 6px;
                 font-size: 0.9rem;
             }
+        }
+
+        /* ===== ESTILOS PARA MODAL DE HORARIOS ===== */
+        #horariosModal .modal {
+            max-width: 500px;
+        }
+        .horarios-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .horarios-tabla td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .horarios-tabla .dia {
+            font-weight: 600;
+        }
+        .horarios-tabla .hora {
+            text-align: right;
+        }
+        .horarios-tabla .cerrado {
+            color: var(--red);
+            font-weight: 600;
+        }
+        .horarios-tabla .feriado {
+            background: var(--primary-light);
+            font-style: italic;
         }
     </style>
 </head>
@@ -1377,7 +1427,6 @@
     const db = firebase.firestore();
     const docRef = db.collection('galeria').doc('datos');
 
-    // Código de recuperación de clave
     const CODIGO_RECUPERACION = 'reset123';
 
     // ============================================================
@@ -1405,7 +1454,6 @@
     let dataLoaded = false;
     let ordenCriterio = 'visitas'; // 'visitas' o 'numero'
 
-    // URL por defecto para fotos
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
     function getDefaultData() {
@@ -1597,6 +1645,7 @@
             const doc = await docRef.get();
             if (doc.exists) {
                 const firestoreData = doc.data();
+                // Verificar si los datos están vacíos (sin locales)
                 const defaultData = getDefaultData();
                 for (let key in defaultData) {
                     if (firestoreData[key] !== undefined) {
@@ -1613,9 +1662,30 @@
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
-                const defaultData = getDefaultData();
-                for (let key in defaultData) {
-                    data[key] = defaultData[key];
+                // El documento no existe: preguntar si cargar datos de muestra
+                const cargarMuestra = confirm('No se encontraron datos en la nube. ¿Deseas cargar los locales de muestra? (Cancelar para empezar vacío)');
+                if (cargarMuestra) {
+                    const defaultData = getDefaultData();
+                    for (let key in defaultData) {
+                        data[key] = defaultData[key];
+                    }
+                } else {
+                    // Empezar con datos vacíos
+                    data = {
+                        locales: [],
+                        banners: [],
+                        rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
+                        theme: 'default',
+                        autoTheme: false,
+                        nextId: 1,
+                        galeriaNombre: 'Galería Cinerama',
+                        galeriaDireccion: 'Colón 375',
+                        bannerInterval: 4,
+                        backups: [],
+                        lastBackupDate: null,
+                        adminClave: 'admin123',
+                        visitasTotales: 0
+                    };
                 }
                 await docRef.set(data);
                 localStorage.setItem('galeriaData', JSON.stringify(data));
@@ -1638,9 +1708,29 @@
                     console.error('Error al parsear localStorage:', e);
                 }
             } else {
-                const defaultData = getDefaultData();
-                for (let key in defaultData) {
-                    data[key] = defaultData[key];
+                // Si no hay nada en local, preguntar
+                const cargarMuestra = confirm('No se pudo conectar a la nube y no hay datos locales. ¿Cargar datos de muestra?');
+                if (cargarMuestra) {
+                    const defaultData = getDefaultData();
+                    for (let key in defaultData) {
+                        data[key] = defaultData[key];
+                    }
+                } else {
+                    data = {
+                        locales: [],
+                        banners: [],
+                        rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
+                        theme: 'default',
+                        autoTheme: false,
+                        nextId: 1,
+                        galeriaNombre: 'Galería Cinerama',
+                        galeriaDireccion: 'Colón 375',
+                        bannerInterval: 4,
+                        backups: [],
+                        lastBackupDate: null,
+                        adminClave: 'admin123',
+                        visitasTotales: 0
+                    };
                 }
             }
         }
@@ -2146,6 +2236,7 @@
             renderVisitasPanel();
             agregarBotonCambiarClave();
             agregarBotonComunicados();
+            agregarEditorVisitasTotales();
         }
     }
 
@@ -2240,22 +2331,18 @@
 
         // Ordenar: primero abiertos (true) luego cerrados, y dentro de cada grupo según criterio
         otrosConEstado.sort((a, b) => {
-            // Primero por estado (abiertos primero)
             if (a._isOpen !== b._isOpen) {
                 return a._isOpen ? -1 : 1;
             }
-            // Luego por criterio
             if (ordenCriterio === 'visitas') {
                 return (b.visitas || 0) - (a.visitas || 0);
-            } else { // numero
+            } else {
                 return a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true });
             }
         });
 
-        // Reconstruir el arreglo final: Data Masters primero, luego el resto ordenado
         let sorted = [];
         if (dataMasters.length > 0) {
-            // Data Masters también podrían tener estado, pero los dejamos al inicio sin importar
             sorted.push(dataMasters[0]);
         }
         sorted = sorted.concat(otrosConEstado);
@@ -2266,14 +2353,7 @@
         }
 
         // Renderizar
-        const now = new Date();
-        const dayNames = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
-        const dayIndex = now.getDay();
-        const dayKey = dayNames[dayIndex];
-        const dateStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
-
         grid.innerHTML = sorted.map(local => {
-            // Usar estado ya calculado (si es Data Masters, puede que no tenga _isOpen)
             let horarioHoy = local._horarioHoy || '';
             let isOpen = local._isOpen || false;
             if (local._isOpen === undefined) {
@@ -2312,6 +2392,9 @@
                 `;
             }
 
+            // Icono de reloj para ver horarios completos
+            const horarioIcon = `<span class="horario-text" onclick="event.stopPropagation(); mostrarHorariosCompletos(${local.id})"><i class="far fa-clock"></i> ${horarioHoy}</span>`;
+
             return `
                 <div class="card" data-id="${local.id}">
                     ${adminButtons}
@@ -2336,7 +2419,7 @@
                         </div>
                         <div class="card-desc">${local.descripcion || ''}</div>
                         <div class="card-horario">
-                            <span><i class="far fa-calendar-alt"></i> Hoy: ${horarioHoy}</span>
+                            ${horarioIcon}
                             <span class="status-badge ${isOpen ? 'open' : 'closed'}">${isOpen ? '🟢 Abierto' : '🔴 Cerrado'}</span>
                         </div>
                         <div class="card-actions">
@@ -2348,6 +2431,68 @@
                 </div>
             `;
         }).join('');
+    }
+
+    // ============================================================
+    //  MOSTRAR HORARIOS COMPLETOS EN MODAL
+    // ============================================================
+    function mostrarHorariosCompletos(localId) {
+        const local = data.locales.find(l => l.id === localId);
+        if (!local) return;
+
+        // Crear modal si no existe
+        let modal = document.getElementById('horariosModal');
+        if (!modal) {
+            const overlay = document.createElement('div');
+            overlay.id = 'horariosModal';
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal">
+                    <h2><i class="far fa-calendar-alt"></i> Horarios de <span id="horariosLocalNombre"></span></h2>
+                    <table class="horarios-tabla" id="horariosTabla">
+                        <tbody></tbody>
+                    </table>
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="closeModal('horariosModal')">Cerrar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) closeModal('horariosModal');
+            });
+            modal = overlay;
+        }
+
+        // Rellenar datos
+        document.getElementById('horariosLocalNombre').textContent = local.nombre;
+        const tbody = document.querySelector('#horariosTabla tbody');
+        const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+        const nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        let html = '';
+        dias.forEach((d, idx) => {
+            const dia = local.horarios[d] || { ini: '--:--', fin: '--:--', cerrado: true };
+            const cerrado = dia.cerrado;
+            const horario = cerrado ? '<span class="cerrado">Cerrado</span>' : `${dia.ini} - ${dia.fin}`;
+            html += `<tr><td class="dia">${nombresDias[idx]}</td><td class="hora">${horario}</td></tr>`;
+        });
+        // Feriados
+        if (local.horarios.feriados) {
+            const feriados = local.horarios.feriados.split(';').map(f => f.trim()).filter(f => f);
+            if (feriados.length > 0) {
+                html += `<tr><td colspan="2" style="background:var(--primary-light); font-weight:600; text-align:center;">Feriados</td></tr>`;
+                feriados.forEach(f => {
+                    const partes = f.split(':');
+                    if (partes.length === 2) {
+                        const fecha = partes[0];
+                        const horario = partes[1];
+                        html += `<tr class="feriado"><td>${fecha}</td><td class="hora">${horario}</td></tr>`;
+                    }
+                });
+            }
+        }
+        tbody.innerHTML = html;
+        openModal('horariosModal');
     }
 
     // ============================================================
@@ -2933,7 +3078,45 @@
     }
 
     // ============================================================
-    //  COMUNICADOS (WhatsApp en cadena) - Mejorada la vista de la agenda
+    //  EDITOR DE VISITAS TOTALES (en panel admin)
+    // ============================================================
+    function agregarEditorVisitasTotales() {
+        const modal = document.getElementById('adminMainModal');
+        let container = document.getElementById('editorVisitasContainer');
+        if (container) return;
+
+        const backupDiv = modal.querySelector('.modal > div:last-child');
+        if (!backupDiv) return;
+
+        container = document.createElement('div');
+        container.id = 'editorVisitasContainer';
+        container.style.cssText = 'margin-top:15px; padding:15px; background:var(--input-bg); border-radius:var(--radius); border:1px solid var(--border);';
+        container.innerHTML = `
+            <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-edit"></i> Editar contador global de visitas</h3>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <label style="font-weight:600;">Visitante n°:</label>
+                <input type="number" id="inputVisitasTotales" value="${data.visitasTotales}" style="width:120px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <button onclick="actualizarVisitasTotales()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Actualizar</button>
+            </div>
+        `;
+        backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
+    }
+
+    async function actualizarVisitasTotales() {
+        const input = document.getElementById('inputVisitasTotales');
+        const nuevo = parseInt(input.value);
+        if (isNaN(nuevo) || nuevo < 0) {
+            showToast('Ingresa un número válido (0 o mayor).');
+            return;
+        }
+        data.visitasTotales = nuevo;
+        await saveData();
+        actualizarNumeroVisitante(nuevo, true);
+        showToast('Contador actualizado a ' + nuevo);
+    }
+
+    // ============================================================
+    //  COMUNICADOS (WhatsApp en cadena)
     // ============================================================
     function crearModalComunicados() {
         if (document.getElementById('comunicadosModal')) return;
@@ -3113,6 +3296,7 @@
             renderVisitasPanel();
             agregarBotonCambiarClave();
             agregarBotonComunicados();
+            agregarEditorVisitasTotales();
         }
         const btn = document.getElementById('orderBtn');
         if (btn) actualizarTextoBotonOrden(btn);
@@ -3139,6 +3323,7 @@
                     agregarBotonCambiarClave();
                     agregarBotonComunicados();
                     renderVisitasPanel();
+                    agregarEditorVisitasTotales();
                 }
             });
             observer.observe(document.getElementById('adminMainModal'), { attributes: true, attributeFilter: ['class'] });
@@ -3211,7 +3396,8 @@
     window.shareLocal = shareLocal;
     window.openImageZoom = openImageZoom;
     window.recuperarClave = recuperarClave;
-    // Comunicados
+    window.mostrarHorariosCompletos = mostrarHorariosCompletos;
+    window.actualizarVisitasTotales = actualizarVisitasTotales;
     window.abrirModalComunicados = abrirModalComunicados;
     window.seleccionarTodosComunicados = seleccionarTodosComunicados;
     window.copiarMensajeComunicados = copiarMensajeComunicados;
