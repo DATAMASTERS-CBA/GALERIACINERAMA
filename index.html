@@ -9,6 +9,8 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
         /* ===== ESTILOS BASE (sin cambios) ===== */
         * {
@@ -288,7 +290,7 @@
             flex: 1 1 200px;
             outline: none;
             transition: 0.2s;
-            min-width: 0; /* Evita desbordes */
+            min-width: 0;
         }
         .search-section input:focus,
         .search-section select:focus {
@@ -1083,6 +1085,74 @@
             background: var(--primary-light);
             font-style: italic;
         }
+
+        /* ===== ESTILOS PARA EL OVERLAY DE PUBLICIDAD ===== */
+        #publicidadOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none; /* Para que no bloquee clics mientras se muestra */
+        }
+        #publicidadOverlay.active {
+            display: flex;
+            pointer-events: auto;
+        }
+        #publicidadOverlay .contenido {
+            text-align: center;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: hidden;
+            animation: publicidadEntrada 0.6s ease;
+        }
+        @keyframes publicidadEntrada {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        #publicidadOverlay .texto-neon {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px #0fa, 0 0 82px #0fa, 0 0 92px #0fa, 0 0 102px #0fa, 0 0 151px #0fa;
+            letter-spacing: 4px;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        #publicidadOverlay .imagen-publicidad {
+            max-width: 80%;
+            max-height: 70vh;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255,255,255,0.3);
+        }
+        #publicidadOverlay .cerrar-publicidad {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2.5rem;
+            color: #fff;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: 0.2s;
+            pointer-events: auto;
+            background: none;
+            border: none;
+        }
+        #publicidadOverlay .cerrar-publicidad:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        @media (max-width: 768px) {
+            #publicidadOverlay .texto-neon {
+                font-size: 2.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1408,6 +1478,7 @@
     <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
 
+    <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente) ===== -->
 </div>
 
 <script>
@@ -1445,7 +1516,14 @@
         backups: [],
         lastBackupDate: null,
         adminClave: 'admin123',
-        visitasTotales: 0
+        visitasTotales: 0,
+        publicidad: {
+            activo: false,
+            tipo: 'texto', // 'texto' o 'imagen'
+            contenido: '¡Gran Liquidación!',
+            duracion: 5,
+            imagenUrl: ''
+        }
     };
 
     let isAdmin = false;
@@ -1635,7 +1713,14 @@
             galeriaDireccion: 'Colón 375',
             theme: 'default',
             autoTheme: false,
-            visitasTotales: 0
+            visitasTotales: 0,
+            publicidad: {
+                activo: false,
+                tipo: 'texto',
+                contenido: '¡Gran Liquidación!',
+                duracion: 5,
+                imagenUrl: ''
+            }
         };
     }
 
@@ -1645,7 +1730,6 @@
             const doc = await docRef.get();
             if (doc.exists) {
                 const firestoreData = doc.data();
-                // Verificar si los datos están vacíos (sin locales)
                 const defaultData = getDefaultData();
                 for (let key in defaultData) {
                     if (firestoreData[key] !== undefined) {
@@ -1660,9 +1744,9 @@
                     if (l.visitas === undefined) l.visitas = 0;
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                if (!data.publicidad) data.publicidad = defaultData.publicidad;
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
-                // El documento no existe: preguntar si cargar datos de muestra
                 const cargarMuestra = confirm('No se encontraron datos en la nube. ¿Deseas cargar los locales de muestra? (Cancelar para empezar vacío)');
                 if (cargarMuestra) {
                     const defaultData = getDefaultData();
@@ -1670,7 +1754,6 @@
                         data[key] = defaultData[key];
                     }
                 } else {
-                    // Empezar con datos vacíos
                     data = {
                         locales: [],
                         banners: [],
@@ -1684,7 +1767,8 @@
                         backups: [],
                         lastBackupDate: null,
                         adminClave: 'admin123',
-                        visitasTotales: 0
+                        visitasTotales: 0,
+                        publicidad: { activo: false, tipo: 'texto', contenido: '¡Gran Liquidación!', duracion: 5, imagenUrl: '' }
                     };
                 }
                 await docRef.set(data);
@@ -1704,11 +1788,11 @@
                         if (l.visitas === undefined) l.visitas = 0;
                     });
                     if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                    if (!data.publicidad) data.publicidad = { activo: false, tipo: 'texto', contenido: '¡Gran Liquidación!', duracion: 5, imagenUrl: '' };
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                 }
             } else {
-                // Si no hay nada en local, preguntar
                 const cargarMuestra = confirm('No se pudo conectar a la nube y no hay datos locales. ¿Cargar datos de muestra?');
                 if (cargarMuestra) {
                     const defaultData = getDefaultData();
@@ -1729,7 +1813,8 @@
                         backups: [],
                         lastBackupDate: null,
                         adminClave: 'admin123',
-                        visitasTotales: 0
+                        visitasTotales: 0,
+                        publicidad: { activo: false, tipo: 'texto', contenido: '¡Gran Liquidación!', duracion: 5, imagenUrl: '' }
                     };
                 }
             }
@@ -1743,6 +1828,10 @@
         initVisitCounter();
         incrementarVisitaGlobal(true);
         initGlobalVisitListeners();
+        // Mostrar publicidad si está activa
+        if (data.publicidad && data.publicidad.activo) {
+            mostrarPublicidad();
+        }
     }
 
     async function saveData() {
@@ -1863,6 +1952,80 @@
     }
 
     // ============================================================
+    //  PUBLICIDAD
+    // ============================================================
+    function mostrarPublicidad() {
+        if (!data.publicidad || !data.publicidad.activo) return;
+        // Crear overlay si no existe
+        let overlay = document.getElementById('publicidadOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'publicidadOverlay';
+            overlay.innerHTML = `
+                <button class="cerrar-publicidad" onclick="cerrarPublicidad()">&times;</button>
+                <div class="contenido" id="publicidadContenido"></div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        const contenido = document.getElementById('publicidadContenido');
+        if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenUrl) {
+            contenido.innerHTML = `<img src="${data.publicidad.imagenUrl}" alt="Publicidad" class="imagen-publicidad">`;
+        } else {
+            contenido.innerHTML = `<div class="texto-neon">${data.publicidad.contenido}</div>`;
+        }
+
+        overlay.classList.add('active');
+        // Efecto confeti
+        dispararConfeti();
+
+        // Temporizador para cerrar
+        if (window._publicidadTimer) clearTimeout(window._publicidadTimer);
+        window._publicidadTimer = setTimeout(() => {
+            cerrarPublicidad();
+        }, (data.publicidad.duracion || 5) * 1000);
+    }
+
+    function cerrarPublicidad() {
+        const overlay = document.getElementById('publicidadOverlay');
+        if (overlay) overlay.classList.remove('active');
+        if (window._publicidadTimer) {
+            clearTimeout(window._publicidadTimer);
+            window._publicidadTimer = null;
+        }
+    }
+
+    function dispararConfeti() {
+        // Usar canvas-confetti
+        if (typeof confetti === 'function') {
+            // Explosión inicial
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                startVelocity: 30
+            });
+            // Lluvia continua
+            const duracion = (data.publicidad.duracion || 5) * 1000;
+            const interval = setInterval(() => {
+                if (!document.getElementById('publicidadOverlay') || !document.getElementById('publicidadOverlay').classList.contains('active')) {
+                    clearInterval(interval);
+                    return;
+                }
+                confetti({
+                    particleCount: 30,
+                    spread: 60,
+                    origin: { y: 0, x: Math.random() },
+                    startVelocity: 20
+                });
+            }, 300);
+            setTimeout(() => clearInterval(interval), duracion);
+        } else {
+            console.warn('Confetti no disponible');
+        }
+    }
+
+    // ============================================================
     //  RECUPERACIÓN DE CLAVE
     // ============================================================
     async function recuperarClave() {
@@ -1958,6 +2121,7 @@
         data.galeriaDireccion = backupData.galeriaDireccion || 'Colón 375';
         data.bannerInterval = backupData.bannerInterval || 4;
         data.visitasTotales = backupData.visitasTotales || 0;
+        data.publicidad = backupData.publicidad || { activo: false, tipo: 'texto', contenido: '¡Gran Liquidación!', duracion: 5, imagenUrl: '' };
         data.locales.forEach(l => {
             l.numeroLocal = String(l.numeroLocal);
             if (l.visitas === undefined) l.visitas = 0;
@@ -2041,6 +2205,7 @@
                     if (l.visitas === undefined) l.visitas = 0;
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                if (!data.publicidad) data.publicidad = { activo: false, tipo: 'texto', contenido: '¡Gran Liquidación!', duracion: 5, imagenUrl: '' };
                 await saveData();
                 renderAll();
                 showToast('Datos importados correctamente');
@@ -2237,6 +2402,7 @@
             agregarBotonCambiarClave();
             agregarBotonComunicados();
             agregarEditorVisitasTotales();
+            agregarSeccionPublicidad();
         }
     }
 
@@ -2319,17 +2485,14 @@
         const grid = document.getElementById('localsGrid');
         if (!filteredLocales) filteredLocales = data.locales;
 
-        // Separar Data Masters
         const dataMasters = filteredLocales.filter(l => l.nombre.trim().toLowerCase() === 'data masters');
         const otros = filteredLocales.filter(l => l.nombre.trim().toLowerCase() !== 'data masters');
 
-        // Construir array con estado
         const otrosConEstado = otros.map(local => {
             const status = getLocalStatus(local);
             return { ...local, _isOpen: status.isOpen, _horarioHoy: status.horarioHoy };
         });
 
-        // Ordenar: primero abiertos (true) luego cerrados, y dentro de cada grupo según criterio
         otrosConEstado.sort((a, b) => {
             if (a._isOpen !== b._isOpen) {
                 return a._isOpen ? -1 : 1;
@@ -2352,7 +2515,6 @@
             return;
         }
 
-        // Renderizar
         grid.innerHTML = sorted.map(local => {
             let horarioHoy = local._horarioHoy || '';
             let isOpen = local._isOpen || false;
@@ -2392,7 +2554,6 @@
                 `;
             }
 
-            // Icono de reloj para ver horarios completos
             const horarioIcon = `<span class="horario-text" onclick="event.stopPropagation(); mostrarHorariosCompletos(${local.id})"><i class="far fa-clock"></i> ${horarioHoy}</span>`;
 
             return `
@@ -2440,7 +2601,6 @@
         const local = data.locales.find(l => l.id === localId);
         if (!local) return;
 
-        // Crear modal si no existe
         let modal = document.getElementById('horariosModal');
         if (!modal) {
             const overlay = document.createElement('div');
@@ -2464,7 +2624,6 @@
             modal = overlay;
         }
 
-        // Rellenar datos
         document.getElementById('horariosLocalNombre').textContent = local.nombre;
         const tbody = document.querySelector('#horariosTabla tbody');
         const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
@@ -2476,7 +2635,6 @@
             const horario = cerrado ? '<span class="cerrado">Cerrado</span>' : `${dia.ini} - ${dia.fin}`;
             html += `<tr><td class="dia">${nombresDias[idx]}</td><td class="hora">${horario}</td></tr>`;
         });
-        // Feriados
         if (local.horarios.feriados) {
             const feriados = local.horarios.feriados.split(';').map(f => f.trim()).filter(f => f);
             if (feriados.length > 0) {
@@ -3116,6 +3274,66 @@
     }
 
     // ============================================================
+    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN
+    // ============================================================
+    function agregarSeccionPublicidad() {
+        const modal = document.getElementById('adminMainModal');
+        let container = document.getElementById('publicidadAdminContainer');
+        if (container) return;
+
+        const backupDiv = modal.querySelector('.modal > div:last-child');
+        if (!backupDiv) return;
+
+        container = document.createElement('div');
+        container.id = 'publicidadAdminContainer';
+        container.style.cssText = 'margin-top:15px; padding:15px; background:var(--input-bg); border-radius:var(--radius); border:1px solid var(--border);';
+        container.innerHTML = `
+            <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-bullhorn"></i> Publicidad</h3>
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                    <input type="checkbox" id="pubActivo" ${data.publicidad.activo ? 'checked' : ''}> Activar
+                </label>
+                <select id="pubTipo" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                    <option value="texto" ${data.publicidad.tipo === 'texto' ? 'selected' : ''}>Texto</option>
+                    <option value="imagen" ${data.publicidad.tipo === 'imagen' ? 'selected' : ''}>Imagen</option>
+                </select>
+                <input type="text" id="pubContenido" value="${data.publicidad.contenido}" placeholder="Texto o URL de imagen" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <label style="display:flex; align-items:center; gap:4px;">Duración (seg): <input type="number" id="pubDuracion" value="${data.publicidad.duracion}" style="width:60px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);"></label>
+                <button onclick="guardarPublicidad()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Guardar</button>
+            </div>
+            <p style="margin-top:8px; font-size:0.9rem; opacity:0.7;">Al activar, se mostrará al cargar la página con efecto de confeti y neón.</p>
+        `;
+        backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
+    }
+
+    async function guardarPublicidad() {
+        const activo = document.getElementById('pubActivo').checked;
+        const tipo = document.getElementById('pubTipo').value;
+        const contenido = document.getElementById('pubContenido').value.trim();
+        const duracion = parseInt(document.getElementById('pubDuracion').value) || 5;
+
+        if (!contenido && tipo === 'texto') {
+            showToast('El texto del anuncio no puede estar vacío.');
+            return;
+        }
+        if (tipo === 'imagen' && contenido && !contenido.match(/^https?:\/\/.+/)) {
+            showToast('Ingresa una URL de imagen válida.');
+            return;
+        }
+
+        data.publicidad = { activo, tipo, contenido, duracion, imagenUrl: tipo === 'imagen' ? contenido : '' };
+        await saveData();
+        showToast('Configuración de publicidad guardada.');
+        // Recargar la vista si está activo y no está mostrándose
+        if (activo) {
+            cerrarPublicidad();
+            setTimeout(() => mostrarPublicidad(), 300);
+        } else {
+            cerrarPublicidad();
+        }
+    }
+
+    // ============================================================
     //  COMUNICADOS (WhatsApp en cadena)
     // ============================================================
     function crearModalComunicados() {
@@ -3297,6 +3515,7 @@
             agregarBotonCambiarClave();
             agregarBotonComunicados();
             agregarEditorVisitasTotales();
+            agregarSeccionPublicidad();
         }
         const btn = document.getElementById('orderBtn');
         if (btn) actualizarTextoBotonOrden(btn);
@@ -3324,6 +3543,7 @@
                     agregarBotonComunicados();
                     renderVisitasPanel();
                     agregarEditorVisitasTotales();
+                    agregarSeccionPublicidad();
                 }
             });
             observer.observe(document.getElementById('adminMainModal'), { attributes: true, attributeFilter: ['class'] });
@@ -3398,6 +3618,8 @@
     window.recuperarClave = recuperarClave;
     window.mostrarHorariosCompletos = mostrarHorariosCompletos;
     window.actualizarVisitasTotales = actualizarVisitasTotales;
+    window.guardarPublicidad = guardarPublicidad;
+    window.cerrarPublicidad = cerrarPublicidad;
     window.abrirModalComunicados = abrirModalComunicados;
     window.seleccionarTodosComunicados = seleccionarTodosComunicados;
     window.copiarMensajeComunicados = copiarMensajeComunicados;
