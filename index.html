@@ -1600,11 +1600,11 @@
         visitasTotales: 0,
         publicidad: {
             activo: false,
-            tipo: 'texto', // 'texto' o 'imagen'
+            tipo: 'texto',
             contenido: '¡Gran Liquidación!',
             duracion: 5,
             imagenUrl: '',
-            efecto: 'confeti', // nombre del efecto
+            efecto: 'confeti',
             textos: [
                 { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
@@ -1617,8 +1617,8 @@
     let bannerIndex = 0;
     let bannerTimer = null;
     let dataLoaded = false;
-    let ordenCriterio = 'visitas'; // 'visitas' o 'numero'
-    let hayFiltroActivo = false; // para saber si se está aplicando algún filtro
+    let ordenCriterio = 'visitas';
+    let hayFiltroActivo = false;
 
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
@@ -1842,7 +1842,6 @@
                         data[key] = defaultData[key];
                     }
                 }
-                // Asegurar que numeroLocal sea string y visitas exista
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
@@ -1966,7 +1965,6 @@
         initVisitCounter();
         incrementarVisitaGlobal(true);
         initGlobalVisitListeners();
-        // Mostrar publicidad si está activa
         if (data.publicidad && data.publicidad.activo) {
             mostrarPublicidad();
         }
@@ -2093,18 +2091,126 @@
     //  PUBLICIDAD (mejorada con múltiples textos y efectos)
     // ============================================================
     const EFECTOS_CONFETI = {
-        'confeti': { colors: ['#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff','#00ffff'], spread: 70, particleCount: 100, startVelocity: 30 },
-        'navidad': { colors: ['#ff0000','#00cc00','#ffffff','#ffcc00'], spread: 60, particleCount: 80, startVelocity: 25 },
-        'halloween': { colors: ['#ff6600','#000000','#8b00ff','#ff0000'], spread: 65, particleCount: 90, startVelocity: 28 },
-        'pascuas': { colors: ['#ffccff','#ffff99','#99ccff','#ff99cc'], spread: 60, particleCount: 80, startVelocity: 25 },
-        'diadelnino': { colors: ['#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff','#00ffff','#ff9900'], spread: 75, particleCount: 120, startVelocity: 30 },
-        'banderasargentinas': { colors: ['#75aadb','#ffffff','#75aadb','#ffffff'], spread: 50, particleCount: 60, startVelocity: 20 },
-        'arcoiris': { colors: ['#ff0000','#ff7f00','#ffff00','#00ff00','#0000ff','#4b0082','#8f00ff'], spread: 80, particleCount: 140, startVelocity: 35 },
-        'pochoclos': { colors: ['#ffcc66','#ffffff','#ff99bb'], spread: 55, particleCount: 70, startVelocity: 22 },
-        'fuegoartificial': { colors: ['#ff0000','#ff7f00','#ffff00','#ffffff'], spread: 90, particleCount: 150, startVelocity: 40, scalar: 1.2 },
-        'estrellas': { colors: ['#ffd700','#ffffff','#ffec8b'], spread: 50, particleCount: 60, startVelocity: 18 },
-        'corazones': { colors: ['#ff0000','#ff1493','#ff69b4'], spread: 60, particleCount: 80, startVelocity: 25 },
-        'globos': { colors: ['#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff','#00ffff','#ff9900'], spread: 70, particleCount: 100, startVelocity: 28 }
+        'confeti': {
+            colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff9900', '#ff6600'],
+            shapes: ['circle', 'square'],
+            scalar: 1,
+            spread: 70,
+            particleCount: 100,
+            startVelocity: 30,
+            gravity: 0.8,
+            drift: 0
+        },
+        'navidad': {
+            colors: ['#ff0000', '#00cc00', '#ffffff', '#ffcc00', '#cc0000', '#006600'],
+            shapes: ['circle', 'square', 'star'],
+            scalar: 1.2,
+            spread: 60,
+            particleCount: 80,
+            startVelocity: 25,
+            gravity: 0.7,
+            drift: 0.1
+        },
+        'halloween': {
+            colors: ['#ff6600', '#000000', '#8b00ff', '#ff0000', '#ffaa00', '#330033'],
+            shapes: ['circle', 'square'],
+            scalar: 1.1,
+            spread: 65,
+            particleCount: 90,
+            startVelocity: 28,
+            gravity: 0.8,
+            drift: 0
+        },
+        'pascuas': {
+            colors: ['#ffccff', '#ffff99', '#99ccff', '#ff99cc', '#66ff66', '#ffcc99'],
+            shapes: ['circle', 'star'],
+            scalar: 1.3,
+            spread: 60,
+            particleCount: 80,
+            startVelocity: 25,
+            gravity: 0.6,
+            drift: 0.2
+        },
+        'diadelnino': {
+            colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff9900', '#ff66cc'],
+            shapes: ['circle', 'square', 'star'],
+            scalar: 1.1,
+            spread: 75,
+            particleCount: 120,
+            startVelocity: 30,
+            gravity: 0.7,
+            drift: 0.1
+        },
+        'banderasargentinas': {
+            colors: ['#75aadb', '#ffffff', '#75aadb', '#ffffff', '#75aadb'],
+            shapes: ['circle', 'square'],
+            scalar: 1.2,
+            spread: 50,
+            particleCount: 60,
+            startVelocity: 20,
+            gravity: 0.8,
+            drift: 0
+        },
+        'arcoiris': {
+            colors: ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#8f00ff'],
+            shapes: ['circle', 'square', 'star'],
+            scalar: 1.1,
+            spread: 80,
+            particleCount: 140,
+            startVelocity: 35,
+            gravity: 0.7,
+            drift: 0.1
+        },
+        'pochoclos': {
+            colors: ['#ffcc66', '#ffffff', '#ff99bb', '#ffaa88'],
+            shapes: ['circle'],
+            scalar: 0.8,
+            spread: 55,
+            particleCount: 70,
+            startVelocity: 22,
+            gravity: 0.9,
+            drift: 0.1
+        },
+        'fuegoartificial': {
+            colors: ['#ff0000', '#ff7f00', '#ffff00', '#ffffff', '#00ccff', '#ff00ff'],
+            shapes: ['circle', 'star'],
+            scalar: 1.4,
+            spread: 90,
+            particleCount: 150,
+            startVelocity: 40,
+            gravity: 0.5,
+            drift: 0.2
+        },
+        'estrellas': {
+            colors: ['#ffd700', '#ffffff', '#ffec8b', '#ffdd44'],
+            shapes: ['star'],
+            scalar: 0.9,
+            spread: 50,
+            particleCount: 60,
+            startVelocity: 18,
+            gravity: 0.6,
+            drift: 0.1
+        },
+        'corazones': {
+            colors: ['#ff0000', '#ff1493', '#ff69b4', '#cc0066'],
+            shapes: ['circle', 'square'],
+            scalar: 1.2,
+            spread: 60,
+            particleCount: 80,
+            startVelocity: 25,
+            gravity: 0.7,
+            drift: 0.1
+        },
+        'globos': {
+            colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff9900', '#ff66cc'],
+            shapes: ['circle'],
+            scalar: 2.2,
+            spread: 50,
+            particleCount: 40,
+            startVelocity: 15,
+            gravity: 0.2,
+            drift: 0.3
+        }
     };
 
     function mostrarPublicidad() {
@@ -2124,7 +2230,6 @@
         if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenUrl) {
             contenido.innerHTML = `<img src="${data.publicidad.imagenUrl}" alt="Publicidad" class="imagen-publicidad">`;
         } else {
-            // Texto con múltiples líneas
             const textos = data.publicidad.textos || [
                 { texto: data.publicidad.contenido, fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
@@ -2141,10 +2246,8 @@
         }
 
         overlay.classList.add('active');
-        // Efecto confeti según selección
         dispararConfeti(data.publicidad.efecto || 'confeti');
 
-        // Temporizador para cerrar
         if (window._publicidadTimer) clearTimeout(window._publicidadTimer);
         window._publicidadTimer = setTimeout(() => {
             cerrarPublicidad();
@@ -2163,15 +2266,51 @@
     function dispararConfeti(effectName) {
         if (typeof confetti !== 'function') return;
         const config = EFECTOS_CONFETI[effectName] || EFECTOS_CONFETI['confeti'];
+        const { colors, shapes, scalar, spread, particleCount, startVelocity, gravity, drift } = config;
+
         // Explosión inicial
         confetti({
-            particleCount: config.particleCount || 100,
-            spread: config.spread || 70,
+            particleCount: particleCount,
+            spread: spread,
             origin: { y: 0.6 },
-            startVelocity: config.startVelocity || 30,
-            colors: config.colors,
-            scalar: config.scalar || 1
+            startVelocity: startVelocity,
+            colors: colors,
+            shapes: shapes,
+            scalar: scalar,
+            gravity: gravity,
+            drift: drift
         });
+
+        // Segunda ráfaga para efectos más densos (fuego artificial, etc.)
+        if (['fuegoartificial', 'arcoiris', 'diadelnino'].includes(effectName)) {
+            setTimeout(() => {
+                confetti({
+                    particleCount: Math.floor(particleCount * 0.6),
+                    spread: spread * 0.8,
+                    origin: { y: 0.4, x: 0.3 },
+                    startVelocity: startVelocity * 0.8,
+                    colors: colors,
+                    shapes: shapes,
+                    scalar: scalar * 0.9,
+                    gravity: gravity * 0.8,
+                    drift: drift
+                });
+            }, 300);
+            setTimeout(() => {
+                confetti({
+                    particleCount: Math.floor(particleCount * 0.6),
+                    spread: spread * 0.8,
+                    origin: { y: 0.4, x: 0.7 },
+                    startVelocity: startVelocity * 0.8,
+                    colors: colors,
+                    shapes: shapes,
+                    scalar: scalar * 0.9,
+                    gravity: gravity * 0.8,
+                    drift: drift
+                });
+            }, 500);
+        }
+
         // Lluvia continua
         const duracion = (data.publicidad.duracion || 5) * 1000;
         const interval = setInterval(() => {
@@ -2180,14 +2319,17 @@
                 return;
             }
             confetti({
-                particleCount: Math.floor((config.particleCount || 100) * 0.3),
-                spread: (config.spread || 70) * 0.8,
+                particleCount: Math.floor(particleCount * 0.3),
+                spread: spread * 0.6,
                 origin: { y: 0, x: Math.random() },
-                startVelocity: (config.startVelocity || 30) * 0.6,
-                colors: config.colors,
-                scalar: config.scalar || 1
+                startVelocity: startVelocity * 0.5,
+                colors: colors,
+                shapes: shapes,
+                scalar: scalar * 0.8,
+                gravity: gravity * 0.9,
+                drift: drift * 0.5
             });
-        }, 400);
+        }, 500);
         setTimeout(() => clearInterval(interval), duracion);
     }
 
@@ -2565,7 +2707,6 @@
                 numInput.removeAttribute('min');
                 numInput.removeAttribute('step');
             }
-            // Cargar imágenes extra si se está editando
             const editId = document.getElementById('editId').value;
             if (editId) {
                 const local = data.locales.find(l => l.id === parseInt(editId));
@@ -2598,10 +2739,10 @@
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
-        const dayNames = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+        const dayNames = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
         const dayIndex = now.getDay();
         const dayKey = dayNames[dayIndex];
-        const dateStr = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
+        const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}`;
 
         let horarioHoy = '';
         let isOpen = false;
@@ -2656,7 +2797,7 @@
             const fromMinutes = hDesde * 60 + mDesde;
             const toMinutes = hHasta * 60 + mHasta;
             return nowMinutes >= fromMinutes && nowMinutes <= toMinutes;
-        } catch(e) {
+        } catch (e) {
             return false;
         }
     }
@@ -2669,20 +2810,17 @@
         const grid = document.getElementById('localsGrid');
         if (!filteredLocales) filteredLocales = data.locales;
 
-        // Determinar si hay filtro activo (búsqueda, rubro, ubicación, número)
         const searchNombre = document.getElementById('searchNombre').value.trim();
         const rubro = document.getElementById('searchRubro').value;
         const numero = document.getElementById('searchNumero').value;
         const ubicacion = document.getElementById('searchUbicacion').value;
         hayFiltroActivo = !!(searchNombre || rubro || numero || ubicacion);
 
-        // Si NO hay filtro, ocultar los que tengan mostrarPagina = false
         let localesMostrar = filteredLocales;
         if (!hayFiltroActivo) {
             localesMostrar = filteredLocales.filter(l => l.mostrarPagina !== false);
         }
 
-        // Separar Data Masters
         const dataMasters = localesMostrar.filter(l => l.nombre.trim().toLowerCase() === 'data masters');
         const otros = localesMostrar.filter(l => l.nombre.trim().toLowerCase() !== 'data masters');
 
@@ -2725,7 +2863,7 @@
             const logoUrl = local.logo || '';
             const fotoUrl = local.foto || DEFAULT_IMAGE_URL;
             const colorFondo = local.colorFondo || '#2563eb';
-            const waNum = local.whatsapp ? local.whatsapp.replace(/\D/g,'') : '';
+            const waNum = local.whatsapp ? local.whatsapp.replace(/\D/g, '') : '';
             const waLink = waNum ? `https://wa.me/${waNum}` : '#';
             const shareUrl = encodeURIComponent(window.location.href);
             const shareText = encodeURIComponent(`¡Mira ${local.nombre} en la Galería!`);
@@ -2754,7 +2892,6 @@
 
             const horarioIcon = `<span class="horario-text" onclick="event.stopPropagation(); mostrarHorariosCompletos(${local.id})"><i class="far fa-clock"></i> ${horarioHoy}</span>`;
 
-            // Carrusel de imágenes extra
             let galeriaHtml = '';
             const imagenesExtra = local.imagenesExtra || [];
             const todasImagenes = [local.foto, ...imagenesExtra].filter(url => url && url.trim() !== '');
@@ -2772,7 +2909,6 @@
                         `).join('')}
                     </div>
                 `;
-                // Iniciar carrusel después de renderizar
                 setTimeout(() => iniciarCarrusel(idCarrusel), 100);
             } else {
                 galeriaHtml = `
@@ -2833,12 +2969,9 @@
             index = (index + 1) % slides.length;
             slides[index].classList.add('active');
         }, 3000);
-        // Guardar referencia para limpiar si es necesario
         contenedor._carruselInterval = interval;
-        // Detener al hacer hover
         contenedor.addEventListener('mouseenter', () => clearInterval(interval));
         contenedor.addEventListener('mouseleave', () => {
-            // Reiniciar con nuevo interval
             clearInterval(interval);
             const nuevoInterval = setInterval(() => {
                 slides.forEach(s => s.classList.remove('active'));
@@ -2881,7 +3014,7 @@
 
         document.getElementById('horariosLocalNombre').textContent = local.nombre;
         const tbody = document.querySelector('#horariosTabla tbody');
-        const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
         const nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
         let html = '';
         dias.forEach((d, idx) => {
@@ -2933,7 +3066,6 @@
         document.getElementById('fLogoPosX').value = local.logoPosX || 50;
         document.getElementById('fLogoPosY').value = local.logoPosY || 50;
         document.getElementById('fMostrarPagina').checked = local.mostrarPagina !== false;
-        // imágenes extra
         if (local.imagenesExtra) {
             const inputs = document.querySelectorAll('.img-extra');
             inputs.forEach((inp, idx) => {
@@ -2942,7 +3074,7 @@
         }
         updateSliderLabels();
 
-        const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
         dias.forEach(d => {
             const dia = local.horarios[d] || { ini: '09:00', fin: '18:00', cerrado: false };
             document.getElementById(`h${capitalize(d)}Ini`).value = dia.ini || '09:00';
@@ -2977,14 +3109,12 @@
         const enAlquiler = document.getElementById('fAlquiler').checked;
         const inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
         const mostrarPagina = document.getElementById('fMostrarPagina').checked;
-        // Obtener imágenes extra
         const inputsExtra = document.querySelectorAll('.img-extra');
         const imagenesExtra = [];
         inputsExtra.forEach(inp => {
             const val = inp.value.trim();
             if (val) imagenesExtra.push(val);
         });
-        // Limitar a 5
         if (imagenesExtra.length > 5) imagenesExtra.length = 5;
 
         if (!nombre || !rubro || !numero) {
@@ -2993,7 +3123,7 @@
         }
 
         const horarios = {};
-        const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
         dias.forEach(d => {
             const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
             const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
@@ -3201,7 +3331,7 @@
     function updateNumeroSelect() {
         const select = document.getElementById('searchNumero');
         const current = select.value;
-        const numeros = [...new Set(data.locales.map(l => l.numeroLocal))].sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+        const numeros = [...new Set(data.locales.map(l => l.numeroLocal))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
         select.innerHTML = `<option value="">Todos los números</option>` + numeros.map(n => `<option value="${n}">${n}</option>`).join('');
         if (current) select.value = current;
     }
@@ -3397,8 +3527,8 @@
     // ============================================================
     function updateClock() {
         const now = new Date();
-        const hours = String(now.getHours()).padStart(2,'0');
-        const minutes = String(now.getMinutes()).padStart(2,'0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
         document.getElementById('clockText').textContent = `${hours}:${minutes}`;
     }
     setInterval(updateClock, 1000);
@@ -3613,7 +3743,6 @@
         const duracion = parseInt(document.getElementById('pubDuracion').value) || 5;
         const efecto = document.getElementById('pubEfecto').value;
 
-        // Recolectar textos
         const textos = [];
         document.querySelectorAll('.pub-texto').forEach(inp => {
             const idx = parseInt(inp.dataset.idx);
@@ -3705,7 +3834,7 @@
         } else {
             let html = '';
             localesConWhatsApp.forEach(l => {
-                const numero = l.whatsapp.replace(/\D/g,'');
+                const numero = l.whatsapp.replace(/\D/g, '');
                 html += `
                     <div class="comunicados-item">
                         <input type="checkbox" id="wa_${l.id}" value="${numero}" data-id="${l.id}">
