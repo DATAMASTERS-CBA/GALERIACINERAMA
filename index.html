@@ -1522,15 +1522,9 @@
                 <label>Feriados (fecha:horario; ej: 25/12:10:00-14:00, 01/01:cerrado)</label>
                 <input type="text" id="hFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
 
-                <!-- NUEVO: Imágenes extra (hasta 5) -->
-                <label>Imágenes adicionales (URLs, hasta 5)</label>
-                <div id="imagenesExtraContainer">
-                    <input type="url" class="img-extra" placeholder="URL imagen extra 1" style="margin-bottom:6px;">
-                    <input type="url" class="img-extra" placeholder="URL imagen extra 2" style="margin-bottom:6px;">
-                    <input type="url" class="img-extra" placeholder="URL imagen extra 3" style="margin-bottom:6px;">
-                    <input type="url" class="img-extra" placeholder="URL imagen extra 4" style="margin-bottom:6px;">
-                    <input type="url" class="img-extra" placeholder="URL imagen extra 5" style="margin-bottom:6px;">
-                </div>
+                <!-- NUEVO: Imágenes extra (dinámicas) -->
+                <label>Imágenes adicionales (URLs)</label>
+                <div id="imagenesExtraContainer"></div>
 
                 <!-- NUEVO: Mostrar en página principal -->
                 <label style="display:flex; align-items:center; gap:10px; margin-top:12px;">
@@ -1965,7 +1959,100 @@
         };
     }
 
-    // Cargar datos desde Firestore
+    // ============================================================
+    //  NUEVAS FUNCIONES PARA IMÁGENES EXTRA DINÁMICAS
+    // ============================================================
+    function renderizarImagenesExtra(imagenes = []) {
+        const container = document.getElementById('imagenesExtraContainer');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (!Array.isArray(imagenes) || imagenes.length === 0) {
+            imagenes = [''];
+        }
+
+        imagenes.forEach((url, index) => {
+            const div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.gap = '8px';
+            div.style.marginBottom = '6px';
+            div.style.alignItems = 'center';
+
+            const input = document.createElement('input');
+            input.type = 'url';
+            input.className = 'img-extra-input';
+            input.placeholder = `URL imagen extra ${index + 1}`;
+            input.value = url;
+            input.style.flex = '1';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.style.cssText = 'background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold;';
+            deleteBtn.addEventListener('click', function () {
+                if (container.querySelectorAll('.img-extra-input').length > 1) {
+                    div.remove();
+                } else {
+                    showToast('Debe quedar al menos un campo');
+                }
+            });
+
+            div.appendChild(input);
+            div.appendChild(deleteBtn);
+            container.appendChild(div);
+        });
+
+        // Botón para agregar nuevo campo
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.innerHTML = '+ Agregar imagen';
+        addBtn.style.cssText = 'padding:6px 16px; border-radius:30px; border:1px solid var(--border); background:var(--primary-light); color:var(--primary); cursor:pointer; font-weight:600; margin-top:4px;';
+        addBtn.addEventListener('click', function () {
+            const div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.gap = '8px';
+            div.style.marginBottom = '6px';
+            div.style.alignItems = 'center';
+
+            const input = document.createElement('input');
+            input.type = 'url';
+            input.className = 'img-extra-input';
+            input.placeholder = `URL imagen extra ${container.querySelectorAll('.img-extra-input').length + 1}`;
+            input.value = '';
+            input.style.flex = '1';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.style.cssText = 'background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold;';
+            deleteBtn.addEventListener('click', function () {
+                if (container.querySelectorAll('.img-extra-input').length > 1) {
+                    div.remove();
+                } else {
+                    showToast('Debe quedar al menos un campo');
+                }
+            });
+
+            div.appendChild(input);
+            div.appendChild(deleteBtn);
+            container.insertBefore(div, addBtn);
+        });
+        container.appendChild(addBtn);
+    }
+
+    function obtenerImagenesExtra() {
+        const inputs = document.querySelectorAll('#imagenesExtraContainer .img-extra-input');
+        const urls = [];
+        inputs.forEach(inp => {
+            const val = inp.value.trim();
+            if (val) urls.push(val);
+        });
+        return urls;
+    }
+
+    // ============================================================
+    //  Cargar datos desde Firestore
+    // ============================================================
     async function loadData() {
         try {
             const doc = await docRef.get();
@@ -2850,24 +2937,9 @@
                 numInput.removeAttribute('step');
             }
             const editId = document.getElementById('editId').value;
-            if (editId) {
-                const local = data.locales.find(l => l.id === parseInt(editId));
-                if (local) {
-                    const inputs = document.querySelectorAll('.img-extra');
-                    inputs.forEach((inp, idx) => {
-                        inp.value = local.imagenesExtra[idx] || '';
-                    });
-                    const intervalo = document.getElementById('intervaloCarrusel');
-                    const animacion = document.getElementById('animacionCarrusel');
-                    if (intervalo) intervalo.value = local.intervaloCarrusel || 3;
-                    if (animacion) animacion.value = local.animacionCarrusel || 'fade';
-                }
-            } else {
-                document.querySelectorAll('.img-extra').forEach(inp => inp.value = '');
-                const intervalo = document.getElementById('intervaloCarrusel');
-                const animacion = document.getElementById('animacionCarrusel');
-                if (intervalo) intervalo.value = 3;
-                if (animacion) animacion.value = 'fade';
+            if (!editId) {
+                // Nuevo local: un campo vacío
+                renderizarImagenesExtra([]);
             }
             inyectarControlesCarrusel();
         }
@@ -3154,7 +3226,6 @@
         const slides = contenedor.querySelectorAll('.slide');
         if (slides.length <= 1) return;
         const total = slides.length;
-        // El overlay es estático, no necesita actualización
 
         if (contenedor._carruselInterval) {
             clearInterval(contenedor._carruselInterval);
@@ -3267,12 +3338,6 @@
         document.getElementById('fLogoPosX').value = local.logoPosX || 50;
         document.getElementById('fLogoPosY').value = local.logoPosY || 50;
         document.getElementById('fMostrarPagina').checked = local.mostrarPagina !== false;
-        if (local.imagenesExtra) {
-            const inputs = document.querySelectorAll('.img-extra');
-            inputs.forEach((inp, idx) => {
-                inp.value = local.imagenesExtra[idx] || '';
-            });
-        }
         const intervalo = document.getElementById('intervaloCarrusel');
         const animacion = document.getElementById('animacionCarrusel');
         if (intervalo) intervalo.value = local.intervaloCarrusel || 3;
@@ -3295,6 +3360,8 @@
         updateRubroSelectInForm();
         document.getElementById('fRubro').value = local.rubro;
         openModal('addLocalModal');
+        // Renderizar imágenes extra con los datos del local
+        renderizarImagenesExtra(local.imagenesExtra || []);
     }
 
     async function deleteLocal(id) {
@@ -3315,13 +3382,7 @@
         const enAlquiler = document.getElementById('fAlquiler').checked;
         const inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
         const mostrarPagina = document.getElementById('fMostrarPagina').checked;
-        const inputsExtra = document.querySelectorAll('.img-extra');
-        const imagenesExtra = [];
-        inputsExtra.forEach(inp => {
-            const val = inp.value.trim();
-            if (val) imagenesExtra.push(val);
-        });
-        if (imagenesExtra.length > 5) imagenesExtra.length = 5;
+        const imagenesExtra = obtenerImagenesExtra();
 
         const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
         const animacion = document.getElementById('animacionCarrusel').value || 'fade';
