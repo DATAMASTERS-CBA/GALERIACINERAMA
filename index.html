@@ -1153,7 +1153,6 @@
         }
         @media (max-width: 768px) {
             #publicidadOverlay .texto-neon {
-                /* Quitamos !important para que el inline pueda prevalecer */
                 font-size: inherit;
             }
         }
@@ -1222,6 +1221,104 @@
             font-size: 1rem;
             pointer-events: none;
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* ===== 10 ANIMACIONES PARA CARRUSEL ===== */
+        .carrusel-imagenes.carousel-fade .slide {
+            transition: opacity 0.8s ease;
+        }
+        .carrusel-imagenes.carousel-slide .slide {
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-slide .slide.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .carrusel-imagenes.carousel-slide .slide.prev {
+            transform: translateX(-100%);
+            opacity: 1;
+        }
+
+        .carrusel-imagenes.carousel-zoom .slide {
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            transform: scale(0.5);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-zoom .slide.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .carrusel-imagenes.carousel-flip .slide {
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            transform: rotateY(90deg);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-flip .slide.active {
+            transform: rotateY(0deg);
+            opacity: 1;
+        }
+
+        .carrusel-imagenes.carousel-rotate .slide {
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            transform: rotate(15deg) scale(0.8);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-rotate .slide.active {
+            transform: rotate(0deg) scale(1);
+            opacity: 1;
+        }
+
+        .carrusel-imagenes.carousel-bounce .slide {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.6s ease;
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-bounce .slide.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .carrusel-imagenes.carousel-blur .slide {
+            transition: filter 0.8s ease, opacity 0.8s ease;
+            filter: blur(20px);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-blur .slide.active {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        .carrusel-imagenes.carousel-scale .slide {
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            transform: scale(0.8) translateY(30px);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-scale .slide.active {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .carrusel-imagenes.carousel-slide-fade .slide {
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            transform: translateX(60px);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-slide-fade .slide.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .carrusel-imagenes.carousel-wipe .slide {
+            transition: clip-path 0.8s ease, opacity 0.8s ease;
+            clip-path: inset(0 100% 0 0);
+            opacity: 0;
+        }
+        .carrusel-imagenes.carousel-wipe .slide.active {
+            clip-path: inset(0 0 0 0);
+            opacity: 1;
         }
     </style>
 </head>
@@ -1627,6 +1724,20 @@
 
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
+    // Lista de animaciones para carrusel
+    const ANIMACIONES_CARRUSEL = [
+        { value: 'fade', label: 'Desvanecido' },
+        { value: 'slide', label: 'Deslizar' },
+        { value: 'zoom', label: 'Zoom' },
+        { value: 'flip', label: 'Giro 3D' },
+        { value: 'rotate', label: 'Rotación' },
+        { value: 'bounce', label: 'Rebote' },
+        { value: 'blur', label: 'Desenfoque' },
+        { value: 'scale', label: 'Escala' },
+        { value: 'slide-fade', label: 'Deslizar y desvanecer' },
+        { value: 'wipe', label: 'Cortina' }
+    ];
+
     function getDefaultData() {
         return {
             rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
@@ -1663,7 +1774,9 @@
                     },
                     visitas: 0,
                     mostrarPagina: true,
-                    imagenesExtra: []
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
                 },
                 {
                     id: 2,
@@ -1697,7 +1810,9 @@
                     },
                     visitas: 0,
                     mostrarPagina: true,
-                    imagenesExtra: []
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
                 },
                 {
                     id: 3,
@@ -1731,7 +1846,9 @@
                     },
                     visitas: 0,
                     mostrarPagina: true,
-                    imagenesExtra: []
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
                 },
                 {
                     id: 4,
@@ -1765,7 +1882,9 @@
                     },
                     visitas: 0,
                     mostrarPagina: true,
-                    imagenesExtra: []
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
                 },
                 {
                     id: 5,
@@ -1799,7 +1918,9 @@
                     },
                     visitas: 0,
                     mostrarPagina: true,
-                    imagenesExtra: []
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
                 }
             ],
             banners: [
@@ -1852,6 +1973,8 @@
                     if (l.visitas === undefined) l.visitas = 0;
                     if (l.mostrarPagina === undefined) l.mostrarPagina = true;
                     if (!l.imagenesExtra) l.imagenesExtra = [];
+                    if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                    if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 if (!data.publicidad) data.publicidad = defaultData.publicidad;
@@ -1913,6 +2036,8 @@
                         if (l.visitas === undefined) l.visitas = 0;
                         if (l.mostrarPagina === undefined) l.mostrarPagina = true;
                         if (!l.imagenesExtra) l.imagenesExtra = [];
+                        if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                        if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                     });
                     if (data.visitasTotales === undefined) data.visitasTotales = 0;
                     if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
@@ -2437,6 +2562,8 @@
             if (l.visitas === undefined) l.visitas = 0;
             if (l.mostrarPagina === undefined) l.mostrarPagina = true;
             if (!l.imagenesExtra) l.imagenesExtra = [];
+            if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+            if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
         });
         await saveData();
         renderAll();
@@ -2517,6 +2644,8 @@
                     if (l.visitas === undefined) l.visitas = 0;
                     if (l.mostrarPagina === undefined) l.mostrarPagina = true;
                     if (!l.imagenesExtra) l.imagenesExtra = [];
+                    if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                    if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
@@ -2712,15 +2841,26 @@
             const editId = document.getElementById('editId').value;
             if (editId) {
                 const local = data.locales.find(l => l.id === parseInt(editId));
-                if (local && local.imagenesExtra) {
+                if (local) {
                     const inputs = document.querySelectorAll('.img-extra');
                     inputs.forEach((inp, idx) => {
                         inp.value = local.imagenesExtra[idx] || '';
                     });
+                    // Cargar configuración de carrusel
+                    const intervalo = document.getElementById('intervaloCarrusel');
+                    const animacion = document.getElementById('animacionCarrusel');
+                    if (intervalo) intervalo.value = local.intervaloCarrusel || 3;
+                    if (animacion) animacion.value = local.animacionCarrusel || 'fade';
                 }
             } else {
                 document.querySelectorAll('.img-extra').forEach(inp => inp.value = '');
+                const intervalo = document.getElementById('intervaloCarrusel');
+                const animacion = document.getElementById('animacionCarrusel');
+                if (intervalo) intervalo.value = 3;
+                if (animacion) animacion.value = 'fade';
             }
+            // Inyectar controles de carrusel si no existen
+            inyectarControlesCarrusel();
         }
         if (id === 'adminMainModal') {
             actualizarInfoBackup();
@@ -2734,6 +2874,43 @@
 
     function closeModal(id) {
         document.getElementById(id).classList.remove('active');
+    }
+
+    // ============================================================
+    //  INYECTAR CONTROLES DE CARRUSEL EN EL FORMULARIO
+    // ============================================================
+    function inyectarControlesCarrusel() {
+        const container = document.getElementById('imagenesExtraContainer');
+        if (!container) return;
+        // Verificar si ya existen los controles
+        if (document.getElementById('controlesCarrusel')) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.id = 'controlesCarrusel';
+        wrapper.style.marginTop = '12px';
+        wrapper.style.padding = '10px';
+        wrapper.style.background = 'var(--input-bg)';
+        wrapper.style.borderRadius = 'var(--radius)';
+        wrapper.style.border = '1px solid var(--border)';
+        wrapper.innerHTML = `
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Configuración del carrusel de imágenes</label>
+            <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+                <div style="flex:1; min-width:120px;">
+                    <label style="font-size:0.85rem;">Intervalo (seg):</label>
+                    <select id="intervaloCarrusel" style="width:100%; padding:6px 10px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                        ${Array.from({length:9}, (_,i) => i+2).map(v => `<option value="${v}">${v} seg</option>`).join('')}
+                    </select>
+                </div>
+                <div style="flex:2; min-width:150px;">
+                    <label style="font-size:0.85rem;">Animación:</label>
+                    <select id="animacionCarrusel" style="width:100%; padding:6px 10px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                        ${ANIMACIONES_CARRUSEL.map(a => `<option value="${a.value}">${a.label}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+        `;
+        // Insertar después del container
+        container.parentNode.insertBefore(wrapper, container.nextSibling);
     }
 
     // ============================================================
@@ -2899,8 +3076,10 @@
             const todasImagenes = [local.foto, ...imagenesExtra].filter(url => url && url.trim() !== '');
             if (todasImagenes.length > 1) {
                 const idCarrusel = `carrusel-${local.id}`;
+                const animacion = local.animacionCarrusel || 'fade';
+                const intervalo = local.intervaloCarrusel || 3;
                 galeriaHtml = `
-                    <div class="carrusel-imagenes" id="${idCarrusel}">
+                    <div class="carrusel-imagenes carousel-${animacion}" id="${idCarrusel}" data-intervalo="${intervalo}">
                         ${todasImagenes.map((url, idx) => `
                             <div class="slide ${idx === 0 ? 'active' : ''}">
                                 <img src="${url}" alt="Imagen ${idx+1}" onclick="event.stopPropagation(); openImageZoom('${url}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
@@ -2911,7 +3090,10 @@
                         `).join('')}
                     </div>
                 `;
-                setTimeout(() => iniciarCarrusel(idCarrusel), 100);
+                // Iniciar carrusel con los parámetros del local
+                setTimeout(() => {
+                    iniciarCarrusel(idCarrusel, intervalo, animacion);
+                }, 100);
             } else {
                 galeriaHtml = `
                     <div class="card-img-wrap">
@@ -2958,20 +3140,31 @@
     }
 
     // ============================================================
-    //  CARRUSEL DE IMÁGENES EXTRA
+    //  CARRUSEL DE IMÁGENES EXTRA (con intervalo y animación)
     // ============================================================
-    function iniciarCarrusel(id) {
+    function iniciarCarrusel(id, intervalo, animacion) {
         const contenedor = document.getElementById(id);
         if (!contenedor) return;
         const slides = contenedor.querySelectorAll('.slide');
         if (slides.length <= 1) return;
+
+        // Limpiar intervalos previos
+        if (contenedor._carruselInterval) {
+            clearInterval(contenedor._carruselInterval);
+        }
+
+        // Aplicar animación (clase CSS)
+        contenedor.className = `carrusel-imagenes carousel-${animacion || 'fade'}`;
+
         let index = 0;
         const interval = setInterval(() => {
             slides.forEach(s => s.classList.remove('active'));
             index = (index + 1) % slides.length;
             slides[index].classList.add('active');
-        }, 3000);
+        }, (intervalo || 3) * 1000);
+
         contenedor._carruselInterval = interval;
+
         contenedor.addEventListener('mouseenter', () => clearInterval(interval));
         contenedor.addEventListener('mouseleave', () => {
             clearInterval(interval);
@@ -2979,7 +3172,7 @@
                 slides.forEach(s => s.classList.remove('active'));
                 index = (index + 1) % slides.length;
                 slides[index].classList.add('active');
-            }, 3000);
+            }, (intervalo || 3) * 1000);
             contenedor._carruselInterval = nuevoInterval;
         });
     }
@@ -3074,6 +3267,12 @@
                 inp.value = local.imagenesExtra[idx] || '';
             });
         }
+        // Cargar controles de carrusel (inyectados en openModal)
+        const intervalo = document.getElementById('intervaloCarrusel');
+        const animacion = document.getElementById('animacionCarrusel');
+        if (intervalo) intervalo.value = local.intervaloCarrusel || 3;
+        if (animacion) animacion.value = local.animacionCarrusel || 'fade';
+
         updateSliderLabels();
 
         const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
@@ -3118,6 +3317,10 @@
             if (val) imagenesExtra.push(val);
         });
         if (imagenesExtra.length > 5) imagenesExtra.length = 5;
+
+        // Obtener configuración de carrusel
+        const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
+        const animacion = document.getElementById('animacionCarrusel').value || 'fade';
 
         if (!nombre || !rubro || !numero) {
             showToast('Complete nombre, rubro y número.');
@@ -3186,7 +3389,9 @@
                 horarios,
                 visitas: 0,
                 mostrarPagina: mostrarPagina,
-                imagenesExtra: imagenesExtra
+                imagenesExtra: imagenesExtra,
+                intervaloCarrusel: intervalo,
+                animacionCarrusel: animacion
             };
 
             if (id) {
