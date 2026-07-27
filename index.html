@@ -1960,35 +1960,85 @@
     }
 
     // ============================================================
-    //  NUEVAS FUNCIONES PARA IMÁGENES EXTRA DINÁMICAS
+    //  FUNCIONES PARA IMÁGENES EXTRA DINÁMICAS CON AJUSTE DE FIT
     // ============================================================
+    function normalizarImagenesExtra(imagenes) {
+        // Convierte un array de strings a objetos {url, fit, posX, posY}
+        if (!Array.isArray(imagenes)) return [];
+        return imagenes.map(item => {
+            if (typeof item === 'string') {
+                return { url: item, fit: 'cover', posX: 50, posY: 50 };
+            }
+            // Si ya es objeto, asegurar propiedades
+            return {
+                url: item.url || '',
+                fit: item.fit || 'cover',
+                posX: item.posX !== undefined ? item.posX : 50,
+                posY: item.posY !== undefined ? item.posY : 50
+            };
+        }).filter(item => item.url && item.url.trim() !== '');
+    }
+
     function renderizarImagenesExtra(imagenes = []) {
         const container = document.getElementById('imagenesExtraContainer');
         if (!container) return;
         container.innerHTML = '';
 
-        if (!Array.isArray(imagenes) || imagenes.length === 0) {
-            imagenes = [''];
+        const items = normalizarImagenesExtra(imagenes);
+        if (items.length === 0) {
+            // Al menos un campo vacío
+            items.push({ url: '', fit: 'cover', posX: 50, posY: 50 });
         }
 
-        imagenes.forEach((url, index) => {
+        items.forEach((item, index) => {
             const div = document.createElement('div');
             div.style.display = 'flex';
             div.style.gap = '8px';
             div.style.marginBottom = '6px';
             div.style.alignItems = 'center';
+            div.style.flexWrap = 'wrap';
 
             const input = document.createElement('input');
             input.type = 'url';
             input.className = 'img-extra-input';
             input.placeholder = `URL imagen extra ${index + 1}`;
-            input.value = url;
-            input.style.flex = '1';
+            input.value = item.url || '';
+            input.style.flex = '2';
+            input.style.minWidth = '150px';
+
+            const selectFit = document.createElement('select');
+            selectFit.className = 'img-extra-fit';
+            selectFit.style.padding = '4px 8px';
+            selectFit.style.borderRadius = '20px';
+            selectFit.style.border = '1px solid var(--border)';
+            selectFit.style.background = 'var(--bg-card)';
+            selectFit.style.color = 'var(--text-color)';
+            selectFit.style.flex = '1';
+            selectFit.style.minWidth = '100px';
+            // Opciones de fit
+            const fitOptions = [
+                { value: 'cover', label: 'Cubrir' },
+                { value: 'contain', label: 'Contener' },
+                { value: 'none', label: 'Normal' },
+                { value: 'fill', label: 'Rellenar' },
+                { value: 'scale-down', label: 'Reducir' }
+            ];
+            fitOptions.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                if (opt.value === (item.fit || 'cover')) option.selected = true;
+                selectFit.appendChild(option);
+            });
+
+            // Posiciones (simplificadas, podrían añadirse sliders pero no se piden explícitamente)
+            // Las dejamos por defecto, pero podrían agregarse si se quiere más control.
+            // Por ahora no incluimos sliders para no sobrecargar.
 
             const deleteBtn = document.createElement('button');
             deleteBtn.type = 'button';
             deleteBtn.innerHTML = '×';
-            deleteBtn.style.cssText = 'background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold;';
+            deleteBtn.style.cssText = 'background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold; flex-shrink:0;';
             deleteBtn.addEventListener('click', function () {
                 if (container.querySelectorAll('.img-extra-input').length > 1) {
                     div.remove();
@@ -1998,6 +2048,7 @@
             });
 
             div.appendChild(input);
+            div.appendChild(selectFit);
             div.appendChild(deleteBtn);
             container.appendChild(div);
         });
@@ -2013,18 +2064,44 @@
             div.style.gap = '8px';
             div.style.marginBottom = '6px';
             div.style.alignItems = 'center';
+            div.style.flexWrap = 'wrap';
 
             const input = document.createElement('input');
             input.type = 'url';
             input.className = 'img-extra-input';
             input.placeholder = `URL imagen extra ${container.querySelectorAll('.img-extra-input').length + 1}`;
             input.value = '';
-            input.style.flex = '1';
+            input.style.flex = '2';
+            input.style.minWidth = '150px';
+
+            const selectFit = document.createElement('select');
+            selectFit.className = 'img-extra-fit';
+            selectFit.style.padding = '4px 8px';
+            selectFit.style.borderRadius = '20px';
+            selectFit.style.border = '1px solid var(--border)';
+            selectFit.style.background = 'var(--bg-card)';
+            selectFit.style.color = 'var(--text-color)';
+            selectFit.style.flex = '1';
+            selectFit.style.minWidth = '100px';
+            const fitOptions = [
+                { value: 'cover', label: 'Cubrir' },
+                { value: 'contain', label: 'Contener' },
+                { value: 'none', label: 'Normal' },
+                { value: 'fill', label: 'Rellenar' },
+                { value: 'scale-down', label: 'Reducir' }
+            ];
+            fitOptions.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                if (opt.value === 'cover') option.selected = true;
+                selectFit.appendChild(option);
+            });
 
             const deleteBtn = document.createElement('button');
             deleteBtn.type = 'button';
             deleteBtn.innerHTML = '×';
-            deleteBtn.style.cssText = 'background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold;';
+            deleteBtn.style.cssText = 'background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold; flex-shrink:0;';
             deleteBtn.addEventListener('click', function () {
                 if (container.querySelectorAll('.img-extra-input').length > 1) {
                     div.remove();
@@ -2034,6 +2111,7 @@
             });
 
             div.appendChild(input);
+            div.appendChild(selectFit);
             div.appendChild(deleteBtn);
             container.insertBefore(div, addBtn);
         });
@@ -2042,12 +2120,16 @@
 
     function obtenerImagenesExtra() {
         const inputs = document.querySelectorAll('#imagenesExtraContainer .img-extra-input');
-        const urls = [];
-        inputs.forEach(inp => {
-            const val = inp.value.trim();
-            if (val) urls.push(val);
+        const fits = document.querySelectorAll('#imagenesExtraContainer .img-extra-fit');
+        const items = [];
+        inputs.forEach((inp, idx) => {
+            const url = inp.value.trim();
+            if (url) {
+                const fit = fits[idx] ? fits[idx].value : 'cover';
+                items.push({ url, fit, posX: 50, posY: 50 });
+            }
         });
-        return urls;
+        return items;
     }
 
     // ============================================================
@@ -2070,7 +2152,8 @@
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
                     if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                    if (!l.imagenesExtra) l.imagenesExtra = [];
+                    // Normalizar imagenesExtra
+                    l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
                     if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
                     if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                 });
@@ -2133,7 +2216,7 @@
                         l.numeroLocal = String(l.numeroLocal);
                         if (l.visitas === undefined) l.visitas = 0;
                         if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                        if (!l.imagenesExtra) l.imagenesExtra = [];
+                        l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
                         if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
                         if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                     });
@@ -2659,7 +2742,7 @@
             l.numeroLocal = String(l.numeroLocal);
             if (l.visitas === undefined) l.visitas = 0;
             if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-            if (!l.imagenesExtra) l.imagenesExtra = [];
+            l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
             if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
             if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
         });
@@ -2741,7 +2824,7 @@
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
                     if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                    if (!l.imagenesExtra) l.imagenesExtra = [];
+                    l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
                     if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
                     if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                 });
@@ -3151,16 +3234,24 @@
 
             let galeriaHtml = '';
             const imagenesExtra = local.imagenesExtra || [];
-            const todasImagenes = [local.foto, ...imagenesExtra].filter(url => url && url.trim() !== '');
+            // Incluir la foto principal como primera imagen (si existe)
+            const todasImagenes = [];
+            if (local.foto) todasImagenes.push({ url: local.foto, fit: local.fotoFit || 'cover', posX: local.fotoPosX || 50, posY: local.fotoPosY || 50 });
+            imagenesExtra.forEach(item => {
+                if (item.url && item.url.trim() !== '') {
+                    todasImagenes.push(item);
+                }
+            });
+
             if (todasImagenes.length > 1) {
                 const idCarrusel = `carrusel-${local.id}`;
                 const animacion = local.animacionCarrusel || 'fade';
                 const intervalo = local.intervaloCarrusel || 3;
                 galeriaHtml = `
                     <div class="carrusel-imagenes carousel-${animacion}" id="${idCarrusel}" data-intervalo="${intervalo}">
-                        ${todasImagenes.map((url, idx) => `
+                        ${todasImagenes.map((img, idx) => `
                             <div class="slide ${idx === 0 ? 'active' : ''}">
-                                <img src="${url}" alt="Imagen ${idx+1}" onclick="event.stopPropagation(); openImageZoom('${url}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
+                                <img src="${img.url}" alt="Imagen ${idx+1}" style="object-fit:${img.fit || 'cover'}; object-position:${img.posX || 50}% ${img.posY || 50}%;" onclick="event.stopPropagation(); openImageZoom('${img.url}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
                             </div>
                         `).join('')}
                         <div class="overlay-numero" id="overlay-${idCarrusel}">
@@ -3173,9 +3264,11 @@
                     iniciarCarrusel(idCarrusel, intervalo, animacion);
                 }, 100);
             } else {
+                // Una sola imagen: mostrar en card-img-wrap
+                const imgData = todasImagenes[0] || { url: fotoUrl, fit: 'cover', posX: 50, posY: 50 };
                 galeriaHtml = `
                     <div class="card-img-wrap">
-                        <img src="${fotoUrl}" alt="${local.nombre}" style="${fotoStyle}" onclick="event.stopPropagation(); openImageZoom('${fotoUrl}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
+                        <img src="${imgData.url}" alt="${local.nombre}" style="object-fit:${imgData.fit}; object-position:${imgData.posX}% ${imgData.posY}%;" onclick="event.stopPropagation(); openImageZoom('${imgData.url}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
                         <div class="card-img-overlay">
                             ${numeroHtml}
                             ${ubicacionHtml}
@@ -3183,6 +3276,12 @@
                     </div>
                 `;
             }
+
+            // Miniaturas de imágenes extra (excluyendo la foto principal)
+            const extraMiniaturas = imagenesExtra.filter(item => item.url && item.url.trim() !== '');
+            const miniaturasHtml = extraMiniaturas.length > 0 ? 
+                `<div class="galeria-extra">${extraMiniaturas.map(item => `<img src="${item.url}" onclick="event.stopPropagation(); openImageZoom('${item.url}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">`).join('')}</div>` 
+                : '';
 
             return `
                 <div class="card" data-id="${local.id}">
@@ -3205,7 +3304,7 @@
                             ${horarioIcon}
                             <span class="status-badge ${isOpen ? 'open' : 'closed'}">${isOpen ? '🟢 Abierto' : '🔴 Cerrado'}</span>
                         </div>
-                        ${imagenesExtra.length > 0 ? `<div class="galeria-extra">${imagenesExtra.map(url => `<img src="${url}" onclick="event.stopPropagation(); openImageZoom('${url}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">`).join('')}</div>` : ''}
+                        ${miniaturasHtml}
                         <div class="card-actions">
                             ${showWhatsapp ? `<a href="${waLink}" target="_blank" class="whatsapp" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> WhatsApp</a>` : ''}
                             <button class="share" onclick="event.stopPropagation(); shareLocal('${local.nombre}','${shareWhatsapp}','${shareFacebook}','${shareTwitter}')"><i class="fas fa-share-alt"></i> Compartir</button>
