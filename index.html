@@ -1123,6 +1123,10 @@
             letter-spacing: 2px;
             line-height: 1.3;
             word-break: break-word;
+            display: inline-block;
+            margin: 4px;
+            padding: 4px 12px;
+            border-radius: 8px;
         }
         #publicidadOverlay .imagen-publicidad {
             max-width: 80%;
@@ -1149,7 +1153,8 @@
         }
         @media (max-width: 768px) {
             #publicidadOverlay .texto-neon {
-                font-size: 2.5rem !important;
+                /* Quitamos !important para que el inline pueda prevalecer */
+                font-size: inherit;
             }
         }
 
@@ -2239,7 +2244,7 @@
             textos.forEach((t, idx) => {
                 if (t.texto && t.texto.trim() !== '') {
                     const fondo = t.fondo && t.fondo !== 'transparente' ? t.fondo : 'transparent';
-                    html += `<div class="texto-neon" style="font-family:${t.fuente || 'Arial'}; font-size:${t.tamaño || '36'}px; color:${t.color || '#ffffff'}; background:${fondo}; padding:4px 12px; border-radius:8px; display:inline-block; margin:4px;">${t.texto}</div>`;
+                    html += `<div class="texto-neon" style="font-family:${t.fuente || 'Arial'} !important; font-size:${t.tamaño || '36'}px !important; color:${t.color || '#ffffff'} !important; background:${fondo}; padding:4px 12px; border-radius:8px; display:inline-block; margin:4px;">${t.texto}</div>`;
                 }
             });
             contenido.innerHTML = html || '<div class="texto-neon">¡Sin texto!</div>';
@@ -2268,7 +2273,6 @@
         const config = EFECTOS_CONFETI[effectName] || EFECTOS_CONFETI['confeti'];
         const { colors, shapes, scalar, spread, particleCount, startVelocity, gravity, drift } = config;
 
-        // Explosión inicial
         confetti({
             particleCount: particleCount,
             spread: spread,
@@ -2281,7 +2285,6 @@
             drift: drift
         });
 
-        // Segunda ráfaga para efectos más densos (fuego artificial, etc.)
         if (['fuegoartificial', 'arcoiris', 'diadelnino'].includes(effectName)) {
             setTimeout(() => {
                 confetti({
@@ -2311,7 +2314,6 @@
             }, 500);
         }
 
-        // Lluvia continua
         const duracion = (data.publicidad.duracion || 5) * 1000;
         const interval = setInterval(() => {
             if (!document.getElementById('publicidadOverlay') || !document.getElementById('publicidadOverlay').classList.contains('active')) {
