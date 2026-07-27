@@ -12,7 +12,7 @@
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        /* ===== ESTILOS BASE (sin cambios) ===== */
+        /* ===== ESTILOS BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -1207,6 +1207,7 @@
             object-fit: cover;
             cursor: pointer;
         }
+        /* Overlay fijo para número y ubicación */
         .carrusel-imagenes .overlay-numero {
             position: absolute;
             bottom: 0;
@@ -1221,6 +1222,17 @@
             font-size: 1rem;
             pointer-events: none;
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+        .carrusel-imagenes .overlay-numero .numero {
+            font-weight: 900;
+            background: rgba(255,255,255,0.15);
+            padding: 0 8px;
+            border-radius: 4px;
+            border-left: 3px solid #fff;
+        }
+        .carrusel-imagenes .overlay-numero .ubicacion {
+            font-weight: 700;
         }
 
         /* ===== 10 ANIMACIONES PARA CARRUSEL ===== */
@@ -1724,7 +1736,6 @@
 
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
-    // Lista de animaciones para carrusel
     const ANIMACIONES_CARRUSEL = [
         { value: 'fade', label: 'Desvanecido' },
         { value: 'slide', label: 'Deslizar' },
@@ -2846,7 +2857,6 @@
                     inputs.forEach((inp, idx) => {
                         inp.value = local.imagenesExtra[idx] || '';
                     });
-                    // Cargar configuración de carrusel
                     const intervalo = document.getElementById('intervaloCarrusel');
                     const animacion = document.getElementById('animacionCarrusel');
                     if (intervalo) intervalo.value = local.intervaloCarrusel || 3;
@@ -2859,7 +2869,6 @@
                 if (intervalo) intervalo.value = 3;
                 if (animacion) animacion.value = 'fade';
             }
-            // Inyectar controles de carrusel si no existen
             inyectarControlesCarrusel();
         }
         if (id === 'adminMainModal') {
@@ -2882,7 +2891,6 @@
     function inyectarControlesCarrusel() {
         const container = document.getElementById('imagenesExtraContainer');
         if (!container) return;
-        // Verificar si ya existen los controles
         if (document.getElementById('controlesCarrusel')) return;
 
         const wrapper = document.createElement('div');
@@ -2909,7 +2917,6 @@
                 </div>
             </div>
         `;
-        // Insertar después del container
         container.parentNode.insertBefore(wrapper, container.nextSibling);
     }
 
@@ -2983,7 +2990,6 @@
 
     // ============================================================
     //  RENDER LOCALES (con orden: abiertos primero, luego cerrados)
-    //  y respetando mostrarPagina según filtros
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -3083,14 +3089,14 @@
                         ${todasImagenes.map((url, idx) => `
                             <div class="slide ${idx === 0 ? 'active' : ''}">
                                 <img src="${url}" alt="Imagen ${idx+1}" onclick="event.stopPropagation(); openImageZoom('${url}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">
-                                <div class="overlay-numero">
-                                    <span>${idx+1}/${todasImagenes.length}</span>
-                                </div>
                             </div>
                         `).join('')}
+                        <div class="overlay-numero" id="overlay-${idCarrusel}">
+                            <span class="numero">Nº ${local.numeroLocal}</span>
+                            <span class="ubicacion">${local.ubicacion || 'Sin ubicación'}</span>
+                        </div>
                     </div>
                 `;
-                // Iniciar carrusel con los parámetros del local
                 setTimeout(() => {
                     iniciarCarrusel(idCarrusel, intervalo, animacion);
                 }, 100);
@@ -3147,19 +3153,19 @@
         if (!contenedor) return;
         const slides = contenedor.querySelectorAll('.slide');
         if (slides.length <= 1) return;
+        const total = slides.length;
+        // El overlay es estático, no necesita actualización
 
-        // Limpiar intervalos previos
         if (contenedor._carruselInterval) {
             clearInterval(contenedor._carruselInterval);
         }
 
-        // Aplicar animación (clase CSS)
         contenedor.className = `carrusel-imagenes carousel-${animacion || 'fade'}`;
 
         let index = 0;
         const interval = setInterval(() => {
             slides.forEach(s => s.classList.remove('active'));
-            index = (index + 1) % slides.length;
+            index = (index + 1) % total;
             slides[index].classList.add('active');
         }, (intervalo || 3) * 1000);
 
@@ -3170,7 +3176,7 @@
             clearInterval(interval);
             const nuevoInterval = setInterval(() => {
                 slides.forEach(s => s.classList.remove('active'));
-                index = (index + 1) % slides.length;
+                index = (index + 1) % total;
                 slides[index].classList.add('active');
             }, (intervalo || 3) * 1000);
             contenedor._carruselInterval = nuevoInterval;
@@ -3267,7 +3273,6 @@
                 inp.value = local.imagenesExtra[idx] || '';
             });
         }
-        // Cargar controles de carrusel (inyectados en openModal)
         const intervalo = document.getElementById('intervaloCarrusel');
         const animacion = document.getElementById('animacionCarrusel');
         if (intervalo) intervalo.value = local.intervaloCarrusel || 3;
@@ -3318,7 +3323,6 @@
         });
         if (imagenesExtra.length > 5) imagenesExtra.length = 5;
 
-        // Obtener configuración de carrusel
         const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
         const animacion = document.getElementById('animacionCarrusel').value || 'fade';
 
