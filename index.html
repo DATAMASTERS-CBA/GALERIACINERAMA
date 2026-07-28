@@ -1725,7 +1725,6 @@
     let bannerIndex = 0;
     let bannerTimer = null;
     let dataLoaded = false;
-    let ordenCriterio = 'visitas';
     let hayFiltroActivo = false;
 
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
@@ -2279,6 +2278,12 @@
         if (data.publicidad && data.publicidad.activo) {
             mostrarPublicidad();
         }
+        // Actualizar automáticamente cada 30 segundos
+        setInterval(() => {
+            if (!document.hidden) {
+                filterLocales();
+            }
+        }, 30000);
     }
 
     async function saveData() {
@@ -3144,7 +3149,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES (con orden: abiertos primero, luego cerrados)
+    //  RENDER LOCALES (orden fijo: Data Masters, abiertos por n°, cerrados por n°)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -3161,30 +3166,29 @@
             localesMostrar = filteredLocales.filter(l => l.mostrarPagina !== false);
         }
 
+        // Separar Data Masters (case insensitive)
         const dataMasters = localesMostrar.filter(l => l.nombre.trim().toLowerCase() === 'data masters');
         const otros = localesMostrar.filter(l => l.nombre.trim().toLowerCase() !== 'data masters');
 
+        // Calcular estado de apertura para cada local
         const otrosConEstado = otros.map(local => {
             const status = getLocalStatus(local);
             return { ...local, _isOpen: status.isOpen, _horarioHoy: status.horarioHoy };
         });
 
-        otrosConEstado.sort((a, b) => {
-            if (a._isOpen !== b._isOpen) {
-                return a._isOpen ? -1 : 1;
-            }
-            if (ordenCriterio === 'visitas') {
-                return (b.visitas || 0) - (a.visitas || 0);
-            } else {
-                return a.numeroLocal.localeCompare(b.numeroLocal, undefined, { numeric: true });
-            }
-        });
+        // Dividir en abiertos y cerrados
+        const abiertos = otrosConEstado.filter(l => l._isOpen === true);
+        const cerrados = otrosConEstado.filter(l => l._isOpen === false);
 
-        let sorted = [];
-        if (dataMasters.length > 0) {
-            sorted.push(dataMasters[0]);
-        }
-        sorted = sorted.concat(otrosConEstado);
+        // Ordenar cada grupo por número de local ascendente (numérico)
+        const sortPorNumero = (a, b) => {
+            return parseInt(a.numeroLocal) - parseInt(b.numeroLocal);
+        };
+        abiertos.sort(sortPorNumero);
+        cerrados.sort(sortPorNumero);
+
+        // Concatenar: Data Masters + abiertos + cerrados
+        const sorted = [...dataMasters, ...abiertos, ...cerrados];
 
         if (sorted.length === 0) {
             grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; background:var(--bg-card); border-radius:var(--radius);">No se encontraron locales.</p>`;
@@ -3930,30 +3934,14 @@
     }
 
     // ============================================================
-    //  ORDER BUTTON
+    //  ORDER BUTTON (ahora solo refresca, no cambia el orden)
     // ============================================================
     function initOrderBtn() {
         const btn = document.getElementById('orderBtn');
-        actualizarTextoBotonOrden(btn);
+        btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Orden por N°';
         btn.addEventListener('click', function() {
-            if (ordenCriterio === 'visitas') {
-                ordenCriterio = 'numero';
-            } else {
-                ordenCriterio = 'visitas';
-            }
-            actualizarTextoBotonOrden(btn);
-            filterLocales();
+            filterLocales(); // solo refresca, sin cambiar criterio
         });
-    }
-
-    function actualizarTextoBotonOrden(btn) {
-        if (ordenCriterio === 'visitas') {
-            btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Ordenar por visitas ↓';
-            btn.dataset.order = 'desc';
-        } else {
-            btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Ordenar N° ↑';
-            btn.dataset.order = 'asc';
-        }
     }
 
     // ============================================================
@@ -3974,9 +3962,7 @@
                 if (document.getElementById('adminMainModal').classList.contains('active')) {
                     renderVisitasPanel();
                 }
-                if (ordenCriterio === 'visitas') {
-                    filterLocales();
-                }
+                // No reordenamos por visitas, solo actualizamos el contador
             }
         });
     }
@@ -4342,7 +4328,7 @@
             agregarSeccionPublicidad();
         }
         const btn = document.getElementById('orderBtn');
-        if (btn) actualizarTextoBotonOrden(btn);
+        if (btn) btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Orden por N°';
         if (document.getElementById('visitNumber')) {
             actualizarNumeroVisitante(data.visitasTotales || 0, false);
         }
