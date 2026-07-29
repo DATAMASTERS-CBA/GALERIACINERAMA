@@ -1374,7 +1374,13 @@
                 <option value="Cochera">Cochera</option>
             </select>
         </div>
-        <button class="order-btn" id="orderBtn"><i class="fas fa-sort-numeric-up-alt"></i> Ordenar N°</button>
+        <select id="ordenSelect" style="padding:10px 16px; border-radius:30px; border:1px solid var(--border); background:var(--input-bg); color:var(--text-color); font-size:0.95rem; outline:none; flex-shrink:0;">
+            <option value="abiertos">📍 Locales abiertos</option>
+            <option value="visitas">⭐ Mayor visitas</option>
+            <option value="numero_desc">🔢 N° mayor a menor</option>
+            <option value="numero_asc">🔢 N° menor a mayor</option>
+        </select>
+        <button class="order-btn" id="orderBtn"><i class="fas fa-sync"></i> Aplicar</button>
     </section>
 
     <!-- ===== GRID DE LOCALES ===== -->
@@ -1726,6 +1732,7 @@
     let bannerTimer = null;
     let dataLoaded = false;
     let hayFiltroActivo = false;
+    let ordenActual = 'abiertos';
 
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
@@ -2269,12 +2276,36 @@
             mostrarPublicidad();
         }
 
-        // ===== ACTUALIZACIÓN AUTOMÁTICA CADA 30 SEGUNDOS =====
-        setInterval(() => {
-            if (!document.hidden) {
-                filterLocales();
+        // Escuchar cambios en tiempo real desde Firestore
+        docRef.onSnapshot(function(doc) {
+            if (doc.exists && dataLoaded) {
+                const firestoreData = doc.data();
+                const defaultData = getDefaultData();
+                for (let key in defaultData) {
+                    if (firestoreData[key] !== undefined) {
+                        data[key] = firestoreData[key];
+                    }
+                }
+                data.locales.forEach(l => {
+                    l.numeroLocal = String(l.numeroLocal);
+                    if (l.visitas === undefined) l.visitas = 0;
+                    if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                    l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                    if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                    if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                });
+                if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
+                    data.publicidad.textos = defaultData.publicidad.textos;
+                }
+                localStorage.setItem('galeriaData', JSON.stringify(data));
+                renderAll();
+                if (document.getElementById('visitNumber')) {
+                    actualizarNumeroVisitante(data.visitasTotales || 0, false);
+                }
             }
-        }, 30000);
+        });
     }
 
     async function saveData() {
@@ -3139,7 +3170,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES (orden fijo: Data Masters, abiertos por n°, cerrados por n°)
+    //  RENDER LOCALES (con múltiples modos de orden)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -3166,19 +3197,29 @@
             return { ...local, _isOpen: status.isOpen, _horarioHoy: status.horarioHoy };
         });
 
-        // Dividir en abiertos y cerrados
-        const abiertos = otrosConEstado.filter(l => l._isOpen === true);
-        const cerrados = otrosConEstado.filter(l => l._isOpen === false);
+        let sorted = [];
 
-        // Ordenar cada grupo por número de local ascendente (numérico)
-        const sortPorNumero = (a, b) => {
-            return parseInt(a.numeroLocal) - parseInt(b.numeroLocal);
-        };
-        abiertos.sort(sortPorNumero);
-        cerrados.sort(sortPorNumero);
-
-        // Concatenar: Data Masters + abiertos + cerrados
-        const sorted = [...dataMasters, ...abiertos, ...cerrados];
+        if (ordenActual === 'abiertos') {
+            // Orden: abiertos primero (por número asc), luego cerrados (por número asc)
+            const abiertos = otrosConEstado.filter(l => l._isOpen === true);
+            const cerrados = otrosConEstado.filter(l => l._isOpen === false);
+            const sortPorNumero = (a, b) => parseInt(a.numeroLocal) - parseInt(b.numeroLocal);
+            abiertos.sort(sortPorNumero);
+            cerrados.sort(sortPorNumero);
+            sorted = [...dataMasters, ...abiertos, ...cerrados];
+        } else if (ordenActual === 'visitas') {
+            // Mayor visitas primero
+            otrosConEstado.sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
+            sorted = [...dataMasters, ...otrosConEstado];
+        } else if (ordenActual === 'numero_desc') {
+            // Número mayor a menor
+            otrosConEstado.sort((a, b) => parseInt(b.numeroLocal) - parseInt(a.numeroLocal));
+            sorted = [...dataMasters, ...otrosConEstado];
+        } else if (ordenActual === 'numero_asc') {
+            // Número menor a mayor
+            otrosConEstado.sort((a, b) => parseInt(a.numeroLocal) - parseInt(b.numeroLocal));
+            sorted = [...dataMasters, ...otrosConEstado];
+        }
 
         if (sorted.length === 0) {
             grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; background:var(--bg-card); border-radius:var(--radius);">No se encontraron locales.</p>`;
@@ -3923,13 +3964,27 @@
     }
 
     // ============================================================
-    //  ORDER BUTTON (solo refresca, no cambia el orden)
+    //  ORDER BUTTON y SELECTOR DE ORDEN
     // ============================================================
-    function initOrderBtn() {
+    function initOrderControls() {
+        const ordenSelect = document.getElementById('ordenSelect');
         const btn = document.getElementById('orderBtn');
-        btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Orden por N°';
+        
+        // Cargar orden guardado
+        const savedOrder = localStorage.getItem('ordenActual');
+        if (savedOrder) {
+            ordenActual = savedOrder;
+            ordenSelect.value = savedOrder;
+        }
+        
+        ordenSelect.addEventListener('change', function() {
+            ordenActual = this.value;
+            localStorage.setItem('ordenActual', ordenActual);
+            filterLocales();
+        });
+        
         btn.addEventListener('click', function() {
-            filterLocales(); // solo refresca
+            filterLocales();
         });
     }
 
@@ -3950,6 +4005,9 @@
                 saveData();
                 if (document.getElementById('adminMainModal').classList.contains('active')) {
                     renderVisitasPanel();
+                }
+                if (ordenActual === 'visitas') {
+                    filterLocales();
                 }
             }
         });
@@ -4315,8 +4373,6 @@
             agregarEditorVisitasTotales();
             agregarSeccionPublicidad();
         }
-        const btn = document.getElementById('orderBtn');
-        if (btn) btn.innerHTML = '<i class="fas fa-sort-numeric-up-alt"></i> Orden por N°';
         if (document.getElementById('visitNumber')) {
             actualizarNumeroVisitante(data.visitasTotales || 0, false);
         }
@@ -4330,7 +4386,7 @@
         document.getElementById('searchRubro').addEventListener('change', filterLocales);
         document.getElementById('searchNumero').addEventListener('change', filterLocales);
         document.getElementById('searchUbicacion').addEventListener('change', filterLocales);
-        initOrderBtn();
+        initOrderControls();
         initThemeButtons();
         initVisitasListener();
         loadData().then(() => {
