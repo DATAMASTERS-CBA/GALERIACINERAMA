@@ -2144,7 +2144,6 @@
                 }
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
-                // Si no hay datos en Firestore y el usuario NO es admin, no preguntar, solo usar localStorage o mostrar error
                 const stored = localStorage.getItem('galeriaData');
                 if (stored) {
                     try {
@@ -2167,19 +2166,16 @@
                         }
                     } catch (e) {
                         console.error('Error al parsear localStorage:', e);
-                        // Si el usuario no es admin, no ofrecer cargar muestra
                         if (!isAdmin) {
                             document.getElementById('loadingMsg').textContent = 'No se pudieron cargar los datos. Contacta al administrador.';
                             return;
                         }
                     }
                 } else {
-                    // Si no hay datos en Firestore ni en localStorage y el usuario no es admin
                     if (!isAdmin) {
                         document.getElementById('loadingMsg').textContent = 'No hay datos disponibles. Contacta al administrador.';
                         return;
                     }
-                    // Para admin, ofrecer cargar muestra
                     const cargarMuestra = confirm('No se encontraron datos en la nube. ¿Deseas cargar los locales de muestra? (Cancelar para empezar vacío)');
                     if (cargarMuestra) {
                         const defaultData = getDefaultData();
@@ -2254,7 +2250,6 @@
                     document.getElementById('loadingMsg').textContent = 'Error de conexión y sin datos locales. Contacta al administrador.';
                     return;
                 }
-                // Solo para admin: ofrecer cargar muestra
                 const cargarMuestra = confirm('No se pudo conectar a la nube y no hay datos locales. ¿Cargar datos de muestra?');
                 if (cargarMuestra) {
                     const defaultData = getDefaultData();
@@ -2300,14 +2295,8 @@
         if (data.autoTheme) checkAutoTheme();
         else applyTheme(data.theme);
         initVisitCounter();
-        // Solo incrementar la visita global si es admin (o si se quiere, pero sin guardar)
-        // Para usuarios no admin, solo actualizamos el contador local sin persistir
-        if (isAdmin) {
-            incrementarVisitaGlobal(true);
-        } else {
-            // Mostrar el contador pero sin incrementar ni guardar (solo mostrar el valor actual)
-            actualizarNumeroVisitante(data.visitasTotales || 0, false);
-        }
+        // Incrementar contador global en cada apertura de página (todos los usuarios)
+        await incrementarVisitaGlobal(true);
         initGlobalVisitListeners();
         if (data.publicidad && data.publicidad.activo) {
             mostrarPublicidad();
@@ -2365,7 +2354,7 @@
     }
 
     // ============================================================
-    //  CONTADOR GLOBAL DE VISITAS (animado, solo persistente si admin)
+    //  CONTADOR GLOBAL DE VISITAS (se incrementa siempre)
     // ============================================================
     function initVisitCounter() {
         const headerLeft = document.querySelector('.header-left');
@@ -2400,44 +2389,49 @@
     }
 
     async function incrementarVisitaGlobal(esApertura = false) {
-        // Solo el admin puede persistir el contador global
-        if (!isAdmin) {
-            // Los usuarios no pueden modificar el contador global en Firebase
-            // Solo actualizamos localmente para la experiencia visual
-            const nuevoValor = (data.visitasTotales || 0) + 1;
-            actualizarNumeroVisitante(nuevoValor, true);
-            return;
-        }
+        // Incrementa el contador siempre, sin importar si es admin o no
         data.visitasTotales = (data.visitasTotales || 0) + 1;
-        await saveData();
         actualizarNumeroVisitante(data.visitasTotales, true);
+        // Persistir solo el contador en Firestore (operación específica)
+        try {
+            await docRef.update({ visitasTotales: data.visitasTotales });
+        } catch (e) {
+            console.warn('No se pudo actualizar el contador en Firestore:', e);
+            // Guardar localmente al menos
+            localStorage.setItem('galeriaData', JSON.stringify(data));
+        }
         if (!esApertura) {
             showToast('¡+1 visita!');
         }
     }
 
     // ============================================================
-    //  LISTENERS PARA CLICS QUE CUENTAN COMO VISITA (solo admin)
+    //  LISTENERS PARA CLICS (solo incrementan visitas a locales, no el global)
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
         if (!container) return;
 
-        const listener = function(e) {
-            // Solo si es admin se incrementa la visita global y se guarda
-            if (isAdmin) {
-                const target = e.target.closest('.banner-slide a, .card-actions .share, .card-actions .whatsapp, .card-actions a:not(.whatsapp), .card-img-wrap img, .carrusel-imagenes img, .galeria-extra img, .card-logo');
-                if (target) {
-                    e.stopPropagation();
-                    incrementarVisitaGlobal(false);
+        // Los clics en elementos ya no incrementan el contador global,
+        // solo se registran las visitas a locales (si es admin)
+        container.addEventListener('click', function(e) {
+            const card = e.target.closest('.card');
+            if (!card) return;
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.carrusel-imagenes') || e.target.closest('.galeria-extra')) return;
+            const id = parseInt(card.dataset.id);
+            if (!id) return;
+            const local = data.locales.find(l => l.id === id);
+            if (local && isAdmin) {
+                local.visitas = (local.visitas || 0) + 1;
+                saveData();
+                if (document.getElementById('adminMainModal').classList.contains('active')) {
+                    renderVisitasPanel();
                 }
-            } else {
-                // Para usuarios no admin, solo se muestra el contador sin incrementar
-                // No hacemos nada
+                if (ordenActual === 'visitas') {
+                    filterLocales();
+                }
             }
-        };
-
-        container.addEventListener('click', listener);
+        });
     }
 
     // ============================================================
@@ -4102,32 +4096,7 @@
     //  VISITAS POR LOCAL (solo admin guarda, pero todos pueden ver)
     // ============================================================
     function initVisitasListener() {
-        const grid = document.getElementById('localsGrid');
-        grid.addEventListener('click', function(e) {
-            const card = e.target.closest('.card');
-            if (!card) return;
-            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.carrusel-imagenes') || e.target.closest('.galeria-extra')) return;
-            const id = parseInt(card.dataset.id);
-            if (!id) return;
-            const local = data.locales.find(l => l.id === id);
-            if (local) {
-                // Solo el admin persiste la visita
-                if (isAdmin) {
-                    local.visitas = (local.visitas || 0) + 1;
-                    saveData();
-                    if (document.getElementById('adminMainModal').classList.contains('active')) {
-                        renderVisitasPanel();
-                    }
-                    if (ordenActual === 'visitas') {
-                        filterLocales();
-                    }
-                } else {
-                    // Los usuarios ven el contador pero no lo incrementan en la nube
-                    // Podríamos mostrar un toast informativo
-                    showToast('Solo el administrador puede registrar visitas.');
-                }
-            }
-        });
+        // Ya se maneja en initGlobalVisitListeners
     }
 
     // ============================================================
@@ -4521,7 +4490,7 @@
         document.getElementById('searchUbicacion').addEventListener('change', filterLocales);
         initOrderControls();
         initThemeButtons();
-        initVisitasListener();
+        // El listener de visitas a locales se maneja en initGlobalVisitListeners
         loadData().then(() => {
             agregarBotonCambiarClave();
             const observer = new MutationObserver(() => {
@@ -4558,8 +4527,6 @@
         document.getElementById('toggleAdminBtn').textContent = ' Administrar';
         showToast('Sesión cerrada');
         renderAll();
-        // Desactivar listener en tiempo real para no admin
-        // No se puede desuscribir fácilmente, pero podemos ignorar las actualizaciones
     }
 
     // ============================================================
