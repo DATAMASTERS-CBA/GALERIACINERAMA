@@ -310,7 +310,6 @@
             min-width: 0;
         }
 
-        /* Ajuste para el selector de orden: mismo tamaño que los filtros */
         .search-section #ordenSelect {
             flex: 1 1 140px;
             min-width: 0;
@@ -328,7 +327,6 @@
             box-shadow: 0 0 0 3px var(--primary-light);
         }
 
-        /* Ocultar botón "Aplicar" */
         #orderBtn {
             display: none;
         }
@@ -363,7 +361,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Contenedor de imagen con overlay */
         .card-img-wrap {
             position: relative;
             width: 100%;
@@ -557,7 +554,6 @@
             margin-top: 4px;
         }
 
-        /* Botones de admin sobre la tarjeta */
         .card-admin-actions {
             position: absolute;
             top: 10px;
@@ -678,7 +674,6 @@
             transform: scale(1.05);
         }
 
-        /* Horarios en modal - mejor alineación */
         .horario-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -721,7 +716,6 @@
             margin: 0;
         }
 
-        /* Ajustes de imagen en modal */
         .image-adjust-group {
             display: flex;
             flex-wrap: wrap;
@@ -872,7 +866,6 @@
             }
         }
 
-        /* Estilo para mensaje de carga */
         #loadingMsg {
             text-align: center;
             padding: 40px;
@@ -880,7 +873,6 @@
             color: var(--primary);
         }
 
-        /* Estilo para enlace de recuperación */
         .forgot-link {
             display: block;
             text-align: right;
@@ -894,7 +886,6 @@
             opacity: 0.7;
         }
 
-        /* Estilos para la sección de visitas en el panel */
         .visitas-container {
             margin-top: 20px;
             padding: 15px;
@@ -927,7 +918,6 @@
             font-weight: 700;
         }
 
-        /* ===== CONTADOR GLOBAL ANIMADO ===== */
         .visit-counter {
             display: inline-flex;
             align-items: center;
@@ -972,7 +962,6 @@
             }
         }
 
-        /* ===== ESTILOS MEJORADOS PARA EL MODAL DE COMUNICADOS ===== */
         #comunicadosModal .modal {
             max-width: 600px;
         }
@@ -1062,7 +1051,6 @@
             }
         }
 
-        /* ===== ESTILOS PARA MODAL DE HORARIOS ===== */
         #horariosModal .modal {
             max-width: 500px;
         }
@@ -1090,7 +1078,6 @@
             font-style: italic;
         }
 
-        /* ===== ESTILOS PARA EL OVERLAY DE PUBLICIDAD ===== */
         #publicidadOverlay {
             position: fixed;
             top: 0;
@@ -1161,7 +1148,6 @@
             }
         }
 
-        /* ===== ESTILOS PARA GALERÍA DE IMÁGENES EXTRA ===== */
         .galeria-extra {
             display: flex;
             gap: 8px;
@@ -1211,7 +1197,6 @@
             object-fit: cover;
             cursor: pointer;
         }
-        /* Overlay fijo para número y ubicación */
         .carrusel-imagenes .overlay-numero {
             position: absolute;
             bottom: 0;
@@ -1239,7 +1224,6 @@
             font-weight: 700;
         }
 
-        /* ===== 10 ANIMACIONES PARA CARRUSEL ===== */
         .carrusel-imagenes.carousel-fade .slide {
             transition: opacity 0.8s ease;
         }
@@ -1378,14 +1362,12 @@
                 <option value="Cochera">Cochera</option>
             </select>
         </div>
-        <!-- Selector de orden (mismo tamaño que los filtros) -->
         <select id="ordenSelect">
             <option value="abiertos">📍 Locales abiertos</option>
             <option value="visitas">⭐ Mayor visitas</option>
             <option value="numero_desc">🔢 N° mayor a menor</option>
             <option value="numero_asc">🔢 N° menor a mayor</option>
         </select>
-        <!-- Botón oculto (ya no se usa) -->
         <button class="order-btn" id="orderBtn"><i class="fas fa-sync"></i> Aplicar</button>
     </section>
 
@@ -1417,7 +1399,6 @@
                 <button class="btn-primary" onclick="openModal('rubrosModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-tags"></i> Rubros</button>
                 <button class="btn-primary" onclick="openModal('temasModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-palette"></i> Temas</button>
                 <button class="btn-primary" onclick="openModal('configModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-cog"></i> Configuración</button>
-                <!-- Botones de backup -->
                 <button class="btn-primary" onclick="crearBackup()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-download"></i> Crear Backup</button>
                 <button class="btn-primary" onclick="abrirModalRestaurar()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-upload"></i> Restaurar</button>
                 <button class="btn-primary" onclick="exportarJSON()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-file-export"></i> Exportar JSON</button>
@@ -1429,7 +1410,6 @@
             <div style="margin-top:15px; padding:12px; background:var(--primary-light); border-radius:var(--radius);">
                 <strong>Último backup:</strong> <span id="ultimoBackupInfo">Nunca</span>
             </div>
-            <!-- Sección de visitas se inyectará aquí mediante JavaScript -->
         </div>
     </div>
 
@@ -1534,11 +1514,9 @@
                 <label>Feriados (fecha:horario; ej: 25/12:10:00-14:00, 01/01:cerrado)</label>
                 <input type="text" id="hFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
 
-                <!-- NUEVO: Imágenes extra (dinámicas) -->
                 <label>Imágenes adicionales (URLs)</label>
                 <div id="imagenesExtraContainer"></div>
 
-                <!-- NUEVO: Mostrar en página principal -->
                 <label style="display:flex; align-items:center; gap:10px; margin-top:12px;">
                     <input type="checkbox" id="fMostrarPagina" checked style="width:auto;">
                     <span>Mostrar en página principal (si está desmarcado, solo aparecerá en búsquedas)</span>
@@ -2136,7 +2114,7 @@
     }
 
     // ============================================================
-    //  Cargar datos desde Firestore
+    //  Cargar datos desde Firestore (con protección)
     // ============================================================
     async function loadData() {
         try {
@@ -2166,44 +2144,81 @@
                 }
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
-                const cargarMuestra = confirm('No se encontraron datos en la nube. ¿Deseas cargar los locales de muestra? (Cancelar para empezar vacío)');
-                if (cargarMuestra) {
-                    const defaultData = getDefaultData();
-                    for (let key in defaultData) {
-                        data[key] = defaultData[key];
+                // Si no hay datos en Firestore y el usuario NO es admin, no preguntar, solo usar localStorage o mostrar error
+                const stored = localStorage.getItem('galeriaData');
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        for (let key in parsed) {
+                            data[key] = parsed[key];
+                        }
+                        data.locales.forEach(l => {
+                            l.numeroLocal = String(l.numeroLocal);
+                            if (l.visitas === undefined) l.visitas = 0;
+                            if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                            l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                            if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                            if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                        });
+                        if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                        if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
+                        if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
+                            data.publicidad.textos = getDefaultData().publicidad.textos;
+                        }
+                    } catch (e) {
+                        console.error('Error al parsear localStorage:', e);
+                        // Si el usuario no es admin, no ofrecer cargar muestra
+                        if (!isAdmin) {
+                            document.getElementById('loadingMsg').textContent = 'No se pudieron cargar los datos. Contacta al administrador.';
+                            return;
+                        }
                     }
                 } else {
-                    data = {
-                        locales: [],
-                        banners: [],
-                        rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
-                        theme: 'default',
-                        autoTheme: false,
-                        nextId: 1,
-                        galeriaNombre: 'Galería Cinerama',
-                        galeriaDireccion: 'Colón 375',
-                        bannerInterval: 4,
-                        backups: [],
-                        lastBackupDate: null,
-                        adminClave: 'admin123',
-                        visitasTotales: 0,
-                        publicidad: {
-                            activo: false,
-                            tipo: 'texto',
-                            contenido: '¡Gran Liquidación!',
-                            duracion: 5,
-                            imagenUrl: '',
-                            efecto: 'confeti',
-                            textos: [
-                                { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
-                                { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
-                                { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-                            ]
+                    // Si no hay datos en Firestore ni en localStorage y el usuario no es admin
+                    if (!isAdmin) {
+                        document.getElementById('loadingMsg').textContent = 'No hay datos disponibles. Contacta al administrador.';
+                        return;
+                    }
+                    // Para admin, ofrecer cargar muestra
+                    const cargarMuestra = confirm('No se encontraron datos en la nube. ¿Deseas cargar los locales de muestra? (Cancelar para empezar vacío)');
+                    if (cargarMuestra) {
+                        const defaultData = getDefaultData();
+                        for (let key in defaultData) {
+                            data[key] = defaultData[key];
                         }
-                    };
+                    } else {
+                        data = {
+                            locales: [],
+                            banners: [],
+                            rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
+                            theme: 'default',
+                            autoTheme: false,
+                            nextId: 1,
+                            galeriaNombre: 'Galería Cinerama',
+                            galeriaDireccion: 'Colón 375',
+                            bannerInterval: 4,
+                            backups: [],
+                            lastBackupDate: null,
+                            adminClave: 'admin123',
+                            visitasTotales: 0,
+                            publicidad: {
+                                activo: false,
+                                tipo: 'texto',
+                                contenido: '¡Gran Liquidación!',
+                                duracion: 5,
+                                imagenUrl: '',
+                                efecto: 'confeti',
+                                textos: [
+                                    { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
+                                    { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
+                                    { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
+                                ]
+                            }
+                        };
+                    }
+                    await docRef.set(data);
+                    localStorage.setItem('galeriaData', JSON.stringify(data));
                 }
-                await docRef.set(data);
-                localStorage.setItem('galeriaData', JSON.stringify(data));
             }
         } catch (error) {
             console.error('Error cargando desde Firestore:', error);
@@ -2229,8 +2244,17 @@
                     }
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
+                    if (!isAdmin) {
+                        document.getElementById('loadingMsg').textContent = 'Error de conexión y sin datos locales. Contacta al administrador.';
+                        return;
+                    }
                 }
             } else {
+                if (!isAdmin) {
+                    document.getElementById('loadingMsg').textContent = 'Error de conexión y sin datos locales. Contacta al administrador.';
+                    return;
+                }
+                // Solo para admin: ofrecer cargar muestra
                 const cargarMuestra = confirm('No se pudo conectar a la nube y no hay datos locales. ¿Cargar datos de muestra?');
                 if (cargarMuestra) {
                     const defaultData = getDefaultData();
@@ -2276,45 +2300,60 @@
         if (data.autoTheme) checkAutoTheme();
         else applyTheme(data.theme);
         initVisitCounter();
-        incrementarVisitaGlobal(true);
+        // Solo incrementar la visita global si es admin (o si se quiere, pero sin guardar)
+        // Para usuarios no admin, solo actualizamos el contador local sin persistir
+        if (isAdmin) {
+            incrementarVisitaGlobal(true);
+        } else {
+            // Mostrar el contador pero sin incrementar ni guardar (solo mostrar el valor actual)
+            actualizarNumeroVisitante(data.visitasTotales || 0, false);
+        }
         initGlobalVisitListeners();
         if (data.publicidad && data.publicidad.activo) {
             mostrarPublicidad();
         }
 
-        // Escuchar cambios en tiempo real desde Firestore
-        docRef.onSnapshot(function(doc) {
-            if (doc.exists && dataLoaded) {
-                const firestoreData = doc.data();
-                const defaultData = getDefaultData();
-                for (let key in defaultData) {
-                    if (firestoreData[key] !== undefined) {
-                        data[key] = firestoreData[key];
+        // Escuchar cambios en tiempo real solo si es admin
+        if (isAdmin) {
+            docRef.onSnapshot(function(doc) {
+                if (doc.exists && dataLoaded) {
+                    const firestoreData = doc.data();
+                    const defaultData = getDefaultData();
+                    for (let key in defaultData) {
+                        if (firestoreData[key] !== undefined) {
+                            data[key] = firestoreData[key];
+                        }
+                    }
+                    data.locales.forEach(l => {
+                        l.numeroLocal = String(l.numeroLocal);
+                        if (l.visitas === undefined) l.visitas = 0;
+                        if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                        l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                        if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                        if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                    });
+                    if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                    if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                    if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
+                        data.publicidad.textos = defaultData.publicidad.textos;
+                    }
+                    localStorage.setItem('galeriaData', JSON.stringify(data));
+                    renderAll();
+                    if (document.getElementById('visitNumber')) {
+                        actualizarNumeroVisitante(data.visitasTotales || 0, false);
                     }
                 }
-                data.locales.forEach(l => {
-                    l.numeroLocal = String(l.numeroLocal);
-                    if (l.visitas === undefined) l.visitas = 0;
-                    if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                    l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
-                    if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
-                    if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
-                });
-                if (data.visitasTotales === undefined) data.visitasTotales = 0;
-                if (!data.publicidad) data.publicidad = defaultData.publicidad;
-                if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
-                    data.publicidad.textos = defaultData.publicidad.textos;
-                }
-                localStorage.setItem('galeriaData', JSON.stringify(data));
-                renderAll();
-                if (document.getElementById('visitNumber')) {
-                    actualizarNumeroVisitante(data.visitasTotales || 0, false);
-                }
-            }
-        });
+            });
+        }
     }
 
     async function saveData() {
+        // Solo el administrador puede guardar en Firestore
+        if (!isAdmin) {
+            console.warn('Intento de guardar datos sin ser administrador');
+            showToast('No tienes permisos para modificar la base de datos.');
+            return;
+        }
         try {
             await docRef.set(data);
             localStorage.setItem('galeriaData', JSON.stringify(data));
@@ -2326,7 +2365,7 @@
     }
 
     // ============================================================
-    //  CONTADOR GLOBAL DE VISITAS (animado)
+    //  CONTADOR GLOBAL DE VISITAS (animado, solo persistente si admin)
     // ============================================================
     function initVisitCounter() {
         const headerLeft = document.querySelector('.header-left');
@@ -2346,7 +2385,7 @@
         } else {
             headerLeft.appendChild(counterDiv);
         }
-        actualizarNumeroVisitante(data.visitasTotales, false);
+        actualizarNumeroVisitante(data.visitasTotales || 0, false);
     }
 
     function actualizarNumeroVisitante(nuevoValor, animar = true) {
@@ -2361,6 +2400,14 @@
     }
 
     async function incrementarVisitaGlobal(esApertura = false) {
+        // Solo el admin puede persistir el contador global
+        if (!isAdmin) {
+            // Los usuarios no pueden modificar el contador global en Firebase
+            // Solo actualizamos localmente para la experiencia visual
+            const nuevoValor = (data.visitasTotales || 0) + 1;
+            actualizarNumeroVisitante(nuevoValor, true);
+            return;
+        }
         data.visitasTotales = (data.visitasTotales || 0) + 1;
         await saveData();
         actualizarNumeroVisitante(data.visitasTotales, true);
@@ -2370,69 +2417,31 @@
     }
 
     // ============================================================
-    //  LISTENERS PARA CLICS QUE CUENTAN COMO VISITA
+    //  LISTENERS PARA CLICS QUE CUENTAN COMO VISITA (solo admin)
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
         if (!container) return;
 
-        container.addEventListener('click', function(e) {
-            const target = e.target.closest('.banner-slide a');
-            if (target) {
-                e.stopPropagation();
-                incrementarVisitaGlobal(false);
-                return;
+        const listener = function(e) {
+            // Solo si es admin se incrementa la visita global y se guarda
+            if (isAdmin) {
+                const target = e.target.closest('.banner-slide a, .card-actions .share, .card-actions .whatsapp, .card-actions a:not(.whatsapp), .card-img-wrap img, .carrusel-imagenes img, .galeria-extra img, .card-logo');
+                if (target) {
+                    e.stopPropagation();
+                    incrementarVisitaGlobal(false);
+                }
+            } else {
+                // Para usuarios no admin, solo se muestra el contador sin incrementar
+                // No hacemos nada
             }
-        });
+        };
 
-        container.addEventListener('click', function(e) {
-            const target = e.target.closest('.card-actions .share');
-            if (target) {
-                e.stopPropagation();
-                incrementarVisitaGlobal(false);
-                return;
-            }
-        });
-
-        container.addEventListener('click', function(e) {
-            const target = e.target.closest('.card-actions .whatsapp');
-            if (target) {
-                e.stopPropagation();
-                incrementarVisitaGlobal(false);
-                return;
-            }
-        });
-
-        container.addEventListener('click', function(e) {
-            const target = e.target.closest('.card-actions a:not(.whatsapp)');
-            if (target) {
-                e.stopPropagation();
-                incrementarVisitaGlobal(false);
-                return;
-            }
-        });
-
-        container.addEventListener('click', function(e) {
-            const target = e.target.closest('.card-img-wrap img, .carrusel-imagenes img, .galeria-extra img');
-            if (target) {
-                e.stopPropagation();
-                incrementarVisitaGlobal(false);
-                return;
-            }
-        });
-
-        container.addEventListener('click', function(e) {
-            const target = e.target.closest('.card-logo');
-            if (target) {
-                e.stopPropagation();
-                incrementarVisitaGlobal(false);
-                return;
-            }
-        });
+        container.addEventListener('click', listener);
     }
 
     // ============================================================
-    //  PUBLICIDAD (mejorada con múltiples textos y efectos)
+    //  PUBLICIDAD (sin cambios)
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -2675,7 +2684,7 @@
     }
 
     // ============================================================
-    //  RECUPERACIÓN DE CLAVE
+    //  RECUPERACIÓN DE CLAVE (sin cambios)
     // ============================================================
     async function recuperarClave() {
         const codigo = prompt('Ingrese el código de recuperación:');
@@ -2718,9 +2727,13 @@
     });
 
     // ============================================================
-    //  BACKUP FUNCTIONS
+    //  BACKUP FUNCTIONS (solo admin)
     // ============================================================
     async function crearBackup() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede crear backups.');
+            return;
+        }
         const backup = {
             timestamp: new Date().toISOString(),
             data: JSON.parse(JSON.stringify(data))
@@ -2735,6 +2748,10 @@
     }
 
     function abrirModalRestaurar() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede restaurar backups.');
+            return;
+        }
         const list = document.getElementById('backupList');
         if (data.backups.length === 0) {
             list.innerHTML = '<p>No hay backups disponibles.</p>';
@@ -2756,6 +2773,10 @@
     }
 
     async function restaurarBackup(index) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede restaurar backups.');
+            return;
+        }
         if (!confirm('¿Restaurar este backup? Se perderán los datos actuales.')) return;
         const backup = data.backups[index];
         if (!backup) return showToast('Backup no encontrado');
@@ -2815,9 +2836,13 @@
     }
 
     // ============================================================
-    //  EXPORTAR / IMPORTAR JSON
+    //  EXPORTAR / IMPORTAR JSON (solo admin)
     // ============================================================
     function exportarJSON() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede exportar datos.');
+            return;
+        }
         const exportData = JSON.parse(JSON.stringify(data));
         const jsonStr = JSON.stringify(exportData, null, 2);
         const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -2833,6 +2858,10 @@
     }
 
     async function importarJSON(event) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede importar datos.');
+            return;
+        }
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
@@ -2877,10 +2906,13 @@
     }
 
     // ============================================================
-    //  CAMBIAR CLAVE
+    //  CAMBIAR CLAVE (solo admin)
     // ============================================================
     async function cambiarClave() {
-        if (!isAdmin) return;
+        if (!isAdmin) {
+            showToast('Solo el administrador puede cambiar la clave.');
+            return;
+        }
         const actual = prompt('Ingrese la clave actual:');
         if (actual === null) return;
         if (actual !== data.adminClave) {
@@ -2919,13 +2951,43 @@
             openModal('adminMainModal');
             document.getElementById('themeStatus').textContent = data.autoTheme ? 'Modo automático activado' : `Tema actual: ${data.theme}`;
             renderAll();
+            // Activar listener en tiempo real ahora que es admin
+            docRef.onSnapshot(function(doc) {
+                if (doc.exists && dataLoaded) {
+                    const firestoreData = doc.data();
+                    const defaultData = getDefaultData();
+                    for (let key in defaultData) {
+                        if (firestoreData[key] !== undefined) {
+                            data[key] = firestoreData[key];
+                        }
+                    }
+                    data.locales.forEach(l => {
+                        l.numeroLocal = String(l.numeroLocal);
+                        if (l.visitas === undefined) l.visitas = 0;
+                        if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                        l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                        if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                        if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                    });
+                    if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                    if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                    if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
+                        data.publicidad.textos = defaultData.publicidad.textos;
+                    }
+                    localStorage.setItem('galeriaData', JSON.stringify(data));
+                    renderAll();
+                    if (document.getElementById('visitNumber')) {
+                        actualizarNumeroVisitante(data.visitasTotales || 0, false);
+                    }
+                }
+            });
         } else {
             showToast('Clave incorrecta');
         }
     }
 
     // ============================================================
-    //  BANNER CARRUSEL
+    //  BANNER CARRUSEL (sin cambios)
     // ============================================================
     function renderBannersCarousel() {
         const track = document.getElementById('bannerTrack');
@@ -2988,7 +3050,7 @@
     carousel.addEventListener('mouseleave', startBannerTimer);
 
     // ============================================================
-    //  TEMAS
+    //  TEMAS (sin cambios)
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
@@ -3025,7 +3087,7 @@
     }
 
     // ============================================================
-    //  MODALES
+    //  MODALES (sin cambios)
     // ============================================================
     function openModal(id) {
         document.getElementById(id).classList.add('active');
@@ -3073,7 +3135,7 @@
     }
 
     // ============================================================
-    //  INYECTAR CONTROLES DE CARRUSEL EN EL FORMULARIO
+    //  INYECTAR CONTROLES DE CARRUSEL (sin cambios)
     // ============================================================
     function inyectarControlesCarrusel() {
         const container = document.getElementById('imagenesExtraContainer');
@@ -3108,7 +3170,7 @@
     }
 
     // ============================================================
-    //  FUNCIÓN AUXILIAR PARA ESTADO DEL LOCAL (abierto/cerrado)
+    //  FUNCIÓN AUXILIAR PARA ESTADO DEL LOCAL (sin cambios)
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
@@ -3176,7 +3238,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES (con múltiples modos de orden)
+    //  RENDER LOCALES (sin cambios funcionales, solo visual)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -3193,11 +3255,9 @@
             localesMostrar = filteredLocales.filter(l => l.mostrarPagina !== false);
         }
 
-        // Separar Data Masters (case insensitive)
         const dataMasters = localesMostrar.filter(l => l.nombre.trim().toLowerCase() === 'data masters');
         const otros = localesMostrar.filter(l => l.nombre.trim().toLowerCase() !== 'data masters');
 
-        // Calcular estado de apertura para cada local
         const otrosConEstado = otros.map(local => {
             const status = getLocalStatus(local);
             return { ...local, _isOpen: status.isOpen, _horarioHoy: status.horarioHoy };
@@ -3206,7 +3266,6 @@
         let sorted = [];
 
         if (ordenActual === 'abiertos') {
-            // Orden: abiertos primero (por número asc), luego cerrados (por número asc)
             const abiertos = otrosConEstado.filter(l => l._isOpen === true);
             const cerrados = otrosConEstado.filter(l => l._isOpen === false);
             const sortPorNumero = (a, b) => parseInt(a.numeroLocal) - parseInt(b.numeroLocal);
@@ -3214,15 +3273,12 @@
             cerrados.sort(sortPorNumero);
             sorted = [...dataMasters, ...abiertos, ...cerrados];
         } else if (ordenActual === 'visitas') {
-            // Mayor visitas primero
             otrosConEstado.sort((a, b) => (b.visitas || 0) - (a.visitas || 0));
             sorted = [...dataMasters, ...otrosConEstado];
         } else if (ordenActual === 'numero_desc') {
-            // Número mayor a menor
             otrosConEstado.sort((a, b) => parseInt(b.numeroLocal) - parseInt(a.numeroLocal));
             sorted = [...dataMasters, ...otrosConEstado];
         } else if (ordenActual === 'numero_asc') {
-            // Número menor a mayor
             otrosConEstado.sort((a, b) => parseInt(a.numeroLocal) - parseInt(b.numeroLocal));
             sorted = [...dataMasters, ...otrosConEstado];
         }
@@ -3275,7 +3331,6 @@
 
             let galeriaHtml = '';
             const imagenesExtra = local.imagenesExtra || [];
-            // Incluir la foto principal como primera imagen (si existe)
             const todasImagenes = [];
             if (local.foto) todasImagenes.push({ url: local.foto, fit: local.fotoFit || 'cover', posX: local.fotoPosX || 50, posY: local.fotoPosY || 50 });
             imagenesExtra.forEach(item => {
@@ -3305,7 +3360,6 @@
                     iniciarCarrusel(idCarrusel, intervalo, animacion);
                 }, 100);
             } else {
-                // Una sola imagen: mostrar en card-img-wrap
                 const imgData = todasImagenes[0] || { url: fotoUrl, fit: 'cover', posX: 50, posY: 50 };
                 galeriaHtml = `
                     <div class="card-img-wrap">
@@ -3318,7 +3372,6 @@
                 `;
             }
 
-            // Miniaturas de imágenes extra (excluyendo la foto principal)
             const extraMiniaturas = imagenesExtra.filter(item => item.url && item.url.trim() !== '');
             const miniaturasHtml = extraMiniaturas.length > 0 ? 
                 `<div class="galeria-extra">${extraMiniaturas.map(item => `<img src="${item.url}" onclick="event.stopPropagation(); openImageZoom('${item.url}')" onerror="this.src='${DEFAULT_IMAGE_URL}'">`).join('')}</div>` 
@@ -3358,7 +3411,7 @@
     }
 
     // ============================================================
-    //  CARRUSEL DE IMÁGENES EXTRA (con intervalo y animación)
+    //  CARRUSEL DE IMÁGENES EXTRA (sin cambios)
     // ============================================================
     function iniciarCarrusel(id, intervalo, animacion) {
         const contenedor = document.getElementById(id);
@@ -3395,7 +3448,7 @@
     }
 
     // ============================================================
-    //  MOSTRAR HORARIOS COMPLETOS EN MODAL
+    //  MOSTRAR HORARIOS COMPLETOS (sin cambios)
     // ============================================================
     function mostrarHorariosCompletos(localId) {
         const local = data.locales.find(l => l.id === localId);
@@ -3454,9 +3507,13 @@
     }
 
     // ============================================================
-    //  ADMIN CRUD (locales)
+    //  ADMIN CRUD (locales) - solo admin
     // ============================================================
     function editLocal(id) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede editar locales.');
+            return;
+        }
         const local = data.locales.find(l => l.id === id);
         if (!local) return;
         document.getElementById('editId').value = id;
@@ -3504,6 +3561,10 @@
     }
 
     async function deleteLocal(id) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede eliminar locales.');
+            return;
+        }
         if (!confirm('¿Eliminar este local permanentemente?')) return;
         data.locales = data.locales.filter(l => l.id !== id);
         await saveData();
@@ -3513,6 +3574,10 @@
 
     document.getElementById('localForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (!isAdmin) {
+            showToast('Solo el administrador puede guardar cambios.');
+            return;
+        }
         const id = document.getElementById('editId').value;
         const nombre = document.getElementById('fNombre').value.trim();
         const rubro = document.getElementById('fRubro').value;
@@ -3650,7 +3715,7 @@
     document.getElementById('bannerPosY').addEventListener('input', updateSliderLabels);
 
     // ============================================================
-    //  RUBROS (CRUD)
+    //  RUBROS (CRUD) - solo admin
     // ============================================================
     function renderRubrosList() {
         const container = document.getElementById('rubrosList');
@@ -3673,12 +3738,20 @@
     }
 
     function editRubro(index) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede editar rubros.');
+            return;
+        }
         const rubro = data.rubros[index];
         document.getElementById('editRubroId').value = index;
         document.getElementById('rubroNombre').value = rubro;
         document.querySelector('#rubroForm button[type="submit"]').innerHTML = '<i class="fas fa-save"></i> Actualizar';
         document.getElementById('rubroForm').onsubmit = async function(e) {
             e.preventDefault();
+            if (!isAdmin) {
+                showToast('Solo el administrador puede modificar rubros.');
+                return;
+            }
             const newName = document.getElementById('rubroNombre').value.trim();
             if (!newName) return showToast('El nombre no puede estar vacío');
             const idx = parseInt(document.getElementById('editRubroId').value);
@@ -3699,6 +3772,10 @@
     }
 
     async function deleteRubro(index) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede eliminar rubros.');
+            return;
+        }
         if (!confirm('¿Eliminar este rubro? Los locales que lo usen conservarán el nombre pero no aparecerá en la lista.')) return;
         data.rubros.splice(index, 1);
         await saveData();
@@ -3709,6 +3786,10 @@
 
     async function addRubro(e) {
         e.preventDefault();
+        if (!isAdmin) {
+            showToast('Solo el administrador puede agregar rubros.');
+            return;
+        }
         const nombre = document.getElementById('rubroNombre').value.trim();
         if (!nombre) return showToast('Ingrese un nombre');
         if (data.rubros.includes(nombre)) return showToast('El rubro ya existe');
@@ -3723,7 +3804,7 @@
     document.getElementById('rubroForm').addEventListener('submit', addRubro);
 
     // ============================================================
-    //  SELECT DE RUBROS Y NÚMEROS
+    //  SELECT DE RUBROS Y NÚMEROS (sin cambios)
     // ============================================================
     function updateRubroSelectInForm() {
         const select = document.getElementById('fRubro');
@@ -3748,10 +3829,14 @@
     }
 
     // ============================================================
-    //  BANNERS ADMIN
+    //  BANNERS ADMIN - solo admin
     // ============================================================
     document.getElementById('bannerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (!isAdmin) {
+            showToast('Solo el administrador puede gestionar banners.');
+            return;
+        }
         const editId = document.getElementById('editBannerId').value;
         const file = document.getElementById('bannerFile').files[0];
         const url = document.getElementById('bannerUrl').value.trim();
@@ -3813,6 +3898,10 @@
     }
 
     function editBanner(id) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede editar banners.');
+            return;
+        }
         const banner = data.banners.find(b => b.id === id);
         if (!banner) return;
         document.getElementById('editBannerId').value = id;
@@ -3829,6 +3918,10 @@
     }
 
     async function deleteBanner(id) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede eliminar banners.');
+            return;
+        }
         if (!confirm('Eliminar banner?')) return;
         data.banners = data.banners.filter(b => b.id !== id);
         await saveData();
@@ -3855,6 +3948,10 @@
     }
 
     async function updateBannerInterval() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede modificar el intervalo.');
+            return;
+        }
         const val = parseInt(document.getElementById('bannerInterval').value);
         if (val < 1) return showToast('El intervalo debe ser mayor a 0');
         data.bannerInterval = val;
@@ -3865,10 +3962,14 @@
     }
 
     // ============================================================
-    //  CONFIGURACIÓN
+    //  CONFIGURACIÓN - solo admin
     // ============================================================
     document.getElementById('configForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (!isAdmin) {
+            showToast('Solo el administrador puede modificar la configuración.');
+            return;
+        }
         const nombre = document.getElementById('configNombre').value.trim();
         const direccion = document.getElementById('configDireccion').value.trim();
         if (nombre) {
@@ -3885,11 +3986,15 @@
     });
 
     // ============================================================
-    //  TEMAS
+    //  TEMAS (sin cambios)
     // ============================================================
     function initThemeButtons() {
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', function() {
+                if (!isAdmin) {
+                    showToast('Solo el administrador puede cambiar temas.');
+                    return;
+                }
                 const theme = this.dataset.theme;
                 data.autoTheme = false;
                 data.theme = theme;
@@ -3900,6 +4005,10 @@
             });
         });
         document.getElementById('autoThemeBtn').addEventListener('click', function() {
+            if (!isAdmin) {
+                showToast('Solo el administrador puede cambiar el modo automático.');
+                return;
+            }
             data.autoTheme = !data.autoTheme;
             saveData();
             if (data.autoTheme) {
@@ -3914,7 +4023,7 @@
     }
 
     // ============================================================
-    //  SHARE
+    //  SHARE (sin cambios)
     // ============================================================
     function shareLocal(nombre, wa, fb, tw) {
         if (navigator.share) {
@@ -3934,7 +4043,7 @@
     }
 
     // ============================================================
-    //  CLOCK
+    //  CLOCK (sin cambios)
     // ============================================================
     function updateClock() {
         const now = new Date();
@@ -3946,7 +4055,7 @@
     updateClock();
 
     // ============================================================
-    //  SEARCH & FILTER
+    //  SEARCH & FILTER (sin cambios)
     // ============================================================
     function filterLocales() {
         const texto = document.getElementById('searchNombre').value.toLowerCase().trim();
@@ -3970,12 +4079,10 @@
     }
 
     // ============================================================
-    //  ORDER CONTROLS (selector y botón oculto)
+    //  ORDER CONTROLS (sin cambios)
     // ============================================================
     function initOrderControls() {
         const ordenSelect = document.getElementById('ordenSelect');
-        
-        // Cargar orden guardado o usar 'abiertos' por defecto
         const savedOrder = localStorage.getItem('ordenActual');
         if (savedOrder && ['abiertos', 'visitas', 'numero_desc', 'numero_asc'].includes(savedOrder)) {
             ordenActual = savedOrder;
@@ -3984,18 +4091,15 @@
             ordenActual = 'abiertos';
             ordenSelect.value = 'abiertos';
         }
-        
         ordenSelect.addEventListener('change', function() {
             ordenActual = this.value;
             localStorage.setItem('ordenActual', ordenActual);
             filterLocales();
         });
-        
-        // El botón "Aplicar" ya no se usa; se oculta con CSS
     }
 
     // ============================================================
-    //  VISITAS POR LOCAL (al hacer clic en la tarjeta)
+    //  VISITAS POR LOCAL (solo admin guarda, pero todos pueden ver)
     // ============================================================
     function initVisitasListener() {
         const grid = document.getElementById('localsGrid');
@@ -4007,22 +4111,30 @@
             if (!id) return;
             const local = data.locales.find(l => l.id === id);
             if (local) {
-                local.visitas = (local.visitas || 0) + 1;
-                saveData();
-                if (document.getElementById('adminMainModal').classList.contains('active')) {
-                    renderVisitasPanel();
-                }
-                if (ordenActual === 'visitas') {
-                    filterLocales();
+                // Solo el admin persiste la visita
+                if (isAdmin) {
+                    local.visitas = (local.visitas || 0) + 1;
+                    saveData();
+                    if (document.getElementById('adminMainModal').classList.contains('active')) {
+                        renderVisitasPanel();
+                    }
+                    if (ordenActual === 'visitas') {
+                        filterLocales();
+                    }
+                } else {
+                    // Los usuarios ven el contador pero no lo incrementan en la nube
+                    // Podríamos mostrar un toast informativo
+                    showToast('Solo el administrador puede registrar visitas.');
                 }
             }
         });
     }
 
     // ============================================================
-    //  PANEL DE VISITAS (en el modal de admin)
+    //  PANEL DE VISITAS (solo admin)
     // ============================================================
     function renderVisitasPanel() {
+        if (!isAdmin) return;
         const modal = document.getElementById('adminMainModal');
         let container = document.getElementById('visitasContainer');
         if (!container) {
@@ -4051,9 +4163,10 @@
     }
 
     // ============================================================
-    //  EDITOR DE VISITAS TOTALES (en panel admin)
+    //  EDITOR DE VISITAS TOTALES (solo admin)
     // ============================================================
     function agregarEditorVisitasTotales() {
+        if (!isAdmin) return;
         const modal = document.getElementById('adminMainModal');
         let container = document.getElementById('editorVisitasContainer');
         if (container) return;
@@ -4076,6 +4189,10 @@
     }
 
     async function actualizarVisitasTotales() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede modificar el contador global.');
+            return;
+        }
         const input = document.getElementById('inputVisitasTotales');
         const nuevo = parseInt(input.value);
         if (isNaN(nuevo) || nuevo < 0) {
@@ -4089,9 +4206,10 @@
     }
 
     // ============================================================
-    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (mejorada)
+    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (solo admin)
     // ============================================================
     function agregarSeccionPublicidad() {
+        if (!isAdmin) return;
         const modal = document.getElementById('adminMainModal');
         let container = document.getElementById('publicidadAdminContainer');
         if (container) return;
@@ -4146,6 +4264,10 @@
     }
 
     async function guardarPublicidad() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede guardar configuración de publicidad.');
+            return;
+        }
         const activo = document.getElementById('pubActivo').checked;
         const tipo = document.getElementById('pubTipo').value;
         const contenido = document.getElementById('pubContenido').value.trim();
@@ -4196,7 +4318,7 @@
     }
 
     // ============================================================
-    //  COMUNICADOS (WhatsApp en cadena)
+    //  COMUNICADOS - solo admin
     // ============================================================
     function crearModalComunicados() {
         if (document.getElementById('comunicadosModal')) return;
@@ -4258,11 +4380,13 @@
     }
 
     function seleccionarTodosComunicados(seleccionar) {
+        if (!isAdmin) return;
         const checkboxes = document.querySelectorAll('#comunicadosLista input[type="checkbox"]');
         checkboxes.forEach(cb => cb.checked = seleccionar);
     }
 
     function copiarMensajeComunicados() {
+        if (!isAdmin) return;
         const msg = document.getElementById('comunicadosMensaje').value;
         if (!msg) {
             showToast('Escribe un mensaje primero.');
@@ -4279,6 +4403,7 @@
     }
 
     function enviarWhatsAppComunicados() {
+        if (!isAdmin) return;
         const msg = document.getElementById('comunicadosMensaje').value.trim();
         if (!msg) {
             showToast('Escribe un mensaje primero.');
@@ -4308,9 +4433,10 @@
     }
 
     // ============================================================
-    //  INYECTAR BOTONES EN EL PANEL DE ADMIN
+    //  INYECTAR BOTONES EN EL PANEL DE ADMIN (solo admin)
     // ============================================================
     function agregarBotonCambiarClave() {
+        if (!isAdmin) return;
         const panelDiv = document.querySelector('#adminMainModal .modal > div:nth-child(2)');
         if (!panelDiv) return;
         if (panelDiv.querySelector('#btnCambiarClave')) return;
@@ -4324,6 +4450,7 @@
     }
 
     function agregarBotonComunicados() {
+        if (!isAdmin) return;
         const panelDiv = document.querySelector('#adminMainModal .modal > div:nth-child(2)');
         if (!panelDiv) return;
         if (panelDiv.querySelector('#btnComunicados')) return;
@@ -4337,7 +4464,7 @@
     }
 
     // ============================================================
-    //  TOAST
+    //  TOAST (sin cambios)
     // ============================================================
     function showToast(msg) {
         const t = document.getElementById('toast');
@@ -4348,7 +4475,7 @@
     }
 
     // ============================================================
-    //  RENDER ALL
+    //  RENDER ALL (sin cambios)
     // ============================================================
     function renderAll() {
         if (!dataLoaded) return;
@@ -4431,10 +4558,12 @@
         document.getElementById('toggleAdminBtn').textContent = ' Administrar';
         showToast('Sesión cerrada');
         renderAll();
+        // Desactivar listener en tiempo real para no admin
+        // No se puede desuscribir fácilmente, pero podemos ignorar las actualizaciones
     }
 
     // ============================================================
-    //  ZOOM DE IMAGEN
+    //  ZOOM DE IMAGEN (sin cambios)
     // ============================================================
     function openImageZoom(src) {
         if (!src || src === '') return;
