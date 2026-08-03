@@ -1768,6 +1768,23 @@
     const CODIGO_RECUPERACION = 'reset123';
 
     // ============================================================
+    //  AUTENTICACIÓN ANÓNIMA PARA STORAGE
+    // ============================================================
+    // Cargar Firebase Auth dinámicamente y autenticar anónimamente
+    (function cargarAuth() {
+        const authScript = document.createElement('script');
+        authScript.src = 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js';
+        authScript.onload = function() {
+            firebase.auth().signInAnonymously().catch(err => {
+                console.warn('Auth anónimo falló:', err);
+                // Si falla, intentar de nuevo o mostrar error
+                showToast('Error de autenticación para subir imágenes. Contacta al administrador.');
+            });
+        };
+        document.head.appendChild(authScript);
+    })();
+
+    // ============================================================
     //  DATA LAYER (Firestore + localStorage fallback)
     // ============================================================
     let data = {
