@@ -1684,13 +1684,13 @@
     <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente) ===== -->
 
     <!-- ===== NUEVOS MODALES PARA DUEÑO Y HISTORIAL ===== -->
-    <!-- Modal autenticación dueño -->
+    <!-- Modal autenticación dueño (corregido: no muestra la clave) -->
     <div class="modal-overlay" id="ownerAuthModal">
         <div class="modal">
             <h2><i class="fas fa-key"></i> Acceso como dueño</h2>
             <p>Mantén presionado el badge de estado durante 4 segundos para acceder.</p>
-            <label>Clave del local:</label>
-            <input type="password" id="ownerAuthClave" placeholder="Ingrese la clave">
+            <label>Ingrese su clave de acceso:</label>
+            <input type="password" id="ownerAuthClave" placeholder="Clave de acceso">
             <div class="btn-group">
                 <button class="btn-secondary" onclick="closeModal('ownerAuthModal')">Cancelar</button>
                 <button class="btn-primary" onclick="validarOwner()">Ingresar</button>
@@ -2936,7 +2936,7 @@
     });
 
     // ============================================================
-    //  FUNCIONES PARA DUEÑO (toque largo en badge)
+    //  FUNCIONES PARA DUEÑO (toque largo en badge) - CORREGIDO: no muestra la clave
     // ============================================================
     let ownerLocalId = null;
 
@@ -2947,10 +2947,9 @@
             showToast('Local no encontrado');
             return;
         }
-        // Si no tiene whatsapp, la clave es adminadmin
-        const clave = local.whatsapp ? local.whatsapp.replace(/\D/g, '') : 'adminadmin';
+        // No mostrar la clave en el placeholder por seguridad
         document.getElementById('ownerAuthClave').value = '';
-        document.getElementById('ownerAuthClave').placeholder = `Clave (${clave})`;
+        document.getElementById('ownerAuthClave').placeholder = 'Clave de acceso';
         openModal('ownerAuthModal');
     }
 
@@ -2961,6 +2960,7 @@
             showToast('Local no encontrado');
             return;
         }
+        // La clave es el número de WhatsApp sin símbolos, o 'adminadmin' si no tiene
         const claveCorrecta = local.whatsapp ? local.whatsapp.replace(/\D/g, '') : 'adminadmin';
         if (claveIngresada === claveCorrecta) {
             closeModal('ownerAuthModal');
@@ -3202,8 +3202,6 @@
         if (data.historial.length > 100) data.historial.shift();
 
         // Guardar en Firestore (solo el admin puede guardar, pero en este caso, el dueño no tiene permisos de escritura directa)
-        // Necesitamos una función especial que actualice el documento con los cambios del dueño.
-        // Para simplificar, reutilizamos saveData pero solo si es admin, si no, usamos una función separada.
         await guardarCambiosOwnerEnFirestore(localId, cambios, entradaHistorial);
 
         showToast('Cambios guardados correctamente.');
