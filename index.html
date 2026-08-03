@@ -21,12 +21,14 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.2s;
         }
+
         body {
             background: var(--bg-body);
             color: var(--text-color);
             min-height: 100vh;
             padding: 20px;
         }
+
         :root {
             --bg-body: #f4f7fc;
             --bg-card: #ffffff;
@@ -42,6 +44,7 @@
             --input-bg: #ffffff;
             --admin-bg: #f1f5f9;
         }
+
         body.dark {
             --bg-body: #0f172a;
             --bg-card: #1e293b;
@@ -54,6 +57,7 @@
             --input-bg: #2d3748;
             --admin-bg: #1e293b;
         }
+
         body.colorful {
             --bg-body: #fdf6e3;
             --bg-card: #fef9ef;
@@ -66,6 +70,7 @@
             --input-bg: #ffffff;
             --admin-bg: #fdf6e3;
         }
+
         body.festive {
             --bg-body: #f0f4f0;
             --bg-card: #ffffff;
@@ -78,7 +83,11 @@
             --input-bg: #ffffff;
             --admin-bg: #f0f4f0;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
         /* ===== HEADER ===== */
         .header {
@@ -93,12 +102,14 @@
             align-items: center;
             gap: 15px;
         }
+
         .header-left {
             display: flex;
             align-items: center;
             gap: 15px;
             flex-wrap: wrap;
         }
+
         .header-left h1 {
             font-size: 1.8rem;
             font-weight: 700;
@@ -111,6 +122,7 @@
             opacity: 0.7;
             margin-left: 5px;
         }
+
         .clock {
             font-size: 1.2rem;
             background: var(--primary-light);
@@ -119,13 +131,18 @@
             color: var(--primary);
             font-weight: 600;
         }
+
         .header-right {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
-        .btn-admin { display: none !important; }
+
+        .btn-admin {
+            display: none !important;
+        }
+
         .btn-logout {
             background: var(--red);
             color: #fff;
@@ -140,7 +157,10 @@
             gap: 8px;
             transition: 0.2s;
         }
-        .btn-logout:hover { opacity: 0.85; transform: scale(1.05); }
+        .btn-logout:hover {
+            opacity: 0.85;
+            transform: scale(1.05);
+        }
 
         /* ===== BANNERS CARRUSEL ===== */
         .banner-carousel {
@@ -220,8 +240,11 @@
             background: #fff;
             transform: scale(1.2);
         }
+
         @media (max-width: 768px) {
-            .banner-slide { height: 160px; }
+            .banner-slide {
+                height: 160px;
+            }
         }
 
         /* ===== BUSCADOR Y FILTROS ===== */
@@ -236,6 +259,7 @@
             align-items: center;
             gap: 15px;
         }
+
         .search-section input,
         .search-section select {
             padding: 10px 16px;
@@ -254,6 +278,7 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-light);
         }
+
         .search-section .filter-group {
             display: flex;
             gap: 10px;
@@ -265,6 +290,7 @@
             flex: 1 1 140px;
             min-width: 0;
         }
+
         .search-section #ordenSelect {
             flex: 1 1 140px;
             min-width: 0;
@@ -281,7 +307,10 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-light);
         }
-        #orderBtn { display: none; }
+
+        #orderBtn {
+            display: none;
+        }
 
         /* ===== GRID DE LOCALES ===== */
         .grid {
@@ -289,6 +318,7 @@
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 25px;
         }
+
         .card {
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -306,10 +336,12 @@
             transform: translateY(-6px) scale(1.01);
             box-shadow: 0 12px 32px rgba(0,0,0,0.15);
         }
+
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
         .card-img-wrap {
             position: relative;
             width: 100%;
@@ -346,19 +378,24 @@
             border-radius: 4px;
             border-left: 3px solid #fff;
         }
-        .card-img-overlay .ubicacion { font-weight: 700; }
+        .card-img-overlay .ubicacion {
+            font-weight: 700;
+        }
+
         .card-body {
             padding: 18px 20px 20px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
+
         .card-header {
             display: flex;
             align-items: center;
             gap: 14px;
             margin-bottom: 12px;
         }
+
         .card-logo {
             width: 60px;
             height: 60px;
@@ -380,6 +417,7 @@
             height: 100%;
             object-fit: cover;
         }
+
         .card-title {
             font-size: 1.2rem;
             font-weight: 700;
@@ -394,6 +432,7 @@
             display: inline-block;
             margin-top: 4px;
         }
+
         .card-desc {
             margin: 8px 0 12px;
             font-size: 0.95rem;
@@ -401,6 +440,7 @@
             opacity: 0.85;
             flex: 1;
         }
+
         .card-horario {
             display: flex;
             align-items: center;
@@ -425,12 +465,19 @@
             font-weight: 600;
             font-size: 0.8rem;
             color: #fff;
-            cursor: default;
             user-select: none;
+            cursor: pointer;
             transition: background 0.2s;
         }
-        .status-badge.open { background: var(--green); }
-        .status-badge.closed { background: var(--red); }
+        .status-badge.open {
+            background: var(--green);
+        }
+        .status-badge.closed {
+            background: var(--red);
+        }
+        .status-badge:active {
+            transform: scale(0.95);
+        }
 
         .card-actions {
             display: flex;
@@ -438,6 +485,7 @@
             margin-top: 12px;
             flex-wrap: wrap;
         }
+
         .card-actions a,
         .card-actions button {
             display: inline-flex;
@@ -459,10 +507,19 @@
             transform: scale(1.05);
             opacity: 0.9;
         }
-        .card-actions .whatsapp { background: #25d366; }
-        .card-actions .whatsapp:hover { background: #1da851; }
-        .card-actions .share { background: #6b7280; }
-        .card-actions .share:hover { background: #4b5563; }
+        .card-actions .whatsapp {
+            background: #25d366;
+        }
+        .card-actions .whatsapp:hover {
+            background: #1da851;
+        }
+        .card-actions .share {
+            background: #6b7280;
+        }
+        .card-actions .share:hover {
+            background: #4b5563;
+        }
+
         .card-ubicacion {
             font-size: 0.8rem;
             color: var(--text-color);
@@ -483,6 +540,7 @@
             font-size: 0.8rem;
             margin-top: 4px;
         }
+
         .card-admin-actions {
             position: absolute;
             top: 10px;
@@ -510,7 +568,9 @@
             transform: scale(1.1);
             background: var(--primary);
         }
-        .card-admin-actions .delete-btn:hover { background: var(--red); }
+        .card-admin-actions .delete-btn:hover {
+            background: var(--red);
+        }
 
         /* ===== MODALES ===== */
         .modal-overlay {
@@ -524,7 +584,9 @@
             align-items: center;
             padding: 20px;
         }
-        .modal-overlay.active { display: flex; }
+        .modal-overlay.active {
+            display: flex;
+        }
         .modal {
             background: var(--bg-card);
             padding: 30px;
@@ -581,17 +643,23 @@
             background: var(--primary);
             color: #fff;
         }
-        .modal .btn-group .btn-primary:hover { transform: scale(1.05); }
+        .modal .btn-group .btn-primary:hover {
+            transform: scale(1.05);
+        }
         .modal .btn-group .btn-secondary {
             background: var(--border);
             color: var(--text-color);
         }
-        .modal .btn-group .btn-secondary:hover { transform: scale(1.05); }
+        .modal .btn-group .btn-secondary:hover {
+            transform: scale(1.05);
+        }
         .modal .btn-group .btn-danger {
             background: var(--red);
             color: #fff;
         }
-        .modal .btn-group .btn-danger:hover { transform: scale(1.05); }
+        .modal .btn-group .btn-danger:hover {
+            transform: scale(1.05);
+        }
 
         .horario-grid {
             display: grid;
@@ -672,9 +740,14 @@
             min-width: 30px;
             opacity: 0.7;
         }
+
         @media (max-width: 600px) {
-            .horario-grid { grid-template-columns: 1fr; }
-            .image-adjust-group { flex-direction: column; }
+            .horario-grid {
+                grid-template-columns: 1fr;
+            }
+            .image-adjust-group {
+                flex-direction: column;
+            }
         }
 
         /* ===== MODAL DE AMPLIACIÓN DE IMAGEN ===== */
@@ -689,7 +762,9 @@
             padding: 30px;
             cursor: pointer;
         }
-        .image-zoom-overlay.active { display: flex; }
+        .image-zoom-overlay.active {
+            display: flex;
+        }
         .image-zoom-overlay img {
             max-width: 90%;
             max-height: 90%;
@@ -745,30 +820,46 @@
                 align-items: stretch;
                 gap: 10px;
             }
-            .header-left { justify-content: center; }
-            .header-right { justify-content: center; }
+            .header-left {
+                justify-content: center;
+            }
+            .header-right {
+                justify-content: center;
+            }
             .search-section {
                 flex-direction: column;
                 align-items: stretch;
             }
-            .search-section .filter-group { flex-direction: column; }
+            .search-section .filter-group {
+                flex-direction: column;
+            }
             .search-section .filter-group select,
             .search-section input,
             .search-section #ordenSelect {
                 flex: 1 1 auto;
                 width: 100%;
             }
-            .grid { grid-template-columns: 1fr; }
-            .banner-slide { height: 160px; }
-            .modal { padding: 20px; }
-            .card-img-wrap { height: 160px; }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .banner-slide {
+                height: 160px;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .card-img-wrap {
+                height: 160px;
+            }
         }
+
         #loadingMsg {
             text-align: center;
             padding: 40px;
             font-size: 1.2rem;
             color: var(--primary);
         }
+
         .forgot-link {
             display: block;
             text-align: right;
@@ -778,7 +869,9 @@
             font-size: 0.9rem;
             text-decoration: underline;
         }
-        .forgot-link:hover { opacity: 0.7; }
+        .forgot-link:hover {
+            opacity: 0.7;
+        }
 
         .visitas-container {
             margin-top: 20px;
@@ -801,7 +894,9 @@
             padding: 6px 10px;
             border-bottom: 1px solid var(--border);
         }
-        .visitas-item .nombre { font-weight: 600; }
+        .visitas-item .nombre {
+            font-weight: 600;
+        }
         .visitas-item .contador {
             background: var(--primary);
             color: #fff;
@@ -849,10 +944,14 @@
                 font-size: 0.8rem;
                 padding: 2px 10px 2px 6px;
             }
-            .visit-counter .number { min-width: 30px; }
+            .visit-counter .number {
+                min-width: 30px;
+            }
         }
 
-        #comunicadosModal .modal { max-width: 600px; }
+        #comunicadosModal .modal {
+            max-width: 600px;
+        }
         .comunicados-lista {
             display: flex;
             flex-wrap: wrap;
@@ -924,7 +1023,9 @@
             background: #25d366;
             color: #fff;
         }
-        .comunicados-actions .btn-send:hover { background: #1da851; }
+        .comunicados-actions .btn-send:hover {
+            background: #1da851;
+        }
 
         @media (max-width: 600px) {
             #comunicadosModal .modal {
@@ -937,7 +1038,9 @@
             }
         }
 
-        #horariosModal .modal { max-width: 500px; }
+        #horariosModal .modal {
+            max-width: 500px;
+        }
         .horarios-tabla {
             width: 100%;
             border-collapse: collapse;
@@ -947,8 +1050,12 @@
             padding: 8px 10px;
             border-bottom: 1px solid var(--border);
         }
-        .horarios-tabla .dia { font-weight: 600; }
-        .horarios-tabla .hora { text-align: right; }
+        .horarios-tabla .dia {
+            font-weight: 600;
+        }
+        .horarios-tabla .hora {
+            text-align: right;
+        }
         .horarios-tabla .cerrado {
             color: var(--red);
             font-weight: 600;
@@ -1023,7 +1130,9 @@
             transform: scale(1.1);
         }
         @media (max-width: 768px) {
-            #publicidadOverlay .texto-neon { font-size: inherit; }
+            #publicidadOverlay .texto-neon {
+                font-size: inherit;
+            }
         }
 
         .galeria-extra {
@@ -1066,7 +1175,9 @@
             opacity: 0;
             transition: opacity 0.8s ease;
         }
-        .carrusel-imagenes .slide.active { opacity: 1; }
+        .carrusel-imagenes .slide.active {
+            opacity: 1;
+        }
         .carrusel-imagenes img {
             width: 100%;
             height: 100%;
@@ -1096,8 +1207,13 @@
             border-radius: 4px;
             border-left: 3px solid #fff;
         }
-        .carrusel-imagenes .overlay-numero .ubicacion { font-weight: 700; }
-        .carrusel-imagenes.carousel-fade .slide { transition: opacity 0.8s ease; }
+        .carrusel-imagenes .overlay-numero .ubicacion {
+            font-weight: 700;
+        }
+
+        .carrusel-imagenes.carousel-fade .slide {
+            transition: opacity 0.8s ease;
+        }
         .carrusel-imagenes.carousel-slide .slide {
             transition: transform 0.8s ease, opacity 0.8s ease;
             transform: translateX(100%);
@@ -1111,6 +1227,7 @@
             transform: translateX(-100%);
             opacity: 1;
         }
+
         .carrusel-imagenes.carousel-zoom .slide {
             transition: transform 0.8s ease, opacity 0.8s ease;
             transform: scale(0.5);
@@ -1120,6 +1237,7 @@
             transform: scale(1);
             opacity: 1;
         }
+
         .carrusel-imagenes.carousel-flip .slide {
             transition: transform 0.8s ease, opacity 0.8s ease;
             transform: rotateY(90deg);
@@ -1129,6 +1247,7 @@
             transform: rotateY(0deg);
             opacity: 1;
         }
+
         .carrusel-imagenes.carousel-rotate .slide {
             transition: transform 0.8s ease, opacity 0.8s ease;
             transform: rotate(15deg) scale(0.8);
@@ -1138,6 +1257,7 @@
             transform: rotate(0deg) scale(1);
             opacity: 1;
         }
+
         .carrusel-imagenes.carousel-bounce .slide {
             transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.6s ease;
             transform: scale(0.3);
@@ -1147,6 +1267,7 @@
             transform: scale(1);
             opacity: 1;
         }
+
         .carrusel-imagenes.carousel-blur .slide {
             transition: filter 0.8s ease, opacity 0.8s ease;
             filter: blur(20px);
@@ -1156,6 +1277,7 @@
             filter: blur(0);
             opacity: 1;
         }
+
         .carrusel-imagenes.carousel-scale .slide {
             transition: transform 0.8s ease, opacity 0.8s ease;
             transform: scale(0.8) translateY(30px);
@@ -1165,6 +1287,7 @@
             transform: scale(1) translateY(0);
             opacity: 1;
         }
+
         .carrusel-imagenes.carousel-slide-fade .slide {
             transition: transform 0.8s ease, opacity 0.8s ease;
             transform: translateX(60px);
@@ -1174,6 +1297,7 @@
             transform: translateX(0);
             opacity: 1;
         }
+
         .carrusel-imagenes.carousel-wipe .slide {
             transition: clip-path 0.8s ease, opacity 0.8s ease;
             clip-path: inset(0 100% 0 0);
@@ -1184,9 +1308,91 @@
             opacity: 1;
         }
 
-        /* ===== NUEVOS ESTILOS PARA HISTORIAL ===== */
+        /* ===== NUEVOS ESTILOS PARA IMÁGENES EXTRA CON SUBIDA ===== */
+        .img-extra-upload-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: var(--input-bg);
+            padding: 6px 10px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            margin-bottom: 6px;
+        }
+        .img-extra-upload-item .img-extra-url {
+            flex: 2;
+            min-width: 120px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-color);
+        }
+        .img-extra-upload-item .img-extra-fit {
+            flex: 1;
+            min-width: 80px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-color);
+        }
+        .img-extra-upload-item .img-extra-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .img-extra-upload-item .img-extra-upload-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .img-extra-upload-item .img-extra-upload-btn:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .img-extra-upload-item .img-extra-delete-btn {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== HISTORIAL ===== */
+        .historial-container {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--input-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        .historial-container h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
         .historial-item {
-            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: background 0.2s;
@@ -1195,46 +1401,41 @@
             background: var(--primary-light);
         }
         .historial-item .fecha {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .historial-item .accion {
+            flex: 1;
+            margin: 0 10px;
+        }
+        .historial-item .usuario {
+            font-weight: 300;
             font-size: 0.8rem;
             opacity: 0.7;
         }
-        .historial-item .detalle {
+        .historial-detalle {
+            background: var(--bg-card);
+            padding: 10px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .historial-detalle table {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 0.9rem;
         }
-        .historial-detalle-modal .modal {
-            max-width: 500px;
+        .historial-detalle th,
+        .historial-detalle td {
+            padding: 4px 8px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
         }
-        .historial-detalle-modal .detalle-campo {
+        .historial-detalle th {
             font-weight: 600;
-            margin-top: 6px;
-        }
-        .historial-detalle-modal .detalle-valor {
-            background: var(--input-bg);
-            padding: 6px 12px;
-            border-radius: 30px;
-            border: 1px solid var(--border);
-            margin: 4px 0 8px;
-        }
-        .owner-image-upload {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-top: 8px;
-        }
-        .owner-image-upload button {
-            padding: 6px 16px;
-            border-radius: 30px;
-            border: none;
-            background: var(--primary);
-            color: #fff;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .owner-image-upload button:hover {
-            opacity: 0.9;
-        }
-        .owner-image-upload input[type="file"] {
-            display: none;
+            background: var(--primary-light);
         }
     </style>
 </head>
@@ -1291,10 +1492,10 @@
     <div id="loadingMsg">Cargando datos desde la nube...</div>
     <div class="grid" id="localsGrid" style="display:none;"></div>
 
-    <!-- ===== MODAL LOGIN ===== -->
+    <!-- ===== MODAL LOGIN ADMIN GENERAL ===== -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal">
-            <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
+            <h2><i class="fas fa-lock"></i> Acceso Administrador General</h2>
             <label>Clave:</label>
             <input type="password" id="loginClave" placeholder="Ingrese clave">
             <span class="forgot-link" id="forgotLink">¿Olvidaste tu clave?</span>
@@ -1305,17 +1506,16 @@
         </div>
     </div>
 
-    <!-- ===== MODAL CLAVE PARA DUEÑO ===== -->
-    <div class="modal-overlay" id="ownerKeyModal">
+    <!-- ===== MODAL LOGIN DUEÑO (acceso rápido) ===== -->
+    <div class="modal-overlay" id="duenoModal">
         <div class="modal">
-            <h2><i class="fas fa-lock"></i> Acceso de Dueño</h2>
-            <p>Ingresa la clave para editar este local.</p>
-            <input type="hidden" id="ownerKeyLocalId" value="">
+            <h2><i class="fas fa-store"></i> Acceso como Dueño</h2>
+            <p>Ingresa la clave del local para editarlo.</p>
             <label>Clave:</label>
-            <input type="password" id="ownerKeyInput" placeholder="Ingresar clave aquí">
+            <input type="password" id="duenoClave" placeholder="Ingresar clave aquí">
             <div class="btn-group">
-                <button class="btn-secondary" onclick="closeModal('ownerKeyModal')">Cancelar</button>
-                <button class="btn-primary" onclick="verificarClaveDueño()">Ingresar</button>
+                <button class="btn-secondary" onclick="closeModal('duenoModal')">Cancelar</button>
+                <button class="btn-primary" onclick="loginDueno()">Ingresar</button>
             </div>
         </div>
     </div>
@@ -1323,7 +1523,7 @@
     <!-- ===== MODAL ADMIN PRINCIPAL ===== -->
     <div class="modal-overlay" id="adminMainModal">
         <div class="modal" style="max-width: 700px;">
-            <h2><i class="fas fa-shield-alt"></i> Panel de Control</h2>
+            <h2><i class="fas fa-shield-alt"></i> Panel de Control General</h2>
             <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
                 <button class="btn-primary" onclick="openModal('addLocalModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-plus"></i> Agregar Local</button>
                 <button class="btn-primary" onclick="openModal('bannerModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-image"></i> Banners</button>
@@ -1335,46 +1535,22 @@
                 <button class="btn-primary" onclick="exportarJSON()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-file-export"></i> Exportar JSON</button>
                 <button class="btn-primary" onclick="document.getElementById('importJSONInput').click()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-file-import"></i> Importar JSON</button>
                 <input type="file" id="importJSONInput" accept=".json" style="display:none;" onchange="importarJSON(event)">
-                <button class="btn-primary" onclick="abrirHistorial()" style="padding:10px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-history"></i> Ver Historial</button>
                 <button class="btn-secondary" onclick="closeModal('adminMainModal')" style="padding:10px 20px; border:none; border-radius:30px; background:var(--border); color:var(--text-color); cursor:pointer; font-weight:600;">Cerrar</button>
             </div>
             <p style="margin-bottom:10px;">Los locales se editan directamente desde la vista principal (iconos en cada tarjeta).</p>
             <div style="margin-top:15px; padding:12px; background:var(--primary-light); border-radius:var(--radius);">
                 <strong>Último backup:</strong> <span id="ultimoBackupInfo">Nunca</span>
             </div>
-        </div>
-    </div>
-
-    <!-- ===== MODAL HISTORIAL ===== -->
-    <div class="modal-overlay" id="historialModal">
-        <div class="modal" style="max-width: 800px;">
-            <h2><i class="fas fa-history"></i> Historial de Cambios</h2>
-            <div style="margin:10px 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                <label>Filtrar por local:</label>
-                <select id="historialFiltroLocal" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--input-bg); color:var(--text-color);">
-                    <option value="">Todos</option>
-                </select>
-                <button class="btn-primary" onclick="cargarHistorial()" style="padding:6px 16px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-sync"></i> Actualizar</button>
-            </div>
-            <div id="historialLista" style="max-height:400px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius);"></div>
-            <div class="btn-group">
-                <button class="btn-secondary" onclick="closeModal('historialModal')">Cerrar</button>
+            <!-- SECCIÓN HISTORIAL -->
+            <div id="historialContainer" class="historial-container">
+                <h3><i class="fas fa-history"></i> Historial de cambios</h3>
+                <div id="historialList" style="max-height:250px; overflow-y:auto;"></div>
+                <div id="historialDetalle" class="historial-detalle" style="display:none;"></div>
             </div>
         </div>
     </div>
 
-    <!-- ===== MODAL DETALLE HISTORIAL ===== -->
-    <div class="modal-overlay historial-detalle-modal" id="historialDetalleModal">
-        <div class="modal" style="max-width:500px;">
-            <h2><i class="fas fa-info-circle"></i> Detalle del Cambio</h2>
-            <div id="historialDetalleContenido"></div>
-            <div class="btn-group">
-                <button class="btn-secondary" onclick="closeModal('historialDetalleModal')">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== MODAL AGREGAR/EDITAR LOCAL (Admin) ===== -->
+    <!-- ===== MODAL AGREGAR/EDITAR LOCAL ===== -->
     <div class="modal-overlay" id="addLocalModal">
         <div class="modal">
             <h2 id="modalLocalTitle"><i class="fas fa-store"></i> Agregar Local</h2>
@@ -1475,7 +1651,7 @@
                 <label>Feriados (fecha:horario; ej: 25/12:10:00-14:00, 01/01:cerrado)</label>
                 <input type="text" id="hFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
 
-                <label>Imágenes adicionales (URLs)</label>
+                <label>Imágenes adicionales (URL o subir archivo)</label>
                 <div id="imagenesExtraContainer"></div>
 
                 <label style="display:flex; align-items:center; gap:10px; margin-top:12px;">
@@ -1491,49 +1667,8 @@
                 <input type="text" id="fLogoUrl" placeholder="O pegar URL de logo" style="margin-top:6px;">
                 
                 <div class="btn-group">
-                    <button type="button" class="btn-secondary" onclick="closeModal('addLocalModal')">Cancelar</button>
-                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ===== MODAL EDITAR DUEÑO ===== -->
-    <div class="modal-overlay" id="editOwnerModal">
-        <div class="modal">
-            <h2><i class="fas fa-edit"></i> Editar Local (Dueño)</h2>
-            <form id="ownerForm">
-                <input type="hidden" id="ownerEditId" value="">
-                <label>Descripción</label>
-                <textarea id="ownerDescripcion" rows="2"></textarea>
-                <label>WhatsApp (sin 0 sin 15)</label>
-                <input type="text" id="ownerWhatsapp" placeholder="Ej: 5491112345678">
-                <label>Sitio web</label>
-                <input type="url" id="ownerWeb" placeholder="https://...">
-                <label>Horarios</label>
-                <div class="horario-grid">
-                    <div class="horario-item"><label>Lunes</label> <input type="time" id="oLunesIni" value="09:00"> - <input type="time" id="oLunesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="oLunesCerrado"> Cerrado</span></div>
-                    <div class="horario-item"><label>Martes</label> <input type="time" id="oMartesIni" value="09:00"> - <input type="time" id="oMartesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="oMartesCerrado"> Cerrado</span></div>
-                    <div class="horario-item"><label>Miércoles</label> <input type="time" id="oMiercolesIni" value="09:00"> - <input type="time" id="oMiercolesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="oMiercolesCerrado"> Cerrado</span></div>
-                    <div class="horario-item"><label>Jueves</label> <input type="time" id="oJuevesIni" value="09:00"> - <input type="time" id="oJuevesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="oJuevesCerrado"> Cerrado</span></div>
-                    <div class="horario-item"><label>Viernes</label> <input type="time" id="oViernesIni" value="09:00"> - <input type="time" id="oViernesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="oViernesCerrado"> Cerrado</span></div>
-                    <div class="horario-item"><label>Sábado</label> <input type="time" id="oSabadoIni" value="10:00"> - <input type="time" id="oSabadoFin" value="14:00"> <span class="cerrado-label"><input type="checkbox" id="oSabadoCerrado"> Cerrado</span></div>
-                    <div class="horario-item"><label>Domingo</label> <input type="time" id="oDomingoIni" value="10:00"> - <input type="time" id="oDomingoFin" value="14:00"> <span class="cerrado-label"><input type="checkbox" id="oDomingoCerrado" checked> Cerrado</span></div>
-                </div>
-                <label>Feriados (fecha:horario; ej: 25/12:10:00-14:00, 01/01:cerrado)</label>
-                <input type="text" id="oFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
-
-                <label>Imágenes adicionales</label>
-                <div id="ownerImagenesExtraContainer"></div>
-                <div class="owner-image-upload">
-                    <button type="button" onclick="document.getElementById('ownerImageFile').click()"><i class="fas fa-camera"></i> Subir imagen</button>
-                    <input type="file" id="ownerImageFile" accept="image/*">
-                    <span style="font-size:0.8rem; opacity:0.7;">(se reducirá a &lt;1MB)</span>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn-secondary" onclick="closeModal('editOwnerModal')">Cancelar</button>
-                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                    <button type="button" class="btn-secondary" id="cancelarEdicionBtn" onclick="cancelarEdicion()">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="guardarLocalBtn"><i class="fas fa-save"></i> Guardar</button>
                 </div>
             </form>
         </div>
@@ -1659,7 +1794,7 @@
     <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
 
-    <!-- ===== OVERLAY DE PUBLICIDAD ===== -->
+    <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente) ===== -->
 </div>
 
 <script>
@@ -1711,15 +1846,19 @@
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
             ]
-        }
+        },
+        historial: []  // Nuevo campo para historial de cambios
     };
 
     let isAdmin = false;
+    let isDuenoMode = false;        // Indica si el usuario actual es dueño (edición limitada)
+    let duenoLocalId = null;        // ID del local que está editando el dueño
     let bannerIndex = 0;
     let bannerTimer = null;
     let dataLoaded = false;
     let hayFiltroActivo = false;
     let ordenActual = 'abiertos';
+    let modoEdicionDueno = false;   // Para controlar el modal de edición
 
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
@@ -1736,8 +1875,225 @@
         { value: 'wipe', label: 'Cortina' }
     ];
 
+    function getDefaultData() {
+        return {
+            rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
+            locales: [
+                {
+                    id: 1,
+                    nombre: "Librería El Saber",
+                    rubro: "Librería",
+                    numeroLocal: "5",
+                    ubicacion: "Primer Piso",
+                    enAlquiler: false,
+                    inmobiliaria: "",
+                    descripcion: "Libros, útiles y material de oficina. Amplio catálogo.",
+                    whatsapp: "5491112345678",
+                    web: "https://libreriaelsaber.com",
+                    colorFondo: "#8B5A2B",
+                    foto: "https://picsum.photos/seed/libro/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "09:00", fin: "18:00", cerrado: false },
+                        martes: { ini: "09:00", fin: "18:00", cerrado: false },
+                        miercoles: { ini: "09:00", fin: "18:00", cerrado: false },
+                        jueves: { ini: "09:00", fin: "18:00", cerrado: false },
+                        viernes: { ini: "09:00", fin: "18:00", cerrado: false },
+                        sabado: { ini: "10:00", fin: "14:00", cerrado: false },
+                        domingo: { ini: "10:00", fin: "14:00", cerrado: true },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    },
+                    visitas: 0,
+                    mostrarPagina: true,
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
+                },
+                {
+                    id: 2,
+                    nombre: "Café Central",
+                    rubro: "Gastronomía",
+                    numeroLocal: "12",
+                    ubicacion: "PB",
+                    enAlquiler: false,
+                    inmobiliaria: "",
+                    descripcion: "Café de especialidad, pastelería y desayunos.",
+                    whatsapp: "5491123456789",
+                    web: "https://cafecentral.com",
+                    colorFondo: "#D97706",
+                    foto: "https://picsum.photos/seed/cafe/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "08:00", fin: "20:00", cerrado: false },
+                        martes: { ini: "08:00", fin: "20:00", cerrado: false },
+                        miercoles: { ini: "08:00", fin: "20:00", cerrado: false },
+                        jueves: { ini: "08:00", fin: "20:00", cerrado: false },
+                        viernes: { ini: "08:00", fin: "20:00", cerrado: false },
+                        sabado: { ini: "09:00", fin: "18:00", cerrado: false },
+                        domingo: { ini: "10:00", fin: "14:00", cerrado: false },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    },
+                    visitas: 0,
+                    mostrarPagina: true,
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
+                },
+                {
+                    id: 3,
+                    nombre: "Indumentaria Sport",
+                    rubro: "Indumentaria",
+                    numeroLocal: "8",
+                    ubicacion: "Subsuelo",
+                    enAlquiler: true,
+                    inmobiliaria: "5491134567890",
+                    descripcion: "Ropa deportiva de primeras marcas.",
+                    whatsapp: "5491134567890",
+                    web: "https://sportwear.com",
+                    colorFondo: "#2563EB",
+                    foto: "https://picsum.photos/seed/sport/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "10:00", fin: "19:00", cerrado: false },
+                        martes: { ini: "10:00", fin: "19:00", cerrado: false },
+                        miercoles: { ini: "10:00", fin: "19:00", cerrado: false },
+                        jueves: { ini: "10:00", fin: "19:00", cerrado: false },
+                        viernes: { ini: "10:00", fin: "19:00", cerrado: false },
+                        sabado: { ini: "10:00", fin: "15:00", cerrado: false },
+                        domingo: { ini: "10:00", fin: "15:00", cerrado: true },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    },
+                    visitas: 0,
+                    mostrarPagina: true,
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
+                },
+                {
+                    id: 4,
+                    nombre: "Joyas D'Luz",
+                    rubro: "Joyería",
+                    numeroLocal: "3",
+                    ubicacion: "Primer Piso",
+                    enAlquiler: false,
+                    inmobiliaria: "",
+                    descripcion: "Joyas de oro y plata, diseños exclusivos.",
+                    whatsapp: "5491145678901",
+                    web: "https://joyasdluz.com",
+                    colorFondo: "#B45309",
+                    foto: "https://picsum.photos/seed/joyas/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "10:00", fin: "17:00", cerrado: false },
+                        martes: { ini: "10:00", fin: "17:00", cerrado: false },
+                        miercoles: { ini: "10:00", fin: "17:00", cerrado: false },
+                        jueves: { ini: "10:00", fin: "17:00", cerrado: false },
+                        viernes: { ini: "10:00", fin: "17:00", cerrado: false },
+                        sabado: { ini: "10:00", fin: "13:00", cerrado: false },
+                        domingo: { ini: "10:00", fin: "13:00", cerrado: true },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    },
+                    visitas: 0,
+                    mostrarPagina: true,
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
+                },
+                {
+                    id: 5,
+                    nombre: "Tecno Store",
+                    rubro: "Electrónica",
+                    numeroLocal: "20",
+                    ubicacion: "Cochera",
+                    enAlquiler: false,
+                    inmobiliaria: "",
+                    descripcion: "Computadoras, celulares y accesorios.",
+                    whatsapp: "5491167890123",
+                    web: "https://tecnostore.com",
+                    colorFondo: "#DC2626",
+                    foto: "https://picsum.photos/seed/tecnologia/400/300",
+                    logo: null,
+                    fotoFit: "cover",
+                    fotoPosX: 50,
+                    fotoPosY: 50,
+                    logoFit: "cover",
+                    logoPosX: 50,
+                    logoPosY: 50,
+                    horarios: {
+                        lunes: { ini: "09:00", fin: "20:00", cerrado: false },
+                        martes: { ini: "09:00", fin: "20:00", cerrado: false },
+                        miercoles: { ini: "09:00", fin: "20:00", cerrado: false },
+                        jueves: { ini: "09:00", fin: "20:00", cerrado: false },
+                        viernes: { ini: "09:00", fin: "20:00", cerrado: false },
+                        sabado: { ini: "10:00", fin: "18:00", cerrado: false },
+                        domingo: { ini: "12:00", fin: "16:00", cerrado: false },
+                        feriados: "25/12:cerrado; 01/01:cerrado"
+                    },
+                    visitas: 0,
+                    mostrarPagina: true,
+                    imagenesExtra: [],
+                    intervaloCarrusel: 3,
+                    animacionCarrusel: 'fade'
+                }
+            ],
+            banners: [
+                { id: 1, imagen: "https://picsum.photos/seed/banner1/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 },
+                { id: 2, imagen: "https://picsum.photos/seed/banner2/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 },
+                { id: 3, imagen: "https://picsum.photos/seed/banner3/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 }
+            ],
+            nextId: 6,
+            bannerInterval: 4,
+            backups: [],
+            lastBackupDate: null,
+            adminClave: 'admin123',
+            galeriaNombre: 'Galería Cinerama',
+            galeriaDireccion: 'Colón 375',
+            theme: 'default',
+            autoTheme: false,
+            visitasTotales: 0,
+            publicidad: {
+                activo: false,
+                tipo: 'texto',
+                contenido: '¡Gran Liquidación!',
+                duracion: 5,
+                imagenUrl: '',
+                efecto: 'confeti',
+                textos: [
+                    { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
+                    { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
+                    { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
+                ]
+            },
+            historial: []
+        };
+    }
+
     // ============================================================
-    //  FUNCIONES PARA IMÁGENES EXTRA
+    //  FUNCIONES PARA IMÁGENES EXTRA CON SUBIDA Y REDUCCIÓN
     // ============================================================
     function normalizarImagenesExtra(imagenes) {
         if (!Array.isArray(imagenes)) return [];
@@ -1754,8 +2110,9 @@
         }).filter(item => item.url && item.url.trim() !== '');
     }
 
-    function renderizarImagenesExtra(imagenes = [], containerId = 'imagenesExtraContainer') {
-        const container = document.getElementById(containerId);
+    // Renderiza los campos de imágenes extra con soporte para subida de archivos y miniatura
+    function renderizarImagenesExtra(imagenes = []) {
+        const container = document.getElementById('imagenesExtraContainer');
         if (!container) return;
         container.innerHTML = '';
 
@@ -1766,15 +2123,11 @@
 
         items.forEach((item, index) => {
             const div = document.createElement('div');
-            div.style.display = 'flex';
-            div.style.gap = '8px';
-            div.style.marginBottom = '6px';
-            div.style.alignItems = 'center';
-            div.style.flexWrap = 'wrap';
+            div.className = 'img-extra-upload-item';
 
             const input = document.createElement('input');
             input.type = 'url';
-            input.className = 'img-extra-input';
+            input.className = 'img-extra-url';
             input.placeholder = `URL imagen extra ${index + 1}`;
             input.value = item.url || '';
             input.style.flex = '2';
@@ -1782,13 +2135,8 @@
 
             const selectFit = document.createElement('select');
             selectFit.className = 'img-extra-fit';
-            selectFit.style.padding = '4px 8px';
-            selectFit.style.borderRadius = '20px';
-            selectFit.style.border = '1px solid var(--border)';
-            selectFit.style.background = 'var(--bg-card)';
-            selectFit.style.color = 'var(--text-color)';
             selectFit.style.flex = '1';
-            selectFit.style.minWidth = '100px';
+            selectFit.style.minWidth = '80px';
             const fitOptions = [
                 { value: 'cover', label: 'Cubrir' },
                 { value: 'contain', label: 'Contener' },
@@ -1804,12 +2152,48 @@
                 selectFit.appendChild(option);
             });
 
+            // Miniatura si hay URL
+            const thumb = document.createElement('img');
+            thumb.className = 'img-extra-thumb';
+            thumb.src = item.url || '';
+            thumb.alt = 'miniatura';
+            thumb.style.display = item.url ? 'block' : 'none';
+            thumb.onerror = () => { thumb.style.display = 'none'; };
+
+            // Botón de subir archivo (cámara/disco)
+            const uploadBtn = document.createElement('button');
+            uploadBtn.type = 'button';
+            uploadBtn.className = 'img-extra-upload-btn';
+            uploadBtn.innerHTML = '<i class="fas fa-camera"></i>';
+            uploadBtn.title = 'Subir imagen desde dispositivo';
+            uploadBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.onchange = function(e2) {
+                    const file = e2.target.files[0];
+                    if (file) {
+                        // Reducir calidad y subir a Storage
+                        subirImagenExtra(file, function(url) {
+                            input.value = url;
+                            thumb.src = url;
+                            thumb.style.display = 'block';
+                            thumb.onerror = () => { thumb.style.display = 'none'; };
+                            showToast('Imagen subida correctamente');
+                        });
+                    }
+                };
+                fileInput.click();
+            });
+
+            // Botón eliminar
             const deleteBtn = document.createElement('button');
             deleteBtn.type = 'button';
+            deleteBtn.className = 'img-extra-delete-btn';
             deleteBtn.innerHTML = '×';
-            deleteBtn.style.cssText = 'background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold; flex-shrink:0;';
-            deleteBtn.addEventListener('click', function () {
-                if (container.querySelectorAll('.img-extra-input').length > 1) {
+            deleteBtn.addEventListener('click', function() {
+                if (container.querySelectorAll('.img-extra-url').length > 1) {
                     div.remove();
                 } else {
                     showToast('Debe quedar al menos un campo');
@@ -1818,6 +2202,8 @@
 
             div.appendChild(input);
             div.appendChild(selectFit);
+            div.appendChild(thumb);
+            div.appendChild(uploadBtn);
             div.appendChild(deleteBtn);
             container.appendChild(div);
         });
@@ -1826,31 +2212,22 @@
         addBtn.type = 'button';
         addBtn.innerHTML = '+ Agregar imagen';
         addBtn.style.cssText = 'padding:6px 16px; border-radius:30px; border:1px solid var(--border); background:var(--primary-light); color:var(--primary); cursor:pointer; font-weight:600; margin-top:4px;';
-        addBtn.addEventListener('click', function () {
+        addBtn.addEventListener('click', function() {
             const div = document.createElement('div');
-            div.style.display = 'flex';
-            div.style.gap = '8px';
-            div.style.marginBottom = '6px';
-            div.style.alignItems = 'center';
-            div.style.flexWrap = 'wrap';
+            div.className = 'img-extra-upload-item';
 
             const input = document.createElement('input');
             input.type = 'url';
-            input.className = 'img-extra-input';
-            input.placeholder = `URL imagen extra ${container.querySelectorAll('.img-extra-input').length + 1}`;
+            input.className = 'img-extra-url';
+            input.placeholder = `URL imagen extra ${container.querySelectorAll('.img-extra-url').length + 1}`;
             input.value = '';
             input.style.flex = '2';
             input.style.minWidth = '150px';
 
             const selectFit = document.createElement('select');
             selectFit.className = 'img-extra-fit';
-            selectFit.style.padding = '4px 8px';
-            selectFit.style.borderRadius = '20px';
-            selectFit.style.border = '1px solid var(--border)';
-            selectFit.style.background = 'var(--bg-card)';
-            selectFit.style.color = 'var(--text-color)';
             selectFit.style.flex = '1';
-            selectFit.style.minWidth = '100px';
+            selectFit.style.minWidth = '80px';
             const fitOptions = [
                 { value: 'cover', label: 'Cubrir' },
                 { value: 'contain', label: 'Contener' },
@@ -1866,12 +2243,43 @@
                 selectFit.appendChild(option);
             });
 
+            const thumb = document.createElement('img');
+            thumb.className = 'img-extra-thumb';
+            thumb.src = '';
+            thumb.alt = 'miniatura';
+            thumb.style.display = 'none';
+
+            const uploadBtn = document.createElement('button');
+            uploadBtn.type = 'button';
+            uploadBtn.className = 'img-extra-upload-btn';
+            uploadBtn.innerHTML = '<i class="fas fa-camera"></i>';
+            uploadBtn.title = 'Subir imagen desde dispositivo';
+            uploadBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.onchange = function(e2) {
+                    const file = e2.target.files[0];
+                    if (file) {
+                        subirImagenExtra(file, function(url) {
+                            input.value = url;
+                            thumb.src = url;
+                            thumb.style.display = 'block';
+                            thumb.onerror = () => { thumb.style.display = 'none'; };
+                            showToast('Imagen subida correctamente');
+                        });
+                    }
+                };
+                fileInput.click();
+            });
+
             const deleteBtn = document.createElement('button');
             deleteBtn.type = 'button';
+            deleteBtn.className = 'img-extra-delete-btn';
             deleteBtn.innerHTML = '×';
-            deleteBtn.style.cssText = 'background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold; flex-shrink:0;';
-            deleteBtn.addEventListener('click', function () {
-                if (container.querySelectorAll('.img-extra-input').length > 1) {
+            deleteBtn.addEventListener('click', function() {
+                if (container.querySelectorAll('.img-extra-url').length > 1) {
                     div.remove();
                 } else {
                     showToast('Debe quedar al menos un campo');
@@ -1880,18 +2288,78 @@
 
             div.appendChild(input);
             div.appendChild(selectFit);
+            div.appendChild(thumb);
+            div.appendChild(uploadBtn);
             div.appendChild(deleteBtn);
             container.insertBefore(div, addBtn);
         });
         container.appendChild(addBtn);
     }
 
-    function obtenerImagenesExtra(containerId = 'imagenesExtraContainer') {
-        const container = document.getElementById(containerId);
-        if (!container) return [];
-        const inputs = container.querySelectorAll('.img-extra-input');
-        const fits = container.querySelectorAll('.img-extra-fit');
+    // Función para subir imagen extra con reducción de calidad a <1MB
+    function subirImagenExtra(file, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                // Reducir dimensiones si es muy grande (manteniendo proporción)
+                const maxDim = 1200;
+                if (width > maxDim || height > maxDim) {
+                    const ratio = Math.min(maxDim / width, maxDim / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // Calidad ajustable para bajar de 1MB
+                let quality = 0.85;
+                let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                // Si aún pesa más de 1MB, reducir calidad progresivamente
+                while (dataUrl.length > 1_000_000 && quality > 0.1) {
+                    quality -= 0.05;
+                    dataUrl = canvas.toDataURL('image/jpeg', quality);
+                }
+                // Subir a Firebase Storage
+                const blob = dataURLtoBlob(dataUrl);
+                const storageRef = storage.ref().child(`imagenes_extra/${Date.now()}_${file.name}`);
+                const uploadTask = storageRef.put(blob);
+                uploadTask.on('state_changed',
+                    null,
+                    (error) => {
+                        console.error('Error al subir:', error);
+                        showToast('Error al subir la imagen');
+                    },
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            callback(downloadURL);
+                        });
+                    }
+                );
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function dataURLtoBlob(dataUrl) {
+        const parts = dataUrl.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const raw = window.atob(parts[1]);
+        const array = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) array[i] = raw.charCodeAt(i);
+        return new Blob([array], { type: contentType });
+    }
+
+    // Obtener las imágenes extra del formulario (incluye URLs)
+    function obtenerImagenesExtra() {
         const items = [];
+        const inputs = document.querySelectorAll('#imagenesExtraContainer .img-extra-url');
+        const fits = document.querySelectorAll('#imagenesExtraContainer .img-extra-fit');
         inputs.forEach((inp, idx) => {
             const url = inp.value.trim();
             if (url) {
@@ -1903,357 +2371,7 @@
     }
 
     // ============================================================
-    //  FUNCIONES DE REDUCCIÓN DE IMAGEN Y SUBIDA A STORAGE
-    // ============================================================
-    function dataURItoBlob(dataURI) {
-        const byteString = atob(dataURI.split(',')[1]);
-        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        return new Blob([ab], { type: mimeString });
-    }
-
-    function reducirImagen(file, maxSizeMB = 1) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const maxDim = 1024;
-                    if (width > maxDim || height > maxDim) {
-                        const ratio = Math.min(maxDim/width, maxDim/height);
-                        width *= ratio;
-                        height *= ratio;
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    let quality = 0.9;
-                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
-                    while (dataUrl.length > maxSizeMB * 1024 * 1024 && quality > 0.1) {
-                        quality -= 0.05;
-                        dataUrl = canvas.toDataURL('image/jpeg', quality);
-                    }
-                    const blob = dataURItoBlob(dataUrl);
-                    resolve(blob);
-                };
-                img.onerror = reject;
-                img.src = e.target.result;
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    async function subirImagenStorage(localId, file) {
-        try {
-            const blob = await reducirImagen(file);
-            const path = `locales/${localId}/imagenes/${Date.now()}_${file.name}`;
-            const ref = storage.ref(path);
-            await ref.put(blob);
-            const url = await ref.getDownloadURL();
-            return url;
-        } catch (error) {
-            console.error('Error subiendo imagen:', error);
-            showToast('Error al subir la imagen');
-            throw error;
-        }
-    }
-
-    // ============================================================
-    //  HISTORIAL (Firestore)
-    // ============================================================
-    async function registrarHistorial(localId, campo, valorAnterior, valorNuevo, usuario) {
-        if (!localId) return;
-        try {
-            await db.collection('historial').add({
-                localId: localId,
-                campo: campo,
-                valorAnterior: valorAnterior,
-                valorNuevo: valorNuevo,
-                fecha: firebase.firestore.FieldValue.serverTimestamp(),
-                usuario: usuario || (isAdmin ? 'admin' : 'dueño')
-            });
-        } catch (error) {
-            console.warn('Error registrando historial:', error);
-        }
-    }
-
-    async function cargarHistorial() {
-        if (!isAdmin) return;
-        const filtroLocal = document.getElementById('historialFiltroLocal').value;
-        let query = db.collection('historial').orderBy('fecha', 'desc').limit(100);
-        if (filtroLocal) {
-            query = query.where('localId', '==', parseInt(filtroLocal));
-        }
-        try {
-            const snapshot = await query.get();
-            const lista = document.getElementById('historialLista');
-            if (snapshot.empty) {
-                lista.innerHTML = '<p style="padding:20px; text-align:center;">No hay registros de cambios.</p>';
-                return;
-            }
-            let html = '';
-            snapshot.forEach(doc => {
-                const h = doc.data();
-                const fecha = h.fecha ? h.fecha.toDate().toLocaleString() : 'sin fecha';
-                html += `
-                    <div class="historial-item" onclick="mostrarDetalleHistorial('${doc.id}')">
-                        <div class="detalle"><strong>${h.campo}</strong> cambiado en local #${h.localId}</div>
-                        <div class="fecha">${fecha} - ${h.usuario || 'desconocido'}</div>
-                    </div>
-                `;
-            });
-            lista.innerHTML = html;
-        } catch (error) {
-            console.error('Error cargando historial:', error);
-            showToast('Error al cargar historial');
-        }
-    }
-
-    async function mostrarDetalleHistorial(docId) {
-        try {
-            const doc = await db.collection('historial').doc(docId).get();
-            if (!doc.exists) {
-                showToast('Registro no encontrado');
-                return;
-            }
-            const h = doc.data();
-            const fecha = h.fecha ? h.fecha.toDate().toLocaleString() : 'sin fecha';
-            const contenido = document.getElementById('historialDetalleContenido');
-            contenido.innerHTML = `
-                <p><strong>Local ID:</strong> ${h.localId}</p>
-                <p><strong>Campo:</strong> ${h.campo}</p>
-                <div class="detalle-campo">Valor anterior:</div>
-                <div class="detalle-valor">${h.valorAnterior !== undefined && h.valorAnterior !== null ? h.valorAnterior : '(vacío)'}</div>
-                <div class="detalle-campo">Valor nuevo:</div>
-                <div class="detalle-valor">${h.valorNuevo !== undefined && h.valorNuevo !== null ? h.valorNuevo : '(vacío)'}</div>
-                <p><strong>Fecha:</strong> ${fecha}</p>
-                <p><strong>Usuario:</strong> ${h.usuario || 'desconocido'}</p>
-            `;
-            openModal('historialDetalleModal');
-        } catch (error) {
-            console.error('Error obteniendo detalle:', error);
-            showToast('Error al obtener detalle');
-        }
-    }
-
-    function abrirHistorial() {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede ver el historial.');
-            return;
-        }
-        const filtro = document.getElementById('historialFiltroLocal');
-        if (filtro) {
-            filtro.innerHTML = '<option value="">Todos</option>' +
-                data.locales.map(l => `<option value="${l.id}">${l.nombre} (N° ${l.numeroLocal})</option>`).join('');
-        }
-        openModal('historialModal');
-        cargarHistorial();
-    }
-
-    // ============================================================
-    //  PRESIÓN LARGA EN BADGE DE ESTADO (Dueño)
-    // ============================================================
-    let ownerPressTimer = null;
-    let ownerPressLocalId = null;
-
-    document.addEventListener('pointerdown', function(e) {
-        const badge = e.target.closest('.status-badge');
-        if (!badge) return;
-        const card = badge.closest('.card');
-        if (!card) return;
-        const id = parseInt(card.dataset.id);
-        if (!id) return;
-        // Iniciar timer de 3 segundos
-        ownerPressLocalId = id;
-        ownerPressTimer = setTimeout(() => {
-            // Mostrar modal de clave
-            document.getElementById('ownerKeyLocalId').value = id;
-            document.getElementById('ownerKeyInput').value = '';
-            openModal('ownerKeyModal');
-            ownerPressTimer = null;
-        }, 3000);
-    });
-
-    document.addEventListener('pointerup', function(e) {
-        if (ownerPressTimer) {
-            clearTimeout(ownerPressTimer);
-            ownerPressTimer = null;
-            ownerPressLocalId = null;
-        }
-    });
-
-    document.addEventListener('pointerleave', function(e) {
-        if (ownerPressTimer) {
-            clearTimeout(ownerPressTimer);
-            ownerPressTimer = null;
-            ownerPressLocalId = null;
-        }
-    });
-
-    // ============================================================
-    //  VERIFICAR CLAVE DE DUEÑO
-    // ============================================================
-    function verificarClaveDueño() {
-        const clave = document.getElementById('ownerKeyInput').value.trim();
-        const localId = parseInt(document.getElementById('ownerKeyLocalId').value);
-        const local = data.locales.find(l => l.id === localId);
-        if (!local) {
-            showToast('Local no encontrado');
-            return;
-        }
-        let telefono = local.whatsapp ? local.whatsapp.replace(/\D/g, '') : '';
-        // Si no tiene telefono, la clave es "adminadmin"
-        if (telefono === '') telefono = 'adminadmin';
-        if (clave === telefono) {
-            closeModal('ownerKeyModal');
-            abrirEdicionDueño(localId);
-        } else {
-            showToast('Clave incorrecta');
-        }
-    }
-
-    // ============================================================
-    //  ABRIR EDICIÓN PARA DUEÑO
-    // ============================================================
-    function abrirEdicionDueño(localId) {
-        const local = data.locales.find(l => l.id === localId);
-        if (!local) return;
-
-        document.getElementById('ownerEditId').value = localId;
-        document.getElementById('ownerDescripcion').value = local.descripcion || '';
-        document.getElementById('ownerWhatsapp').value = local.whatsapp || '';
-        document.getElementById('ownerWeb').value = local.web || '';
-
-        // Horarios
-        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-        dias.forEach(d => {
-            const dia = local.horarios[d] || { ini: '09:00', fin: '18:00', cerrado: false };
-            document.getElementById(`o${capitalize(d)}Ini`).value = dia.ini || '09:00';
-            document.getElementById(`o${capitalize(d)}Fin`).value = dia.fin || '18:00';
-            document.getElementById(`o${capitalize(d)}Cerrado`).checked = dia.cerrado || false;
-        });
-        document.getElementById('oFeriados').value = local.horarios.feriados || '';
-
-        // Imágenes extra
-        renderizarImagenesExtra(local.imagenesExtra || [], 'ownerImagenesExtraContainer');
-
-        openModal('editOwnerModal');
-    }
-
-    // ============================================================
-    //  GUARDAR EDICIÓN DE DUEÑO
-    // ============================================================
-    document.getElementById('ownerForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const localId = parseInt(document.getElementById('ownerEditId').value);
-        const local = data.locales.find(l => l.id === localId);
-        if (!local) {
-            showToast('Local no encontrado');
-            return;
-        }
-
-        // Guardar copia anterior para historial
-        const anterior = JSON.parse(JSON.stringify(local));
-
-        // Actualizar campos permitidos
-        local.descripcion = document.getElementById('ownerDescripcion').value.trim();
-        local.whatsapp = document.getElementById('ownerWhatsapp').value.trim();
-        local.web = document.getElementById('ownerWeb').value.trim();
-
-        // Horarios
-        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-        dias.forEach(d => {
-            const ini = document.getElementById(`o${capitalize(d)}Ini`).value;
-            const fin = document.getElementById(`o${capitalize(d)}Fin`).value;
-            const cerrado = document.getElementById(`o${capitalize(d)}Cerrado`).checked;
-            local.horarios[d] = { ini, fin, cerrado };
-        });
-        local.horarios.feriados = document.getElementById('oFeriados').value.trim();
-
-        // Imágenes extra
-        const imagenesExtra = obtenerImagenesExtra('ownerImagenesExtraContainer');
-        local.imagenesExtra = imagenesExtra;
-
-        // Guardar en Firestore
-        await saveData();
-
-        // Registrar historial para cada campo modificado
-        const campos = ['descripcion', 'whatsapp', 'web', 'horarios', 'imagenesExtra'];
-        const usuario = 'dueño';
-        for (let campo of campos) {
-            let valAnt, valNue;
-            if (campo === 'horarios') {
-                valAnt = JSON.stringify(anterior.horarios);
-                valNue = JSON.stringify(local.horarios);
-            } else if (campo === 'imagenesExtra') {
-                valAnt = JSON.stringify(anterior.imagenesExtra);
-                valNue = JSON.stringify(local.imagenesExtra);
-            } else {
-                valAnt = anterior[campo];
-                valNue = local[campo];
-            }
-            if (valAnt !== valNue) {
-                await registrarHistorial(localId, campo, valAnt, valNue, usuario);
-            }
-        }
-
-        renderAll();
-        closeModal('editOwnerModal');
-        showToast('Cambios guardados correctamente');
-    });
-
-    // ============================================================
-    //  SUBIR IMAGEN EN DUEÑO (evento)
-    // ============================================================
-    document.getElementById('ownerImageFile').addEventListener('change', async function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const localId = parseInt(document.getElementById('ownerEditId').value);
-        if (!localId) {
-            showToast('Local no válido');
-            return;
-        }
-        try {
-            const url = await subirImagenStorage(localId, file);
-            // Agregar al container de imágenes extra
-            const container = document.getElementById('ownerImagenesExtraContainer');
-            const inputs = container.querySelectorAll('.img-extra-input');
-            // Si hay un campo vacío, rellenarlo, si no agregar uno nuevo
-            let emptyInput = null;
-            for (let inp of inputs) {
-                if (!inp.value.trim()) {
-                    emptyInput = inp;
-                    break;
-                }
-            }
-            if (emptyInput) {
-                emptyInput.value = url;
-            } else {
-                // Crear nuevo campo
-                const addBtn = container.querySelector('button:last-child');
-                if (addBtn) addBtn.click();
-                const newInputs = container.querySelectorAll('.img-extra-input');
-                const lastInput = newInputs[newInputs.length - 1];
-                if (lastInput) lastInput.value = url;
-            }
-            showToast('Imagen subida correctamente');
-        } catch (error) {
-            showToast('Error al subir imagen');
-        }
-        e.target.value = '';
-    });
-
-    // ============================================================
-    //  Cargar datos desde Firestore
+    //  Cargar datos desde Firestore (con protección)
     // ============================================================
     async function loadData() {
         try {
@@ -2281,6 +2399,7 @@
                 if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                     data.publicidad.textos = defaultData.publicidad.textos;
                 }
+                if (!data.historial) data.historial = [];
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
                 const stored = localStorage.getItem('galeriaData');
@@ -2303,6 +2422,7 @@
                         if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                             data.publicidad.textos = getDefaultData().publicidad.textos;
                         }
+                        if (!data.historial) data.historial = [];
                     } catch (e) {
                         console.error('Error al parsear localStorage:', e);
                         if (!isAdmin) {
@@ -2348,7 +2468,8 @@
                                     { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
                                     { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
                                 ]
-                            }
+                            },
+                            historial: []
                         };
                     }
                     await docRef.set(data);
@@ -2377,6 +2498,7 @@
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = getDefaultData().publicidad.textos;
                     }
+                    if (!data.historial) data.historial = [];
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                     if (!isAdmin) {
@@ -2422,7 +2544,8 @@
                                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
                                 { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
                             ]
-                        }
+                        },
+                        historial: []
                     };
                 }
             }
@@ -2440,7 +2563,6 @@
             mostrarPublicidad();
         }
 
-        // Escuchar cambios en tiempo real solo si es admin
         if (isAdmin) {
             docRef.onSnapshot(function(doc) {
                 if (doc.exists && dataLoaded) {
@@ -2464,6 +2586,7 @@
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
+                    if (!data.historial) data.historial = [];
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
@@ -2475,8 +2598,8 @@
     }
 
     async function saveData() {
-        if (!isAdmin) {
-            console.warn('Intento de guardar datos sin ser administrador');
+        if (!isAdmin && !isDuenoMode) {
+            console.warn('Intento de guardar datos sin permisos');
             showToast('No tienes permisos para modificar la base de datos.');
             return;
         }
@@ -2539,6 +2662,9 @@
         }
     }
 
+    // ============================================================
+    //  LISTENERS PARA CLICS (incremento de visitas a locales)
+    // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
         if (!container) return;
@@ -2806,7 +2932,7 @@
     }
 
     // ============================================================
-    //  RECUPERACIÓN DE CLAVE (sin cambios)
+    //  RECUPERACIÓN DE CLAVE
     // ============================================================
     async function recuperarClave() {
         const codigo = prompt('Ingrese el código de recuperación:');
@@ -2834,7 +2960,7 @@
     }
 
     // ============================================================
-    //  EVENTO DE CLIC LARGO EN EL TÍTULO PARA ACCESO ADMIN
+    //  EVENTO DE CLIC LARGO EN EL TÍTULO PARA ACCESO ADMIN GENERAL
     // ============================================================
     function initAdminAccess() {
         const titulo = document.getElementById('galeriaNombre');
@@ -2864,307 +2990,783 @@
     }
 
     // ============================================================
-    //  DOCUMENT READY - INICIALIZACIÓN
+    //  CLIC LARGO EN EL BADGE DE ESTADO (ABIERTO/CERRADO) PARA DUEÑO
     // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        initAdminAccess();
+    function initDuenoAccess() {
+        // Se agregará dinámicamente al renderizar cada tarjeta
+        // Usamos delegación de eventos en el contenedor de la grid
+        const grid = document.getElementById('localsGrid');
+        if (!grid) return;
 
-        document.getElementById('searchNombre').addEventListener('input', filterLocales);
-        document.getElementById('searchRubro').addEventListener('change', filterLocales);
-        document.getElementById('searchNumero').addEventListener('change', filterLocales);
-        document.getElementById('searchUbicacion').addEventListener('change', filterLocales);
-        initOrderControls();
-        initThemeButtons();
-        loadData().then(() => {
-            agregarBotonCambiarClave();
-            const observer = new MutationObserver(() => {
-                if (document.getElementById('adminMainModal').classList.contains('active')) {
-                    agregarBotonCambiarClave();
-                    agregarBotonComunicados();
-                    renderVisitasPanel();
-                    agregarEditorVisitasTotales();
-                    agregarSeccionPublicidad();
-                }
-            });
-            observer.observe(document.getElementById('adminMainModal'), { attributes: true, attributeFilter: ['class'] });
+        let pressTimer = null;
+        let targetBadge = null;
+
+        grid.addEventListener('pointerdown', function(e) {
+            const badge = e.target.closest('.status-badge');
+            if (!badge) return;
+            targetBadge = badge;
+            const card = badge.closest('.card');
+            if (!card) return;
+            const id = parseInt(card.dataset.id);
+            if (!id) return;
+            pressTimer = setTimeout(() => {
+                // Activar modal de dueño
+                duenoLocalId = id;
+                openModal('duenoModal');
+                document.getElementById('duenoClave').value = '';
+                pressTimer = null;
+            }, 3000);
         });
 
-        document.getElementById('toggleAdminBtn').addEventListener('click', function() {
-            if (!isAdmin) {
-                openModal('loginModal');
-                document.getElementById('loginClave').value = '';
-            } else {
-                openModal('adminMainModal');
+        grid.addEventListener('pointerup', function(e) {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
             }
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('active');
-                }
-            });
+        grid.addEventListener('pointerleave', function(e) {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
         });
-
-        // Evento para subir imagen en el modal de dueño
-        document.getElementById('ownerImageFile').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const localId = parseInt(document.getElementById('ownerEditId').value);
-            if (!localId) {
-                showToast('Local no válido');
-                return;
-            }
-            try {
-                const url = await subirImagenStorage(localId, file);
-                const container = document.getElementById('ownerImagenesExtraContainer');
-                const inputs = container.querySelectorAll('.img-extra-input');
-                let emptyInput = null;
-                for (let inp of inputs) {
-                    if (!inp.value.trim()) {
-                        emptyInput = inp;
-                        break;
-                    }
-                }
-                if (emptyInput) {
-                    emptyInput.value = url;
-                } else {
-                    const addBtn = container.querySelector('button:last-child');
-                    if (addBtn) addBtn.click();
-                    const newInputs = container.querySelectorAll('.img-extra-input');
-                    const lastInput = newInputs[newInputs.length - 1];
-                    if (lastInput) lastInput.value = url;
-                }
-                showToast('Imagen subida correctamente');
-            } catch (error) {
-                showToast('Error al subir imagen');
-            }
-            e.target.value = '';
-        });
-    });
-
-    // ============================================================
-    //  RESTO DE FUNCIONES (sin cambios significativos)
-    // ============================================================
-    function getDefaultData() {
-        return {
-            rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
-            locales: [
-                {
-                    id: 1,
-                    nombre: "Librería El Saber",
-                    rubro: "Librería",
-                    numeroLocal: "5",
-                    ubicacion: "Primer Piso",
-                    enAlquiler: false,
-                    inmobiliaria: "",
-                    descripcion: "Libros, útiles y material de oficina. Amplio catálogo.",
-                    whatsapp: "5491112345678",
-                    web: "https://libreriaelsaber.com",
-                    colorFondo: "#8B5A2B",
-                    foto: "https://picsum.photos/seed/libro/400/300",
-                    logo: null,
-                    fotoFit: "cover",
-                    fotoPosX: 50,
-                    fotoPosY: 50,
-                    logoFit: "cover",
-                    logoPosX: 50,
-                    logoPosY: 50,
-                    horarios: {
-                        lunes: { ini: "09:00", fin: "18:00", cerrado: false },
-                        martes: { ini: "09:00", fin: "18:00", cerrado: false },
-                        miercoles: { ini: "09:00", fin: "18:00", cerrado: false },
-                        jueves: { ini: "09:00", fin: "18:00", cerrado: false },
-                        viernes: { ini: "09:00", fin: "18:00", cerrado: false },
-                        sabado: { ini: "10:00", fin: "14:00", cerrado: false },
-                        domingo: { ini: "10:00", fin: "14:00", cerrado: true },
-                        feriados: "25/12:cerrado; 01/01:cerrado"
-                    },
-                    visitas: 0,
-                    mostrarPagina: true,
-                    imagenesExtra: [],
-                    intervaloCarrusel: 3,
-                    animacionCarrusel: 'fade'
-                },
-                {
-                    id: 2,
-                    nombre: "Café Central",
-                    rubro: "Gastronomía",
-                    numeroLocal: "12",
-                    ubicacion: "PB",
-                    enAlquiler: false,
-                    inmobiliaria: "",
-                    descripcion: "Café de especialidad, pastelería y desayunos.",
-                    whatsapp: "5491123456789",
-                    web: "https://cafecentral.com",
-                    colorFondo: "#D97706",
-                    foto: "https://picsum.photos/seed/cafe/400/300",
-                    logo: null,
-                    fotoFit: "cover",
-                    fotoPosX: 50,
-                    fotoPosY: 50,
-                    logoFit: "cover",
-                    logoPosX: 50,
-                    logoPosY: 50,
-                    horarios: {
-                        lunes: { ini: "08:00", fin: "20:00", cerrado: false },
-                        martes: { ini: "08:00", fin: "20:00", cerrado: false },
-                        miercoles: { ini: "08:00", fin: "20:00", cerrado: false },
-                        jueves: { ini: "08:00", fin: "20:00", cerrado: false },
-                        viernes: { ini: "08:00", fin: "20:00", cerrado: false },
-                        sabado: { ini: "09:00", fin: "18:00", cerrado: false },
-                        domingo: { ini: "10:00", fin: "14:00", cerrado: false },
-                        feriados: "25/12:cerrado; 01/01:cerrado"
-                    },
-                    visitas: 0,
-                    mostrarPagina: true,
-                    imagenesExtra: [],
-                    intervaloCarrusel: 3,
-                    animacionCarrusel: 'fade'
-                },
-                {
-                    id: 3,
-                    nombre: "Indumentaria Sport",
-                    rubro: "Indumentaria",
-                    numeroLocal: "8",
-                    ubicacion: "Subsuelo",
-                    enAlquiler: true,
-                    inmobiliaria: "5491134567890",
-                    descripcion: "Ropa deportiva de primeras marcas.",
-                    whatsapp: "5491134567890",
-                    web: "https://sportwear.com",
-                    colorFondo: "#2563EB",
-                    foto: "https://picsum.photos/seed/sport/400/300",
-                    logo: null,
-                    fotoFit: "cover",
-                    fotoPosX: 50,
-                    fotoPosY: 50,
-                    logoFit: "cover",
-                    logoPosX: 50,
-                    logoPosY: 50,
-                    horarios: {
-                        lunes: { ini: "10:00", fin: "19:00", cerrado: false },
-                        martes: { ini: "10:00", fin: "19:00", cerrado: false },
-                        miercoles: { ini: "10:00", fin: "19:00", cerrado: false },
-                        jueves: { ini: "10:00", fin: "19:00", cerrado: false },
-                        viernes: { ini: "10:00", fin: "19:00", cerrado: false },
-                        sabado: { ini: "10:00", fin: "15:00", cerrado: false },
-                        domingo: { ini: "10:00", fin: "15:00", cerrado: true },
-                        feriados: "25/12:cerrado; 01/01:cerrado"
-                    },
-                    visitas: 0,
-                    mostrarPagina: true,
-                    imagenesExtra: [],
-                    intervaloCarrusel: 3,
-                    animacionCarrusel: 'fade'
-                },
-                {
-                    id: 4,
-                    nombre: "Joyas D'Luz",
-                    rubro: "Joyería",
-                    numeroLocal: "3",
-                    ubicacion: "Primer Piso",
-                    enAlquiler: false,
-                    inmobiliaria: "",
-                    descripcion: "Joyas de oro y plata, diseños exclusivos.",
-                    whatsapp: "5491145678901",
-                    web: "https://joyasdluz.com",
-                    colorFondo: "#B45309",
-                    foto: "https://picsum.photos/seed/joyas/400/300",
-                    logo: null,
-                    fotoFit: "cover",
-                    fotoPosX: 50,
-                    fotoPosY: 50,
-                    logoFit: "cover",
-                    logoPosX: 50,
-                    logoPosY: 50,
-                    horarios: {
-                        lunes: { ini: "10:00", fin: "17:00", cerrado: false },
-                        martes: { ini: "10:00", fin: "17:00", cerrado: false },
-                        miercoles: { ini: "10:00", fin: "17:00", cerrado: false },
-                        jueves: { ini: "10:00", fin: "17:00", cerrado: false },
-                        viernes: { ini: "10:00", fin: "17:00", cerrado: false },
-                        sabado: { ini: "10:00", fin: "13:00", cerrado: false },
-                        domingo: { ini: "10:00", fin: "13:00", cerrado: true },
-                        feriados: "25/12:cerrado; 01/01:cerrado"
-                    },
-                    visitas: 0,
-                    mostrarPagina: true,
-                    imagenesExtra: [],
-                    intervaloCarrusel: 3,
-                    animacionCarrusel: 'fade'
-                },
-                {
-                    id: 5,
-                    nombre: "Tecno Store",
-                    rubro: "Electrónica",
-                    numeroLocal: "20",
-                    ubicacion: "Cochera",
-                    enAlquiler: false,
-                    inmobiliaria: "",
-                    descripcion: "Computadoras, celulares y accesorios.",
-                    whatsapp: "5491167890123",
-                    web: "https://tecnostore.com",
-                    colorFondo: "#DC2626",
-                    foto: "https://picsum.photos/seed/tecnologia/400/300",
-                    logo: null,
-                    fotoFit: "cover",
-                    fotoPosX: 50,
-                    fotoPosY: 50,
-                    logoFit: "cover",
-                    logoPosX: 50,
-                    logoPosY: 50,
-                    horarios: {
-                        lunes: { ini: "09:00", fin: "20:00", cerrado: false },
-                        martes: { ini: "09:00", fin: "20:00", cerrado: false },
-                        miercoles: { ini: "09:00", fin: "20:00", cerrado: false },
-                        jueves: { ini: "09:00", fin: "20:00", cerrado: false },
-                        viernes: { ini: "09:00", fin: "20:00", cerrado: false },
-                        sabado: { ini: "10:00", fin: "18:00", cerrado: false },
-                        domingo: { ini: "12:00", fin: "16:00", cerrado: false },
-                        feriados: "25/12:cerrado; 01/01:cerrado"
-                    },
-                    visitas: 0,
-                    mostrarPagina: true,
-                    imagenesExtra: [],
-                    intervaloCarrusel: 3,
-                    animacionCarrusel: 'fade'
-                }
-            ],
-            banners: [
-                { id: 1, imagen: "https://picsum.photos/seed/banner1/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 },
-                { id: 2, imagen: "https://picsum.photos/seed/banner2/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 },
-                { id: 3, imagen: "https://picsum.photos/seed/banner3/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 }
-            ],
-            nextId: 6,
-            bannerInterval: 4,
-            backups: [],
-            lastBackupDate: null,
-            adminClave: 'admin123',
-            galeriaNombre: 'Galería Cinerama',
-            galeriaDireccion: 'Colón 375',
-            theme: 'default',
-            autoTheme: false,
-            visitasTotales: 0,
-            publicidad: {
-                activo: false,
-                tipo: 'texto',
-                contenido: '¡Gran Liquidación!',
-                duracion: 5,
-                imagenUrl: '',
-                efecto: 'confeti',
-                textos: [
-                    { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
-                    { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
-                    { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-                ]
-            }
-        };
     }
 
     // ============================================================
-    //  APLICAR TEMA
+    //  LOGIN DUEÑO
+    // ============================================================
+    async function loginDueno() {
+        const clave = document.getElementById('duenoClave').value.trim();
+        if (!duenoLocalId) {
+            showToast('Error: no se identificó el local.');
+            return;
+        }
+        const local = data.locales.find(l => l.id === duenoLocalId);
+        if (!local) {
+            showToast('Local no encontrado.');
+            return;
+        }
+        // La clave esperada es el número de teléfono sin formato (solo dígitos) o "adminadmin"
+        const telefonoLimpio = local.whatsapp ? local.whatsapp.replace(/\D/g, '') : '';
+        let claveValida = false;
+        if (clave === 'adminadmin') {
+            claveValida = true;
+        } else if (telefonoLimpio && clave === telefonoLimpio) {
+            claveValida = true;
+        }
+        if (!claveValida) {
+            showToast('Clave incorrecta');
+            return;
+        }
+        // Acceso concedido: abrir edición del local en modo dueño
+        isDuenoMode = true;
+        modoEdicionDueno = true;
+        closeModal('duenoModal');
+        showToast('Acceso como dueño concedido');
+        // Abrir edición del local
+        editLocal(duenoLocalId, true); // true = modo dueño
+    }
+
+    // ============================================================
+    //  MODIFICACIÓN DE editLocal PARA MODO DUEÑO
+    // ============================================================
+    function editLocal(id, dueno = false) {
+        if (!isAdmin && !dueno) {
+            showToast('No tienes permisos para editar.');
+            return;
+        }
+        const local = data.locales.find(l => l.id === id);
+        if (!local) return;
+
+        // Guardar modo
+        if (dueno) {
+            modoEdicionDueno = true;
+            isDuenoMode = true;
+        } else {
+            modoEdicionDueno = false;
+            isDuenoMode = false;
+        }
+
+        document.getElementById('editId').value = id;
+        document.getElementById('fNombre').value = local.nombre;
+        document.getElementById('fNumero').value = local.numeroLocal;
+        document.getElementById('fUbicacion').value = local.ubicacion || 'Primer Piso';
+        document.getElementById('fAlquiler').checked = local.enAlquiler || false;
+        document.getElementById('fInmobiliaria').value = local.inmobiliaria || '';
+        document.getElementById('fWhatsapp').value = local.whatsapp || '';
+        document.getElementById('fWeb').value = local.web || '';
+        document.getElementById('fColorFondo').value = local.colorFondo || '#2563eb';
+        document.getElementById('fDescripcion').value = local.descripcion || '';
+        document.getElementById('fFotoUrl').value = local.foto || '';
+        document.getElementById('fLogoUrl').value = local.logo || '';
+        document.getElementById('fFotoFit').value = local.fotoFit || 'cover';
+        document.getElementById('fFotoPosX').value = local.fotoPosX || 50;
+        document.getElementById('fFotoPosY').value = local.fotoPosY || 50;
+        document.getElementById('fLogoFit').value = local.logoFit || 'cover';
+        document.getElementById('fLogoPosX').value = local.logoPosX || 50;
+        document.getElementById('fLogoPosY').value = local.logoPosY || 50;
+        document.getElementById('fMostrarPagina').checked = local.mostrarPagina !== false;
+        const intervalo = document.getElementById('intervaloCarrusel');
+        const animacion = document.getElementById('animacionCarrusel');
+        if (intervalo) intervalo.value = local.intervaloCarrusel || 3;
+        if (animacion) animacion.value = local.animacionCarrusel || 'fade';
+
+        updateSliderLabels();
+
+        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+        dias.forEach(d => {
+            const dia = local.horarios[d] || { ini: '09:00', fin: '18:00', cerrado: false };
+            document.getElementById(`h${capitalize(d)}Ini`).value = dia.ini || '09:00';
+            document.getElementById(`h${capitalize(d)}Fin`).value = dia.fin || '18:00';
+            document.getElementById(`h${capitalize(d)}Cerrado`).checked = dia.cerrado || false;
+        });
+        document.getElementById('hFeriados').value = local.horarios.feriados || '';
+        document.getElementById('fFotoFile').value = '';
+        document.getElementById('fLogoFile').value = '';
+
+        if (dueno) {
+            document.getElementById('modalLocalTitle').innerHTML = '<i class="fas fa-store"></i> Editar Local (modo dueño)';
+            // Deshabilitar campos no editables por dueño
+            document.getElementById('fNombre').disabled = true;
+            document.getElementById('fRubro').disabled = true;
+            document.getElementById('fNumero').disabled = true;
+            document.getElementById('fUbicacion').disabled = true;
+            document.getElementById('fAlquiler').disabled = true;
+            document.getElementById('fInmobiliaria').disabled = true;
+            document.getElementById('fColorFondo').disabled = true;
+            document.getElementById('fFotoFit').disabled = true;
+            document.getElementById('fFotoPosX').disabled = true;
+            document.getElementById('fFotoPosY').disabled = true;
+            document.getElementById('fLogoFit').disabled = true;
+            document.getElementById('fLogoPosX').disabled = true;
+            document.getElementById('fLogoPosY').disabled = true;
+            document.getElementById('fMostrarPagina').disabled = true;
+            document.getElementById('intervaloCarrusel').disabled = true;
+            document.getElementById('animacionCarrusel').disabled = true;
+            document.getElementById('fFotoUrl').disabled = true;
+            document.getElementById('fLogoUrl').disabled = true;
+            document.getElementById('fFotoFile').disabled = true;
+            document.getElementById('fLogoFile').disabled = true;
+            // Habilitar solo: descripción, horarios, WhatsApp, web, imágenes extra (con subida)
+            document.getElementById('fDescripcion').disabled = false;
+            document.getElementById('fWhatsapp').disabled = false;
+            document.getElementById('fWeb').disabled = false;
+            // Las imágenes extra ya se manejan con subida, no se deshabilitan
+            // Los horarios se dejan habilitados
+            document.querySelectorAll('.horario-item input, .horario-item select, .horario-item .cerrado-label input').forEach(el => {
+                el.disabled = false;
+            });
+            document.getElementById('hFeriados').disabled = false;
+            // Ocultar botón de agregar rubro
+            const rubroBtn = document.querySelector('#fRubro + button');
+            if (rubroBtn) rubroBtn.style.display = 'none';
+            // Cambiar texto del botón guardar
+            document.getElementById('guardarLocalBtn').textContent = 'Actualizar (dueño)';
+        } else {
+            document.getElementById('modalLocalTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Local';
+            // Habilitar todo
+            document.querySelectorAll('#addLocalModal input, #addLocalModal select, #addLocalModal textarea').forEach(el => {
+                el.disabled = false;
+            });
+            const rubroBtn = document.querySelector('#fRubro + button');
+            if (rubroBtn) rubroBtn.style.display = '';
+            document.getElementById('guardarLocalBtn').textContent = 'Guardar';
+        }
+
+        toggleInmobiliaria();
+        updateRubroSelectInForm();
+        document.getElementById('fRubro').value = local.rubro;
+        openModal('addLocalModal');
+        renderizarImagenesExtra(local.imagenesExtra || []);
+    }
+
+    // ============================================================
+    //  CANCELAR EDICIÓN (vuelve a la página inicial)
+    // ============================================================
+    function cancelarEdicion() {
+        // Cerrar modal y limpiar modo dueño
+        closeModal('addLocalModal');
+        if (isDuenoMode) {
+            isDuenoMode = false;
+            modoEdicionDueno = false;
+            duenoLocalId = null;
+            showToast('Edición cancelada');
+        }
+        // Restaurar campos habilitados por si acaso
+        document.querySelectorAll('#addLocalModal input, #addLocalModal select, #addLocalModal textarea').forEach(el => {
+            el.disabled = false;
+        });
+        const rubroBtn = document.querySelector('#fRubro + button');
+        if (rubroBtn) rubroBtn.style.display = '';
+        document.getElementById('guardarLocalBtn').textContent = 'Guardar';
+    }
+
+    // ============================================================
+    //  HISTORIAL DE CAMBIOS
+    // ============================================================
+    function registrarHistorial(localId, camposModificados, usuario = 'admin') {
+        if (!data.historial) data.historial = [];
+        const entrada = {
+            fecha: new Date().toISOString(),
+            usuario: usuario,
+            localId: localId,
+            campos: camposModificados // objeto con los cambios
+        };
+        data.historial.push(entrada);
+        // Limitar historial a 200 entradas
+        if (data.historial.length > 200) data.historial.shift();
+        saveData();
+        renderHistorial();
+    }
+
+    function renderHistorial() {
+        const container = document.getElementById('historialList');
+        if (!container) return;
+        if (!data.historial || data.historial.length === 0) {
+            container.innerHTML = '<p>No hay cambios registrados.</p>';
+            return;
+        }
+        const copia = [...data.historial].reverse();
+        let html = '';
+        copia.forEach((h, idx) => {
+            const fecha = new Date(h.fecha);
+            const fechaStr = fecha.toLocaleString();
+            const local = data.locales.find(l => l.id === h.localId);
+            const nombreLocal = local ? local.nombre : `ID ${h.localId}`;
+            html += `
+                <div class="historial-item" data-index="${data.historial.length - 1 - idx}">
+                    <span class="fecha">${fechaStr}</span>
+                    <span class="accion">${nombreLocal} - ${Object.keys(h.campos).join(', ')}</span>
+                    <span class="usuario">${h.usuario}</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+
+        // Eventos para mostrar detalle al hacer clic
+        container.querySelectorAll('.historial-item').forEach(el => {
+            el.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                const entrada = data.historial[index];
+                if (!entrada) return;
+                mostrarDetalleHistorial(entrada);
+            });
+        });
+    }
+
+    function mostrarDetalleHistorial(entrada) {
+        const detalleDiv = document.getElementById('historialDetalle');
+        if (!detalleDiv) return;
+        const fecha = new Date(entrada.fecha);
+        const fechaStr = fecha.toLocaleString();
+        const local = data.locales.find(l => l.id === entrada.localId);
+        const nombreLocal = local ? local.nombre : `ID ${entrada.localId}`;
+        let html = `<h4>${nombreLocal} - ${fechaStr} (${entrada.usuario})</h4>`;
+        html += `<table><thead><tr><th>Campo</th><th>Nuevo valor</th></tr></thead><tbody>`;
+        for (let [campo, valor] of Object.entries(entrada.campos)) {
+            html += `<tr><td>${campo}</td><td>${valor}</td></tr>`;
+        }
+        html += `</tbody></table>`;
+        detalleDiv.innerHTML = html;
+        detalleDiv.style.display = 'block';
+    }
+
+    // ============================================================
+    //  MODIFICACIÓN DE GUARDADO LOCAL PARA REGISTRAR HISTORIAL
+    // ============================================================
+    // Se modifica el submit del formulario para incluir el historial
+    document.getElementById('localForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!isAdmin && !isDuenoMode) {
+            showToast('No tienes permisos para guardar cambios.');
+            return;
+        }
+        const id = document.getElementById('editId').value;
+        const nombre = document.getElementById('fNombre').value.trim();
+        const rubro = document.getElementById('fRubro').value;
+        const numero = document.getElementById('fNumero').value.trim();
+        const ubicacion = document.getElementById('fUbicacion').value;
+        const enAlquiler = document.getElementById('fAlquiler').checked;
+        const inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
+        const mostrarPagina = document.getElementById('fMostrarPagina').checked;
+        const imagenesExtra = obtenerImagenesExtra();
+
+        const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
+        const animacion = document.getElementById('animacionCarrusel').value || 'fade';
+
+        if (!nombre || !rubro || !numero) {
+            showToast('Complete nombre, rubro y número.');
+            return;
+        }
+
+        const horarios = {};
+        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+        dias.forEach(d => {
+            const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
+            const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
+            const cerrado = document.getElementById(`h${capitalize(d)}Cerrado`).checked;
+            horarios[d] = { ini, fin, cerrado };
+        });
+        horarios.feriados = document.getElementById('hFeriados').value.trim();
+
+        let foto = document.getElementById('fFotoUrl').value.trim();
+        const fotoFile = document.getElementById('fFotoFile').files[0];
+        if (fotoFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                foto = e.target.result;
+                finishSave(foto);
+            };
+            reader.readAsDataURL(fotoFile);
+        } else {
+            finishSave(foto);
+        }
+
+        async function finishSave(fotoFinal) {
+            let logo = document.getElementById('fLogoUrl').value.trim();
+            const logoFile = document.getElementById('fLogoFile').files[0];
+            if (logoFile) {
+                const reader2 = new FileReader();
+                reader2.onload = function(e) {
+                    logo = e.target.result;
+                    finishSave2(fotoFinal, logo);
+                };
+                reader2.readAsDataURL(logoFile);
+            } else {
+                finishSave2(fotoFinal, logo);
+            }
+        }
+
+        async function finishSave2(fotoFinal, logoFinal) {
+            // Obtener el local anterior para comparar cambios
+            let localAnterior = null;
+            if (id) {
+                localAnterior = data.locales.find(l => l.id === parseInt(id));
+            }
+
+            const localData = {
+                id: id ? parseInt(id) : data.nextId++,
+                nombre,
+                rubro,
+                numeroLocal: numero,
+                ubicacion,
+                enAlquiler,
+                inmobiliaria: enAlquiler ? inmobiliaria : '',
+                descripcion: document.getElementById('fDescripcion').value.trim(),
+                whatsapp: document.getElementById('fWhatsapp').value.trim(),
+                web: document.getElementById('fWeb').value.trim(),
+                colorFondo: document.getElementById('fColorFondo').value,
+                foto: fotoFinal || DEFAULT_IMAGE_URL,
+                logo: logoFinal || null,
+                fotoFit: document.getElementById('fFotoFit').value,
+                fotoPosX: parseInt(document.getElementById('fFotoPosX').value),
+                fotoPosY: parseInt(document.getElementById('fFotoPosY').value),
+                logoFit: document.getElementById('fLogoFit').value,
+                logoPosX: parseInt(document.getElementById('fLogoPosX').value),
+                logoPosY: parseInt(document.getElementById('fLogoPosY').value),
+                horarios,
+                visitas: 0,
+                mostrarPagina: mostrarPagina,
+                imagenesExtra: imagenesExtra,
+                intervaloCarrusel: intervalo,
+                animacionCarrusel: animacion
+            };
+
+            if (id) {
+                const index = data.locales.findIndex(l => l.id === parseInt(id));
+                if (index !== -1) {
+                    localData.visitas = data.locales[index].visitas || 0;
+                    // Registrar cambios en historial (solo si hay diferencias)
+                    if (localAnterior) {
+                        const cambios = {};
+                        // Comparar campos editables (para dueño) o todos (admin)
+                        const camposAComparar = isDuenoMode ? 
+                            ['descripcion', 'whatsapp', 'web', 'horarios', 'imagenesExtra'] :
+                            ['nombre', 'rubro', 'numeroLocal', 'ubicacion', 'enAlquiler', 'inmobiliaria', 'descripcion', 'whatsapp', 'web', 'colorFondo', 'foto', 'logo', 'fotoFit', 'fotoPosX', 'fotoPosY', 'logoFit', 'logoPosX', 'logoPosY', 'horarios', 'mostrarPagina', 'imagenesExtra', 'intervaloCarrusel', 'animacionCarrusel'];
+                        camposAComparar.forEach(campo => {
+                            let valorAnterior = localAnterior[campo];
+                            let valorNuevo = localData[campo];
+                            if (campo === 'horarios') {
+                                valorAnterior = JSON.stringify(valorAnterior);
+                                valorNuevo = JSON.stringify(valorNuevo);
+                            } else if (campo === 'imagenesExtra') {
+                                valorAnterior = JSON.stringify(valorAnterior);
+                                valorNuevo = JSON.stringify(valorNuevo);
+                            }
+                            if (valorAnterior !== valorNuevo) {
+                                cambios[campo] = valorNuevo;
+                            }
+                        });
+                        if (Object.keys(cambios).length > 0) {
+                            const usuario = isDuenoMode ? 'dueño' : 'admin';
+                            registrarHistorial(parseInt(id), cambios, usuario);
+                        }
+                    }
+                    data.locales[index] = localData;
+                }
+            } else {
+                data.locales.push(localData);
+                // Registrar creación
+                registrarHistorial(localData.id, { creacion: 'Nuevo local' }, 'admin');
+            }
+            await saveData();
+            renderAll();
+            document.getElementById('localForm').reset();
+            document.getElementById('editId').value = '';
+            closeModal('addLocalModal');
+            showToast('Local guardado');
+            updateRubroSelectInForm();
+            updateNumeroSelect();
+            // Restaurar modo dueño
+            if (isDuenoMode) {
+                isDuenoMode = false;
+                modoEdicionDueno = false;
+                duenoLocalId = null;
+                document.querySelectorAll('#addLocalModal input, #addLocalModal select, #addLocalModal textarea').forEach(el => {
+                    el.disabled = false;
+                });
+                const rubroBtn = document.querySelector('#fRubro + button');
+                if (rubroBtn) rubroBtn.style.display = '';
+                document.getElementById('guardarLocalBtn').textContent = 'Guardar';
+            }
+        }
+    });
+
+    // ============================================================
+    //  RESTO DE FUNCIONES (sin cambios importantes, solo adaptaciones)
+    // ============================================================
+    // ... (las funciones existentes: applyTheme, openModal, closeModal, etc.)
+    // se mantienen igual, solo se agregan las nuevas.
+
+    // ============================================================
+    //  BACKUP FUNCTIONS (solo admin)
+    // ============================================================
+    async function crearBackup() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede crear backups.');
+            return;
+        }
+        const backup = {
+            timestamp: new Date().toISOString(),
+            data: JSON.parse(JSON.stringify(data))
+        };
+        data.backups.push(backup);
+        if (data.backups.length > 20) data.backups.shift();
+        data.lastBackupDate = backup.timestamp;
+        await saveData();
+        actualizarInfoBackup();
+        showToast('Backup creado correctamente');
+        renderAll();
+    }
+
+    function abrirModalRestaurar() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede restaurar backups.');
+            return;
+        }
+        const list = document.getElementById('backupList');
+        if (data.backups.length === 0) {
+            list.innerHTML = '<p>No hay backups disponibles.</p>';
+        } else {
+            let html = '<ul style="list-style:none; padding:0;">';
+            const copias = [...data.backups].reverse();
+            copias.forEach((b, index) => {
+                const fecha = new Date(b.timestamp);
+                const fechaStr = fecha.toLocaleString();
+                html += `<li style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--border);">
+                    <span>${fechaStr}</span>
+                    <button onclick="restaurarBackup(${data.backups.length - 1 - index})" class="btn-primary" style="padding:6px 16px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Restaurar</button>
+                </li>`;
+            });
+            html += '</ul>';
+            list.innerHTML = html;
+        }
+        openModal('restoreModal');
+    }
+
+    async function restaurarBackup(index) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede restaurar backups.');
+            return;
+        }
+        if (!confirm('¿Restaurar este backup? Se perderán los datos actuales.')) return;
+        const backup = data.backups[index];
+        if (!backup) return showToast('Backup no encontrado');
+        const backupData = backup.data;
+        data.locales = backupData.locales || [];
+        data.banners = backupData.banners || [];
+        data.rubros = backupData.rubros || [];
+        data.theme = backupData.theme || 'default';
+        data.autoTheme = backupData.autoTheme || false;
+        data.nextId = backupData.nextId || 1;
+        data.galeriaNombre = backupData.galeriaNombre || 'Galería Cinerama';
+        data.galeriaDireccion = backupData.galeriaDireccion || 'Colón 375';
+        data.bannerInterval = backupData.bannerInterval || 4;
+        data.visitasTotales = backupData.visitasTotales || 0;
+        data.publicidad = backupData.publicidad || getDefaultData().publicidad;
+        data.historial = backupData.historial || [];
+        data.locales.forEach(l => {
+            l.numeroLocal = String(l.numeroLocal);
+            if (l.visitas === undefined) l.visitas = 0;
+            if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+            l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+            if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+            if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+        });
+        await saveData();
+        renderAll();
+        closeModal('restoreModal');
+        showToast('Backup restaurado correctamente');
+        actualizarNumeroVisitante(data.visitasTotales, false);
+    }
+
+    function actualizarInfoBackup() {
+        const span = document.getElementById('ultimoBackupInfo');
+        if (data.lastBackupDate) {
+            const fecha = new Date(data.lastBackupDate);
+            span.textContent = fecha.toLocaleString();
+        } else {
+            span.textContent = 'Nunca';
+        }
+    }
+
+    async function verificarBackupAutomatico() {
+        if (!isAdmin) return;
+        const ahora = new Date();
+        let debeBackup = false;
+        if (!data.lastBackupDate) {
+            debeBackup = true;
+        } else {
+            const ultimo = new Date(data.lastBackupDate);
+            const diffMs = ahora - ultimo;
+            const diffDias = diffMs / (1000 * 60 * 60 * 24);
+            if (diffDias >= 7) debeBackup = true;
+        }
+        if (debeBackup) {
+            await crearBackup();
+            showToast('Backup automático semanal realizado');
+        }
+    }
+
+    // ============================================================
+    //  EXPORTAR / IMPORTAR JSON (solo admin)
+    // ============================================================
+    function exportarJSON() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede exportar datos.');
+            return;
+        }
+        const exportData = JSON.parse(JSON.stringify(data));
+        const jsonStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `galeria_backup_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Datos exportados correctamente');
+    }
+
+    async function importarJSON(event) {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede importar datos.');
+            return;
+        }
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                if (!importedData.locales || !importedData.banners || !importedData.rubros) {
+                    showToast('El archivo no tiene el formato correcto');
+                    return;
+                }
+                if (!confirm('¿Importar estos datos? Se perderán todos los datos actuales (excepto los backups, que se mantendrán).')) {
+                    return;
+                }
+                const backupsActuales = data.backups;
+                const lastBackup = data.lastBackupDate;
+                const adminClaveActual = data.adminClave;
+                data = importedData;
+                data.backups = backupsActuales;
+                data.lastBackupDate = lastBackup;
+                data.adminClave = adminClaveActual;
+                data.historial = importedData.historial || [];
+                data.locales.forEach(l => {
+                    l.numeroLocal = String(l.numeroLocal);
+                    if (l.visitas === undefined) l.visitas = 0;
+                    if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                    l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                    if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                    if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                });
+                if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
+                await saveData();
+                renderAll();
+                showToast('Datos importados correctamente');
+                actualizarNumeroVisitante(data.visitasTotales, false);
+            } catch(err) {
+                showToast('Error al leer el archivo JSON');
+                console.error(err);
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    // ============================================================
+    //  CAMBIAR CLAVE (solo admin)
+    // ============================================================
+    async function cambiarClave() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede cambiar la clave.');
+            return;
+        }
+        const actual = prompt('Ingrese la clave actual:');
+        if (actual === null) return;
+        if (actual !== data.adminClave) {
+            showToast('Clave actual incorrecta');
+            return;
+        }
+        const nueva = prompt('Ingrese la nueva clave:');
+        if (nueva === null) return;
+        if (nueva.length < 4) {
+            showToast('La clave debe tener al menos 4 caracteres');
+            return;
+        }
+        const confirmar = prompt('Confirme la nueva clave:');
+        if (confirmar === null) return;
+        if (nueva !== confirmar) {
+            showToast('Las claves no coinciden');
+            return;
+        }
+        data.adminClave = nueva;
+        await saveData();
+        showToast('Clave cambiada exitosamente');
+    }
+
+    // ============================================================
+    //  LOGIN ADMIN GENERAL
+    // ============================================================
+    async function loginAdmin() {
+        const clave = document.getElementById('loginClave').value;
+        if (clave === data.adminClave) {
+            isAdmin = true;
+            closeModal('loginModal');
+            showToast('Acceso concedido');
+            document.getElementById('logoutBtn').style.display = 'flex';
+            await verificarBackupAutomatico();
+            openModal('adminMainModal');
+            document.getElementById('themeStatus').textContent = data.autoTheme ? 'Modo automático activado' : `Tema actual: ${data.theme}`;
+            renderAll();
+            renderHistorial();
+            docRef.onSnapshot(function(doc) {
+                if (doc.exists && dataLoaded) {
+                    const firestoreData = doc.data();
+                    const defaultData = getDefaultData();
+                    for (let key in defaultData) {
+                        if (firestoreData[key] !== undefined) {
+                            data[key] = firestoreData[key];
+                        }
+                    }
+                    data.locales.forEach(l => {
+                        l.numeroLocal = String(l.numeroLocal);
+                        if (l.visitas === undefined) l.visitas = 0;
+                        if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                        l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                        if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                        if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                    });
+                    if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                    if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                    if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
+                        data.publicidad.textos = defaultData.publicidad.textos;
+                    }
+                    if (!data.historial) data.historial = [];
+                    localStorage.setItem('galeriaData', JSON.stringify(data));
+                    renderAll();
+                    renderHistorial();
+                    if (document.getElementById('visitNumber')) {
+                        actualizarNumeroVisitante(data.visitasTotales || 0, false);
+                    }
+                }
+            });
+        } else {
+            showToast('Clave incorrecta');
+        }
+    }
+
+    // ============================================================
+    //  BANNER CARRUSEL
+    // ============================================================
+    function renderBannersCarousel() {
+        const track = document.getElementById('bannerTrack');
+        const dots = document.getElementById('bannerDots');
+        track.innerHTML = '';
+        dots.innerHTML = '';
+        if (data.banners.length === 0) {
+            track.innerHTML = `<div class="banner-slide" style="background:var(--bg-card); color:var(--text-color); font-size:1.2rem;">No hay banners configurados</div>`;
+            return;
+        }
+        data.banners.forEach((b, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'banner-slide';
+            const fit = b.fit || 'cover';
+            const posX = b.posX || 50;
+            const posY = b.posY || 50;
+            slide.innerHTML = `<a href="${b.link || '#'}" target="_blank"><img src="${b.imagen}" alt="banner ${i+1}" style="object-fit:${fit}; object-position:${posX}% ${posY}%;"></a>`;
+            track.appendChild(slide);
+            const dot = document.createElement('span');
+            dot.addEventListener('click', () => goToBanner(i));
+            dots.appendChild(dot);
+        });
+        goToBanner(0);
+        startBannerTimer();
+    }
+
+    function goToBanner(index) {
+        if (data.banners.length === 0) return;
+        const slides = document.querySelectorAll('.banner-slide');
+        if (index >= slides.length) index = 0;
+        if (index < 0) index = slides.length - 1;
+        bannerIndex = index;
+        const track = document.getElementById('bannerTrack');
+        track.style.transform = `translateX(-${index * 100}%)`;
+        const dots = document.querySelectorAll('#bannerDots span');
+        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    }
+
+    function nextBanner() { goToBanner(bannerIndex + 1); }
+    function prevBanner() { goToBanner(bannerIndex - 1); }
+
+    function startBannerTimer() {
+        if (bannerTimer) clearInterval(bannerTimer);
+        if (data.banners.length > 1) {
+            bannerTimer = setInterval(nextBanner, data.bannerInterval * 1000);
+        }
+    }
+
+    function stopBannerTimer() {
+        if (bannerTimer) {
+            clearInterval(bannerTimer);
+            bannerTimer = null;
+        }
+    }
+
+    document.getElementById('nextBanner').addEventListener('click', () => { stopBannerTimer(); nextBanner(); startBannerTimer(); });
+    document.getElementById('prevBanner').addEventListener('click', () => { stopBannerTimer(); prevBanner(); startBannerTimer(); });
+    const carousel = document.getElementById('bannerCarousel');
+    carousel.addEventListener('mouseenter', stopBannerTimer);
+    carousel.addEventListener('mouseleave', startBannerTimer);
+
+    // ============================================================
+    //  TEMAS
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
@@ -3237,6 +3839,7 @@
         if (id === 'adminMainModal') {
             actualizarInfoBackup();
             renderVisitasPanel();
+            renderHistorial();
             agregarBotonCambiarClave();
             agregarBotonComunicados();
             agregarEditorVisitasTotales();
@@ -3621,62 +4224,8 @@
     }
 
     // ============================================================
-    //  ADMIN CRUD (locales)
+    //  ADMIN CRUD (locales) - solo admin
     // ============================================================
-    function editLocal(id) {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede editar locales.');
-            return;
-        }
-        const local = data.locales.find(l => l.id === id);
-        if (!local) return;
-        // Guardar copia para historial
-        window._localBackup = JSON.parse(JSON.stringify(local));
-
-        document.getElementById('editId').value = id;
-        document.getElementById('fNombre').value = local.nombre;
-        document.getElementById('fNumero').value = local.numeroLocal;
-        document.getElementById('fUbicacion').value = local.ubicacion || 'Primer Piso';
-        document.getElementById('fAlquiler').checked = local.enAlquiler || false;
-        document.getElementById('fInmobiliaria').value = local.inmobiliaria || '';
-        document.getElementById('fWhatsapp').value = local.whatsapp || '';
-        document.getElementById('fWeb').value = local.web || '';
-        document.getElementById('fColorFondo').value = local.colorFondo || '#2563eb';
-        document.getElementById('fDescripcion').value = local.descripcion || '';
-        document.getElementById('fFotoUrl').value = local.foto || '';
-        document.getElementById('fLogoUrl').value = local.logo || '';
-        document.getElementById('fFotoFit').value = local.fotoFit || 'cover';
-        document.getElementById('fFotoPosX').value = local.fotoPosX || 50;
-        document.getElementById('fFotoPosY').value = local.fotoPosY || 50;
-        document.getElementById('fLogoFit').value = local.logoFit || 'cover';
-        document.getElementById('fLogoPosX').value = local.logoPosX || 50;
-        document.getElementById('fLogoPosY').value = local.logoPosY || 50;
-        document.getElementById('fMostrarPagina').checked = local.mostrarPagina !== false;
-        const intervalo = document.getElementById('intervaloCarrusel');
-        const animacion = document.getElementById('animacionCarrusel');
-        if (intervalo) intervalo.value = local.intervaloCarrusel || 3;
-        if (animacion) animacion.value = local.animacionCarrusel || 'fade';
-
-        updateSliderLabels();
-
-        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-        dias.forEach(d => {
-            const dia = local.horarios[d] || { ini: '09:00', fin: '18:00', cerrado: false };
-            document.getElementById(`h${capitalize(d)}Ini`).value = dia.ini || '09:00';
-            document.getElementById(`h${capitalize(d)}Fin`).value = dia.fin || '18:00';
-            document.getElementById(`h${capitalize(d)}Cerrado`).checked = dia.cerrado || false;
-        });
-        document.getElementById('hFeriados').value = local.horarios.feriados || '';
-        document.getElementById('fFotoFile').value = '';
-        document.getElementById('fLogoFile').value = '';
-        document.getElementById('modalLocalTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Local';
-        toggleInmobiliaria();
-        updateRubroSelectInForm();
-        document.getElementById('fRubro').value = local.rubro;
-        openModal('addLocalModal');
-        renderizarImagenesExtra(local.imagenesExtra || []);
-    }
-
     async function deleteLocal(id) {
         if (!isAdmin) {
             showToast('Solo el administrador puede eliminar locales.');
@@ -3688,137 +4237,6 @@
         renderAll();
         showToast('Local eliminado');
     }
-
-    document.getElementById('localForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        if (!isAdmin) {
-            showToast('Solo el administrador puede guardar cambios.');
-            return;
-        }
-        const id = document.getElementById('editId').value;
-        const nombre = document.getElementById('fNombre').value.trim();
-        const rubro = document.getElementById('fRubro').value;
-        const numero = document.getElementById('fNumero').value.trim();
-        const ubicacion = document.getElementById('fUbicacion').value;
-        const enAlquiler = document.getElementById('fAlquiler').checked;
-        const inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
-        const mostrarPagina = document.getElementById('fMostrarPagina').checked;
-        const imagenesExtra = obtenerImagenesExtra();
-
-        const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
-        const animacion = document.getElementById('animacionCarrusel').value || 'fade';
-
-        if (!nombre || !rubro || !numero) {
-            showToast('Complete nombre, rubro y número.');
-            return;
-        }
-
-        const horarios = {};
-        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-        dias.forEach(d => {
-            const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
-            const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
-            const cerrado = document.getElementById(`h${capitalize(d)}Cerrado`).checked;
-            horarios[d] = { ini, fin, cerrado };
-        });
-        horarios.feriados = document.getElementById('hFeriados').value.trim();
-
-        let foto = document.getElementById('fFotoUrl').value.trim();
-        const fotoFile = document.getElementById('fFotoFile').files[0];
-        if (fotoFile) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                foto = e.target.result;
-                finishSave(foto);
-            };
-            reader.readAsDataURL(fotoFile);
-        } else {
-            finishSave(foto);
-        }
-
-        async function finishSave(fotoFinal) {
-            let logo = document.getElementById('fLogoUrl').value.trim();
-            const logoFile = document.getElementById('fLogoFile').files[0];
-            if (logoFile) {
-                const reader2 = new FileReader();
-                reader2.onload = function(e) {
-                    logo = e.target.result;
-                    finishSave2(fotoFinal, logo);
-                };
-                reader2.readAsDataURL(logoFile);
-            } else {
-                finishSave2(fotoFinal, logo);
-            }
-        }
-
-        async function finishSave2(fotoFinal, logoFinal) {
-            const localData = {
-                id: id ? parseInt(id) : data.nextId++,
-                nombre,
-                rubro,
-                numeroLocal: numero,
-                ubicacion,
-                enAlquiler,
-                inmobiliaria: enAlquiler ? inmobiliaria : '',
-                descripcion: document.getElementById('fDescripcion').value.trim(),
-                whatsapp: document.getElementById('fWhatsapp').value.trim(),
-                web: document.getElementById('fWeb').value.trim(),
-                colorFondo: document.getElementById('fColorFondo').value,
-                foto: fotoFinal || DEFAULT_IMAGE_URL,
-                logo: logoFinal || null,
-                fotoFit: document.getElementById('fFotoFit').value,
-                fotoPosX: parseInt(document.getElementById('fFotoPosX').value),
-                fotoPosY: parseInt(document.getElementById('fFotoPosY').value),
-                logoFit: document.getElementById('fLogoFit').value,
-                logoPosX: parseInt(document.getElementById('fLogoPosX').value),
-                logoPosY: parseInt(document.getElementById('fLogoPosY').value),
-                horarios,
-                visitas: 0,
-                mostrarPagina: mostrarPagina,
-                imagenesExtra: imagenesExtra,
-                intervaloCarrusel: intervalo,
-                animacionCarrusel: animacion
-            };
-
-            let cambios = [];
-            if (id) {
-                const index = data.locales.findIndex(l => l.id === parseInt(id));
-                if (index !== -1) {
-                    const anterior = window._localBackup || data.locales[index];
-                    // Comparar campos para historial
-                    const campos = ['nombre','rubro','numeroLocal','ubicacion','enAlquiler','inmobiliaria','descripcion','whatsapp','web','colorFondo','foto','logo','fotoFit','fotoPosX','fotoPosY','logoFit','logoPosX','logoPosY','horarios','mostrarPagina','imagenesExtra','intervaloCarrusel','animacionCarrusel'];
-                    for (let campo of campos) {
-                        let valAnt = anterior[campo];
-                        let valNue = localData[campo];
-                        if (campo === 'horarios' || campo === 'imagenesExtra') {
-                            valAnt = JSON.stringify(valAnt);
-                            valNue = JSON.stringify(valNue);
-                        }
-                        if (valAnt !== valNue) {
-                            cambios.push({ campo, valorAnterior: anterior[campo], valorNuevo: localData[campo] });
-                        }
-                    }
-                    localData.visitas = data.locales[index].visitas || 0;
-                    data.locales[index] = localData;
-                }
-            } else {
-                data.locales.push(localData);
-            }
-            await saveData();
-            // Registrar historial
-            for (let c of cambios) {
-                await registrarHistorial(localData.id, c.campo, c.valorAnterior, c.valorNuevo, 'admin');
-            }
-            renderAll();
-            document.getElementById('localForm').reset();
-            document.getElementById('editId').value = '';
-            closeModal('addLocalModal');
-            showToast('Local guardado');
-            updateRubroSelectInForm();
-            updateNumeroSelect();
-            window._localBackup = null;
-        }
-    });
 
     function capitalize(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
@@ -3852,7 +4270,7 @@
     document.getElementById('bannerPosY').addEventListener('input', updateSliderLabels);
 
     // ============================================================
-    //  RUBROS (CRUD)
+    //  RUBROS (CRUD) - solo admin
     // ============================================================
     function renderRubrosList() {
         const container = document.getElementById('rubrosList');
@@ -3966,7 +4384,7 @@
     }
 
     // ============================================================
-    //  BANNERS ADMIN
+    //  BANNERS ADMIN - solo admin
     // ============================================================
     document.getElementById('bannerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -4099,7 +4517,7 @@
     }
 
     // ============================================================
-    //  CONFIGURACIÓN
+    //  CONFIGURACIÓN - solo admin
     // ============================================================
     document.getElementById('configForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -4123,7 +4541,7 @@
     });
 
     // ============================================================
-    //  TEMAS
+    //  TEMAS (botones)
     // ============================================================
     function initThemeButtons() {
         document.querySelectorAll('.theme-btn').forEach(btn => {
@@ -4236,7 +4654,14 @@
     }
 
     // ============================================================
-    //  VISITAS POR LOCAL (panel admin)
+    //  VISITAS POR LOCAL (solo admin guarda, pero todos pueden ver)
+    // ============================================================
+    function initVisitasListener() {
+        // Ya se maneja en initGlobalVisitListeners
+    }
+
+    // ============================================================
+    //  PANEL DE VISITAS (solo admin)
     // ============================================================
     function renderVisitasPanel() {
         if (!isAdmin) return;
@@ -4268,7 +4693,7 @@
     }
 
     // ============================================================
-    //  EDITOR DE VISITAS TOTALES (admin)
+    //  EDITOR DE VISITAS TOTALES (solo admin)
     // ============================================================
     function agregarEditorVisitasTotales() {
         if (!isAdmin) return;
@@ -4311,7 +4736,7 @@
     }
 
     // ============================================================
-    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN
+    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (solo admin)
     // ============================================================
     function agregarSeccionPublicidad() {
         if (!isAdmin) return;
@@ -4423,7 +4848,7 @@
     }
 
     // ============================================================
-    //  COMUNICADOS (admin)
+    //  COMUNICADOS - solo admin
     // ============================================================
     function crearModalComunicados() {
         if (document.getElementById('comunicadosModal')) return;
@@ -4538,7 +4963,7 @@
     }
 
     // ============================================================
-    //  BOTONES EN PANEL ADMIN
+    //  INYECTAR BOTONES EN EL PANEL DE ADMIN (solo admin)
     // ============================================================
     function agregarBotonCambiarClave() {
         if (!isAdmin) return;
@@ -4601,6 +5026,7 @@
         actualizarInfoBackup();
         if (document.getElementById('adminMainModal').classList.contains('active')) {
             renderVisitasPanel();
+            renderHistorial();
             agregarBotonCambiarClave();
             agregarBotonComunicados();
             agregarEditorVisitasTotales();
@@ -4642,331 +5068,58 @@
     });
 
     // ============================================================
-    //  BANNER CARRUSEL (actualizado)
+    //  INICIALIZACIÓN
     // ============================================================
-    function renderBannersCarousel() {
-        const track = document.getElementById('bannerTrack');
-        const dots = document.getElementById('bannerDots');
-        track.innerHTML = '';
-        dots.innerHTML = '';
-        if (data.banners.length === 0) {
-            track.innerHTML = `<div class="banner-slide" style="background:var(--bg-card); color:var(--text-color); font-size:1.2rem;">No hay banners configurados</div>`;
-            return;
-        }
-        data.banners.forEach((b, i) => {
-            const slide = document.createElement('div');
-            slide.className = 'banner-slide';
-            const fit = b.fit || 'cover';
-            const posX = b.posX || 50;
-            const posY = b.posY || 50;
-            slide.innerHTML = `<a href="${b.link || '#'}" target="_blank"><img src="${b.imagen}" alt="banner ${i+1}" style="object-fit:${fit}; object-position:${posX}% ${posY}%;"></a>`;
-            track.appendChild(slide);
-            const dot = document.createElement('span');
-            dot.addEventListener('click', () => goToBanner(i));
-            dots.appendChild(dot);
-        });
-        goToBanner(0);
-        startBannerTimer();
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        initAdminAccess();
+        initDuenoAccess();
 
-    function goToBanner(index) {
-        if (data.banners.length === 0) return;
-        const slides = document.querySelectorAll('.banner-slide');
-        if (index >= slides.length) index = 0;
-        if (index < 0) index = slides.length - 1;
-        bannerIndex = index;
-        const track = document.getElementById('bannerTrack');
-        track.style.transform = `translateX(-${index * 100}%)`;
-        const dots = document.querySelectorAll('#bannerDots span');
-        dots.forEach((d, i) => d.classList.toggle('active', i === index));
-    }
+        document.getElementById('searchNombre').addEventListener('input', filterLocales);
+        document.getElementById('searchRubro').addEventListener('change', filterLocales);
+        document.getElementById('searchNumero').addEventListener('change', filterLocales);
+        document.getElementById('searchUbicacion').addEventListener('change', filterLocales);
+        initOrderControls();
+        initThemeButtons();
 
-    function nextBanner() { goToBanner(bannerIndex + 1); }
-    function prevBanner() { goToBanner(bannerIndex - 1); }
-
-    function startBannerTimer() {
-        if (bannerTimer) clearInterval(bannerTimer);
-        if (data.banners.length > 1) {
-            bannerTimer = setInterval(nextBanner, data.bannerInterval * 1000);
-        }
-    }
-
-    function stopBannerTimer() {
-        if (bannerTimer) {
-            clearInterval(bannerTimer);
-            bannerTimer = null;
-        }
-    }
-
-    document.getElementById('nextBanner').addEventListener('click', () => { stopBannerTimer(); nextBanner(); startBannerTimer(); });
-    document.getElementById('prevBanner').addEventListener('click', () => { stopBannerTimer(); prevBanner(); startBannerTimer(); });
-    const carousel = document.getElementById('bannerCarousel');
-    carousel.addEventListener('mouseenter', stopBannerTimer);
-    carousel.addEventListener('mouseleave', startBannerTimer);
-
-    // ============================================================
-    //  BACKUP FUNCTIONS
-    // ============================================================
-    async function crearBackup() {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede crear backups.');
-            return;
-        }
-        const backup = {
-            timestamp: new Date().toISOString(),
-            data: JSON.parse(JSON.stringify(data))
-        };
-        data.backups.push(backup);
-        if (data.backups.length > 20) data.backups.shift();
-        data.lastBackupDate = backup.timestamp;
-        await saveData();
-        actualizarInfoBackup();
-        showToast('Backup creado correctamente');
-        renderAll();
-    }
-
-    function abrirModalRestaurar() {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede restaurar backups.');
-            return;
-        }
-        const list = document.getElementById('backupList');
-        if (data.backups.length === 0) {
-            list.innerHTML = '<p>No hay backups disponibles.</p>';
-        } else {
-            let html = '<ul style="list-style:none; padding:0;">';
-            const copias = [...data.backups].reverse();
-            copias.forEach((b, index) => {
-                const fecha = new Date(b.timestamp);
-                const fechaStr = fecha.toLocaleString();
-                html += `<li style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; border-bottom:1px solid var(--border);">
-                    <span>${fechaStr}</span>
-                    <button onclick="restaurarBackup(${data.backups.length - 1 - index})" class="btn-primary" style="padding:6px 16px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Restaurar</button>
-                </li>`;
+        loadData().then(() => {
+            agregarBotonCambiarClave();
+            const observer = new MutationObserver(() => {
+                if (document.getElementById('adminMainModal').classList.contains('active')) {
+                    agregarBotonCambiarClave();
+                    agregarBotonComunicados();
+                    renderVisitasPanel();
+                    renderHistorial();
+                    agregarEditorVisitasTotales();
+                    agregarSeccionPublicidad();
+                }
             });
-            html += '</ul>';
-            list.innerHTML = html;
-        }
-        openModal('restoreModal');
-    }
-
-    async function restaurarBackup(index) {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede restaurar backups.');
-            return;
-        }
-        if (!confirm('¿Restaurar este backup? Se perderán los datos actuales.')) return;
-        const backup = data.backups[index];
-        if (!backup) return showToast('Backup no encontrado');
-        const backupData = backup.data;
-        data.locales = backupData.locales || [];
-        data.banners = backupData.banners || [];
-        data.rubros = backupData.rubros || [];
-        data.theme = backupData.theme || 'default';
-        data.autoTheme = backupData.autoTheme || false;
-        data.nextId = backupData.nextId || 1;
-        data.galeriaNombre = backupData.galeriaNombre || 'Galería Cinerama';
-        data.galeriaDireccion = backupData.galeriaDireccion || 'Colón 375';
-        data.bannerInterval = backupData.bannerInterval || 4;
-        data.visitasTotales = backupData.visitasTotales || 0;
-        data.publicidad = backupData.publicidad || getDefaultData().publicidad;
-        data.locales.forEach(l => {
-            l.numeroLocal = String(l.numeroLocal);
-            if (l.visitas === undefined) l.visitas = 0;
-            if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-            l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
-            if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
-            if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+            observer.observe(document.getElementById('adminMainModal'), { attributes: true, attributeFilter: ['class'] });
         });
-        await saveData();
-        renderAll();
-        closeModal('restoreModal');
-        showToast('Backup restaurado correctamente');
-        actualizarNumeroVisitante(data.visitasTotales, false);
-    }
 
-    function actualizarInfoBackup() {
-        const span = document.getElementById('ultimoBackupInfo');
-        if (data.lastBackupDate) {
-            const fecha = new Date(data.lastBackupDate);
-            span.textContent = fecha.toLocaleString();
-        } else {
-            span.textContent = 'Nunca';
-        }
-    }
-
-    async function verificarBackupAutomatico() {
-        if (!isAdmin) return;
-        const ahora = new Date();
-        let debeBackup = false;
-        if (!data.lastBackupDate) {
-            debeBackup = true;
-        } else {
-            const ultimo = new Date(data.lastBackupDate);
-            const diffMs = ahora - ultimo;
-            const diffDias = diffMs / (1000 * 60 * 60 * 24);
-            if (diffDias >= 7) debeBackup = true;
-        }
-        if (debeBackup) {
-            await crearBackup();
-            showToast('Backup automático semanal realizado');
-        }
-    }
-
-    // ============================================================
-    //  EXPORTAR / IMPORTAR JSON
-    // ============================================================
-    function exportarJSON() {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede exportar datos.');
-            return;
-        }
-        const exportData = JSON.parse(JSON.stringify(data));
-        const jsonStr = JSON.stringify(exportData, null, 2);
-        const blob = new Blob([jsonStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `galeria_backup_${new Date().toISOString().slice(0,10)}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('Datos exportados correctamente');
-    }
-
-    async function importarJSON(event) {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede importar datos.');
-            return;
-        }
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (!importedData.locales || !importedData.banners || !importedData.rubros) {
-                    showToast('El archivo no tiene el formato correcto');
-                    return;
-                }
-                if (!confirm('¿Importar estos datos? Se perderán todos los datos actuales (excepto los backups, que se mantendrán).')) {
-                    return;
-                }
-                const backupsActuales = data.backups;
-                const lastBackup = data.lastBackupDate;
-                const adminClaveActual = data.adminClave;
-                data = importedData;
-                data.backups = backupsActuales;
-                data.lastBackupDate = lastBackup;
-                data.adminClave = adminClaveActual;
-                data.locales.forEach(l => {
-                    l.numeroLocal = String(l.numeroLocal);
-                    if (l.visitas === undefined) l.visitas = 0;
-                    if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                    l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
-                    if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
-                    if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
-                });
-                if (data.visitasTotales === undefined) data.visitasTotales = 0;
-                if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
-                await saveData();
-                renderAll();
-                showToast('Datos importados correctamente');
-                actualizarNumeroVisitante(data.visitasTotales, false);
-            } catch(err) {
-                showToast('Error al leer el archivo JSON');
-                console.error(err);
+        document.getElementById('toggleAdminBtn').addEventListener('click', function() {
+            if (!isAdmin) {
+                openModal('loginModal');
+                document.getElementById('loginClave').value = '';
+            } else {
+                openModal('adminMainModal');
             }
-        };
-        reader.readAsText(file);
-        event.target.value = '';
-    }
+        });
 
-    // ============================================================
-    //  CAMBIAR CLAVE (admin)
-    // ============================================================
-    async function cambiarClave() {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede cambiar la clave.');
-            return;
-        }
-        const actual = prompt('Ingrese la clave actual:');
-        if (actual === null) return;
-        if (actual !== data.adminClave) {
-            showToast('Clave actual incorrecta');
-            return;
-        }
-        const nueva = prompt('Ingrese la nueva clave:');
-        if (nueva === null) return;
-        if (nueva.length < 4) {
-            showToast('La clave debe tener al menos 4 caracteres');
-            return;
-        }
-        const confirmar = prompt('Confirme la nueva clave:');
-        if (confirmar === null) return;
-        if (nueva !== confirmar) {
-            showToast('Las claves no coinciden');
-            return;
-        }
-        data.adminClave = nueva;
-        await saveData();
-        showToast('Clave cambiada exitosamente');
-    }
-
-    // ============================================================
-    //  LOGIN
-    // ============================================================
-    async function loginAdmin() {
-        const clave = document.getElementById('loginClave').value;
-        if (clave === data.adminClave) {
-            isAdmin = true;
-            closeModal('loginModal');
-            showToast('Acceso concedido');
-            document.getElementById('logoutBtn').style.display = 'flex';
-            await verificarBackupAutomatico();
-            openModal('adminMainModal');
-            document.getElementById('themeStatus').textContent = data.autoTheme ? 'Modo automático activado' : `Tema actual: ${data.theme}`;
-            renderAll();
-            // Activar listener en tiempo real
-            docRef.onSnapshot(function(doc) {
-                if (doc.exists && dataLoaded) {
-                    const firestoreData = doc.data();
-                    const defaultData = getDefaultData();
-                    for (let key in defaultData) {
-                        if (firestoreData[key] !== undefined) {
-                            data[key] = firestoreData[key];
-                        }
-                    }
-                    data.locales.forEach(l => {
-                        l.numeroLocal = String(l.numeroLocal);
-                        if (l.visitas === undefined) l.visitas = 0;
-                        if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                        l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
-                        if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
-                        if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
-                    });
-                    if (data.visitasTotales === undefined) data.visitasTotales = 0;
-                    if (!data.publicidad) data.publicidad = defaultData.publicidad;
-                    if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
-                        data.publicidad.textos = defaultData.publicidad.textos;
-                    }
-                    localStorage.setItem('galeriaData', JSON.stringify(data));
-                    renderAll();
-                    if (document.getElementById('visitNumber')) {
-                        actualizarNumeroVisitante(data.visitasTotales || 0, false);
-                    }
+        document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
                 }
             });
-        } else {
-            showToast('Clave incorrecta');
-        }
-    }
+        });
+    });
 
     // Exposición de funciones globales
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.loginAdmin = loginAdmin;
+    window.loginDueno = loginDueno;
     window.crearBackup = crearBackup;
     window.abrirModalRestaurar = abrirModalRestaurar;
     window.restaurarBackup = restaurarBackup;
@@ -4991,10 +5144,7 @@
     window.seleccionarTodosComunicados = seleccionarTodosComunicados;
     window.copiarMensajeComunicados = copiarMensajeComunicados;
     window.enviarWhatsAppComunicados = enviarWhatsAppComunicados;
-    window.abrirHistorial = abrirHistorial;
-    window.cargarHistorial = cargarHistorial;
-    window.mostrarDetalleHistorial = mostrarDetalleHistorial;
-    window.verificarClaveDueño = verificarClaveDueño;
+    window.cancelarEdicion = cancelarEdicion;
 </script>
 </body>
 </html>
