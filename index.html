@@ -1382,7 +1382,7 @@
             opacity: 1;
         }
 
-        /* Ocultar campos no permitidos para dueño */
+        /* Ocultar campos para dueño */
         .owner-hidden {
             display: none !important;
         }
@@ -1499,39 +1499,30 @@
             <h2 id="modalLocalTitle"><i class="fas fa-store"></i> Agregar Local</h2>
             <form id="localForm">
                 <input type="hidden" id="editId" value="">
-                <!-- Campos permitidos para dueño (visibles) -->
-                <div id="ownerFields">
-                    <label>Nombre</label>
-                    <input type="text" id="fNombre" disabled>
-                    <label>WhatsApp (con código país, ej: 5491112345678)</label>
-                    <input type="text" id="fWhatsapp" placeholder="5491112345678">
-                    <label>Sitio web</label>
-                    <input type="url" id="fWeb" placeholder="https://...">
-                    <label>Horarios (marcar cerrado si no atiende)</label>
-                    <div class="horario-grid">
-                        <div class="horario-item"><label>Lunes</label> <input type="time" id="hLunesIni" value="09:00"> - <input type="time" id="hLunesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hLunesCerrado"> Cerrado</span></div>
-                        <div class="horario-item"><label>Martes</label> <input type="time" id="hMartesIni" value="09:00"> - <input type="time" id="hMartesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hMartesCerrado"> Cerrado</span></div>
-                        <div class="horario-item"><label>Miércoles</label> <input type="time" id="hMiercolesIni" value="09:00"> - <input type="time" id="hMiercolesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hMiercolesCerrado"> Cerrado</span></div>
-                        <div class="horario-item"><label>Jueves</label> <input type="time" id="hJuevesIni" value="09:00"> - <input type="time" id="hJuevesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hJuevesCerrado"> Cerrado</span></div>
-                        <div class="horario-item"><label>Viernes</label> <input type="time" id="hViernesIni" value="09:00"> - <input type="time" id="hViernesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hViernesCerrado"> Cerrado</span></div>
-                        <div class="horario-item"><label>Sábado</label> <input type="time" id="hSabadoIni" value="10:00"> - <input type="time" id="hSabadoFin" value="14:00"> <span class="cerrado-label"><input type="checkbox" id="hSabadoCerrado"> Cerrado</span></div>
-                        <div class="horario-item"><label>Domingo</label> <input type="time" id="hDomingoIni" value="10:00"> - <input type="time" id="hDomingoFin" value="14:00"> <span class="cerrado-label"><input type="checkbox" id="hDomingoCerrado" checked> Cerrado</span></div>
-                    </div>
-                    <label>Feriados (fecha:horario; ej: 25/12:10:00-14:00, 01/01:cerrado)</label>
-                    <input type="text" id="hFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
-                    <label>Imágenes adicionales (URL o subir archivo)</label>
-                    <div id="imagenesExtraContainer"></div>
+
+                <!-- Sección: Nombre (siempre visible) -->
+                <div id="fieldNombre">
+                    <label>Nombre *</label>
+                    <input type="text" id="fNombre" required>
                 </div>
 
-                <!-- Campos restringidos (ocultos para dueño) -->
-                <div id="adminFields">
+                <!-- Sección: Rubro + botón editar (solo admin) -->
+                <div id="fieldRubro">
                     <label>Rubro *</label>
                     <div style="display:flex; gap:8px; align-items:center;">
                         <select id="fRubro" required style="flex:1;"></select>
                         <button type="button" class="btn-primary" onclick="openModal('rubrosModal')" style="padding:6px 14px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;"><i class="fas fa-edit"></i></button>
                     </div>
+                </div>
+
+                <!-- Sección: Número de local (solo admin) -->
+                <div id="fieldNumero">
                     <label>Número de local *</label>
                     <input type="text" id="fNumero" required placeholder="Ej: S17, 12, A3">
+                </div>
+
+                <!-- Sección: Ubicación (solo admin) -->
+                <div id="fieldUbicacion">
                     <label>Ubicación</label>
                     <select id="fUbicacion">
                         <option value="Primer Piso">Primer Piso</option>
@@ -1539,6 +1530,10 @@
                         <option value="Subsuelo">Subsuelo</option>
                         <option value="Cochera">Cochera</option>
                     </select>
+                </div>
+
+                <!-- Sección: Alquiler (solo admin) -->
+                <div id="fieldAlquiler">
                     <label>¿En alquiler?</label>
                     <div style="display:flex; align-items:center; gap:10px;">
                         <input type="checkbox" id="fAlquiler" style="width:auto;">
@@ -1548,11 +1543,34 @@
                         <label>Teléfono de la inmobiliaria</label>
                         <input type="text" id="fInmobiliaria" placeholder="Ej: 5491112345678">
                     </div>
+                </div>
+
+                <!-- Sección: WhatsApp (siempre visible para dueño y admin) -->
+                <div id="fieldWhatsapp">
+                    <label>WhatsApp (con código país, ej: 5491112345678)</label>
+                    <input type="text" id="fWhatsapp" placeholder="5491112345678">
+                </div>
+
+                <!-- Sección: Web (siempre visible para dueño y admin) -->
+                <div id="fieldWeb">
+                    <label>Sitio web</label>
+                    <input type="url" id="fWeb" placeholder="https://...">
+                </div>
+
+                <!-- Sección: Color de fondo (solo admin) -->
+                <div id="fieldColor">
                     <label>Color de fondo para logo</label>
                     <input type="color" id="fColorFondo" value="#2563eb">
+                </div>
+
+                <!-- Sección: Descripción (solo admin) -->
+                <div id="fieldDescripcion">
                     <label>Descripción</label>
                     <textarea id="fDescripcion" rows="2"></textarea>
+                </div>
 
+                <!-- Sección: Ajuste foto principal (solo admin) -->
+                <div id="fieldFotoAjuste">
                     <label>Ajuste de la foto principal</label>
                     <div class="image-adjust-group">
                         <div style="display:flex; flex-wrap:wrap; gap:8px; width:100%;">
@@ -1576,7 +1594,10 @@
                             <span id="fFotoPosYVal">50%</span>
                         </div>
                     </div>
+                </div>
 
+                <!-- Sección: Ajuste logo (solo admin) -->
+                <div id="fieldLogoAjuste">
                     <label>Ajuste del logo</label>
                     <div class="image-adjust-group">
                         <div style="display:flex; flex-wrap:wrap; gap:8px; width:100%;">
@@ -1600,40 +1621,59 @@
                             <span id="fLogoPosYVal">50%</span>
                         </div>
                     </div>
+                </div>
 
-                    <div id="controlesCarrusel">
-                        <label>Configuración del carrusel de imágenes</label>
-                        <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
-                            <div style="flex:1; min-width:120px;">
-                                <label style="font-size:0.85rem;">Intervalo (seg):</label>
-                                <select id="intervaloCarrusel" style="width:100%; padding:6px 10px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                                    ${Array.from({length:9}, (_,i) => i+2).map(v => `<option value="${v}">${v} seg</option>`).join('')}
-                                </select>
-                            </div>
-                            <div style="flex:2; min-width:150px;">
-                                <label style="font-size:0.85rem;">Animación:</label>
-                                <select id="animacionCarrusel" style="width:100%; padding:6px 10px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                                    ${ANIMACIONES_CARRUSEL.map(a => `<option value="${a.value}">${a.label}</option>`).join('')}
-                                </select>
-                            </div>
-                        </div>
+                <!-- Sección: Horarios (siempre visible para dueño y admin) -->
+                <div id="fieldHorarios">
+                    <label>Horarios (marcar cerrado si no atiende)</label>
+                    <div class="horario-grid">
+                        <div class="horario-item"><label>Lunes</label> <input type="time" id="hLunesIni" value="09:00"> - <input type="time" id="hLunesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hLunesCerrado"> Cerrado</span></div>
+                        <div class="horario-item"><label>Martes</label> <input type="time" id="hMartesIni" value="09:00"> - <input type="time" id="hMartesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hMartesCerrado"> Cerrado</span></div>
+                        <div class="horario-item"><label>Miércoles</label> <input type="time" id="hMiercolesIni" value="09:00"> - <input type="time" id="hMiercolesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hMiercolesCerrado"> Cerrado</span></div>
+                        <div class="horario-item"><label>Jueves</label> <input type="time" id="hJuevesIni" value="09:00"> - <input type="time" id="hJuevesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hJuevesCerrado"> Cerrado</span></div>
+                        <div class="horario-item"><label>Viernes</label> <input type="time" id="hViernesIni" value="09:00"> - <input type="time" id="hViernesFin" value="18:00"> <span class="cerrado-label"><input type="checkbox" id="hViernesCerrado"> Cerrado</span></div>
+                        <div class="horario-item"><label>Sábado</label> <input type="time" id="hSabadoIni" value="10:00"> - <input type="time" id="hSabadoFin" value="14:00"> <span class="cerrado-label"><input type="checkbox" id="hSabadoCerrado"> Cerrado</span></div>
+                        <div class="horario-item"><label>Domingo</label> <input type="time" id="hDomingoIni" value="10:00"> - <input type="time" id="hDomingoFin" value="14:00"> <span class="cerrado-label"><input type="checkbox" id="hDomingoCerrado" checked> Cerrado</span></div>
                     </div>
+                    <label>Feriados (fecha:horario; ej: 25/12:10:00-14:00, 01/01:cerrado)</label>
+                    <input type="text" id="hFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
+                </div>
 
+                <!-- Sección: Imágenes adicionales (siempre visible para dueño y admin) -->
+                <div id="fieldImagenesExtra">
+                    <label>Imágenes adicionales (URL o subir archivo)</label>
+                    <div id="imagenesExtraContainer"></div>
+                </div>
+
+                <!-- Sección: Mostrar en página (solo admin) -->
+                <div id="fieldMostrarPagina">
                     <label style="display:flex; align-items:center; gap:10px; margin-top:12px;">
                         <input type="checkbox" id="fMostrarPagina" checked style="width:auto;">
                         <span>Mostrar en página principal (si está desmarcado, solo aparecerá en búsquedas)</span>
                     </label>
-                    
+                </div>
+
+                <!-- Sección: Foto principal (solo admin) -->
+                <div id="fieldFoto">
                     <label>Foto (URL o subir archivo)</label>
                     <input type="file" id="fFotoFile" accept="image/*" capture="environment">
                     <input type="text" id="fFotoUrl" placeholder="O pegar URL de imagen" style="margin-top:6px;">
+                </div>
+
+                <!-- Sección: Logo (solo admin) -->
+                <div id="fieldLogo">
                     <label>Logo (URL o subir archivo)</label>
                     <input type="file" id="fLogoFile" accept="image/*" capture="environment">
                     <input type="text" id="fLogoUrl" placeholder="O pegar URL de logo" style="margin-top:6px;">
                 </div>
 
+                <!-- Controles del carrusel (solo admin) -->
+                <div id="fieldCarrusel">
+                    <div id="controlesCarrusel"></div>
+                </div>
+
                 <div class="btn-group">
-                    <button type="button" class="btn-secondary" onclick="closeModal('addLocalModal')">Cancelar</button>
+                    <button type="button" class="btn-secondary" onclick="cerrarModalEdicion()">Cancelar</button>
                     <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
                 </div>
             </form>
@@ -2621,7 +2661,7 @@
     }
 
     // ============================================================
-    //  LISTENERS (clic en tarjeta, pulsación larga en número)
+    //  LISTENERS
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
@@ -2686,7 +2726,7 @@
             }
         });
 
-        // Pulsación larga en badge de estado (para inversión temporal)
+        // Pulsación larga en badge de estado
         container.addEventListener('pointerdown', function(e) {
             const badge = e.target.closest('.status-badge');
             if (!badge) return;
@@ -2741,8 +2781,10 @@
             showToast('Local no encontrado');
             return;
         }
-        // La clave es el WhatsApp registrado (comparación exacta)
-        if (clave === local.whatsapp) {
+        // Limpiar el WhatsApp (solo dígitos) para comparar
+        const whatsappLimpio = local.whatsapp ? local.whatsapp.replace(/\D/g, '') : '';
+        const claveLimpia = clave.replace(/\D/g, '');
+        if (claveLimpia === whatsappLimpio && whatsappLimpio.length > 0) {
             ownerLocalId = local.id;
             ownerNumero = local.numeroLocal;
             closeModal('ownerAuthModal');
@@ -2754,7 +2796,7 @@
     }
 
     // ============================================================
-    //  ESTADO TEMPORAL (para inversión)
+    //  ESTADO TEMPORAL
     // ============================================================
     async function toggleTemporalEstado(localId) {
         const local = data.locales.find(l => l.id === localId);
@@ -3184,6 +3226,13 @@
     }
 
     // ============================================================
+    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN (sin cambios)
+    // ============================================================
+    function cerrarModalEdicion() {
+        closeModal('addLocalModal');
+    }
+
+    // ============================================================
     //  DOCUMENT READY
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
@@ -3239,7 +3288,7 @@
     });
 
     // ============================================================
-    //  RESTO DE FUNCIONES (con soporte para dueño)
+    //  RESTO DE FUNCIONES
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
@@ -3298,17 +3347,10 @@
             if (!editId) {
                 renderizarImagenesExtra([]);
             }
-            // Si es dueño, ocultar campos no permitidos
+            inyectarControlesCarrusel();
+            // Si es dueño, aplicar restricciones
             if (ownerLocalId) {
                 aplicarRestriccionesDueño();
-            } else {
-                // Asegurar que se muestren todos los campos (admin)
-                document.getElementById('adminFields').classList.remove('owner-hidden');
-                document.getElementById('ownerFields').classList.remove('owner-hidden');
-                // Habilitar todos los campos (por si estaban deshabilitados)
-                document.querySelectorAll('#adminFields input, #adminFields select, #adminFields textarea').forEach(el => el.disabled = false);
-                document.querySelectorAll('#ownerFields input, #ownerFields select, #ownerFields textarea').forEach(el => el.disabled = false);
-                document.getElementById('fNombre').disabled = false;
             }
         }
         if (id === 'adminMainModal') {
@@ -3323,14 +3365,28 @@
 
     function closeModal(id) {
         document.getElementById(id).classList.remove('active');
-        // Si se cierra el modal de edición, y era dueño, cerrar sesión de dueño
-        if (id === 'addLocalModal' && ownerLocalId) {
-            ownerLocalId = null;
-            ownerNumero = null;
-            showToast('Sesión de dueño finalizada');
-            // Opcional: recargar vista para quitar botón de edición
-            renderAll();
-        }
+    }
+
+    function inyectarControlesCarrusel() {
+        const container = document.getElementById('controlesCarrusel');
+        if (!container) return;
+        container.innerHTML = `
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Configuración del carrusel de imágenes</label>
+            <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+                <div style="flex:1; min-width:120px;">
+                    <label style="font-size:0.85rem;">Intervalo (seg):</label>
+                    <select id="intervaloCarrusel" style="width:100%; padding:6px 10px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                        ${Array.from({length:9}, (_,i) => i+2).map(v => `<option value="${v}">${v} seg</option>`).join('')}
+                    </select>
+                </div>
+                <div style="flex:2; min-width:150px;">
+                    <label style="font-size:0.85rem;">Animación:</label>
+                    <select id="animacionCarrusel" style="width:100%; padding:6px 10px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                        ${ANIMACIONES_CARRUSEL.map(a => `<option value="${a.value}">${a.label}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+        `;
     }
 
     // ============================================================
@@ -3345,24 +3401,36 @@
             showToast('No tienes permisos para editar este local');
             return;
         }
-        // Ocultar campos de admin
-        document.getElementById('adminFields').classList.add('owner-hidden');
-        // Mostrar campos de dueño
-        document.getElementById('ownerFields').classList.remove('owner-hidden');
-        // Deshabilitar el campo nombre (solo lectura)
-        document.getElementById('fNombre').disabled = true;
-        // Asegurar que los campos de owner estén habilitados (whatsapp, web, horarios)
-        document.querySelectorAll('#ownerFields input, #ownerFields select, #ownerFields textarea').forEach(el => {
-            if (el.id !== 'fNombre') el.disabled = false;
+
+        // Ocultar campos no permitidos
+        const camposOcultar = [
+            'fieldRubro', 'fieldNumero', 'fieldUbicacion', 'fieldAlquiler',
+            'fieldColor', 'fieldDescripcion', 'fieldFotoAjuste', 'fieldLogoAjuste',
+            'fieldMostrarPagina', 'fieldFoto', 'fieldLogo', 'fieldCarrusel'
+        ];
+        camposOcultar.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('owner-hidden');
         });
-        // Ocultar controles de carrusel y ajustes de imagen (ya están en adminFields)
-        // Cambiar título
+
+        // Habilitar nombre (solo lectura), whatsapp y web editables
+        document.getElementById('fNombre').disabled = true;
+        document.getElementById('fWhatsapp').disabled = false;
+        document.getElementById('fWeb').disabled = false;
+
+        // Mostrar título específico
         document.getElementById('modalLocalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Editar datos del dueño';
-        showToast('Modo dueño: solo puedes editar WhatsApp, web, horarios e imágenes adicionales');
+
+        // Asegurar que horarios e imágenes extra estén visibles
+        document.getElementById('fieldHorarios').classList.remove('owner-hidden');
+        document.getElementById('fieldImagenesExtra').classList.remove('owner-hidden');
+        document.getElementById('fieldWhatsapp').classList.remove('owner-hidden');
+        document.getElementById('fieldWeb').classList.remove('owner-hidden');
+        document.getElementById('fieldNombre').classList.remove('owner-hidden');
     }
 
     // ============================================================
-    //  RENDER LOCALES (con botón de edición para dueño)
+    //  RENDER LOCALES
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -3640,7 +3708,7 @@
     }
 
     // ============================================================
-    //  ADMIN CRUD (locales) - con verificación de dueño
+    //  ADMIN CRUD (locales)
     // ============================================================
     function editLocal(id) {
         const local = data.locales.find(l => l.id === id);
@@ -3656,7 +3724,6 @@
             return;
         }
 
-        // Cargar datos en el formulario
         document.getElementById('editId').value = id;
         document.getElementById('fNombre').value = local.nombre;
         document.getElementById('fNumero').value = local.numeroLocal;
@@ -3697,11 +3764,9 @@
         toggleInmobiliaria();
         updateRubroSelectInForm();
         document.getElementById('fRubro').value = local.rubro;
-        renderizarImagenesExtra(local.imagenesExtra || []);
-        // Si es dueño, aplicar restricciones (se hace al abrir modal)
-        // Pero debemos asegurar que al abrir el modal se apliquen
         openModal('addLocalModal');
-        // La restricción se aplica en openModal
+        renderizarImagenesExtra(local.imagenesExtra || []);
+        // Si es dueño, se aplican restricciones en openModal
     }
 
     async function deleteLocal(id) {
@@ -3751,7 +3816,6 @@
         let animacion = localExistente.animacionCarrusel;
 
         if (isAdmin) {
-            // Admin puede editar todo
             nombre = document.getElementById('fNombre').value.trim();
             rubro = document.getElementById('fRubro').value;
             numero = document.getElementById('fNumero').value.trim();
@@ -3793,7 +3857,7 @@
             logoPosY = parseInt(document.getElementById('fLogoPosY').value);
         }
 
-        // Campos que el dueño sí puede modificar (desde ownerFields)
+        // Campos que el dueño puede modificar
         const whatsapp = document.getElementById('fWhatsapp').value.trim();
         const web = document.getElementById('fWeb').value.trim();
         const imagenesExtra = obtenerImagenesExtra();
@@ -3852,7 +3916,6 @@
         showToast('Local actualizado');
         updateRubroSelectInForm();
         updateNumeroSelect();
-        // Si era dueño, cerrar sesión (ya se hace en closeModal)
     });
 
     function capitalize(str) {
@@ -5036,6 +5099,7 @@
     window.enviarWhatsAppComunicados = enviarWhatsAppComunicados;
     window.toggleTemporalEstado = toggleTemporalEstado;
     window.autenticarDueño = autenticarDueño;
+    window.cerrarModalEdicion = cerrarModalEdicion;
 </script>
 </body>
 </html>
