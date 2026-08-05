@@ -12,7 +12,7 @@
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        /* ===== ESTILOS BASE ===== */
+        /* ===== ESTILOS BASE (sin cambios) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -722,7 +722,7 @@
             background: var(--bg-card);
             border: 2px solid var(--border);
             border-radius: 16px;
-            font-size: 2.5rem;  /* doble del tamaño anterior */
+            font-size: 2.5rem;
             padding: 16px 24px;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
@@ -2732,7 +2732,7 @@
     }
 
     // ============================================================
-    //  LISTENERS
+    //  LISTENERS (con desactivación al abrir modal de edición)
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
@@ -2762,6 +2762,8 @@
         container.addEventListener('pointerdown', function(e) {
             const storeIcon = e.target.closest('.store-icon');
             if (!storeIcon) return;
+            // Si el modal de edición está abierto, no hacer nada
+            if (document.getElementById('addLocalModal').classList.contains('active')) return;
             const card = storeIcon.closest('.card');
             if (!card) return;
             const id = parseInt(card.dataset.id);
@@ -2801,10 +2803,11 @@
             }
         });
 
-        // Pulsación larga en badge de estado (para inversión temporal)
+        // Pulsación larga en badge de estado (para inversión temporal) - también se desactiva en edición
         container.addEventListener('pointerdown', function(e) {
             const badge = e.target.closest('.status-badge');
             if (!badge) return;
+            if (document.getElementById('addLocalModal').classList.contains('active')) return;
             const card = badge.closest('.card');
             if (!card) return;
             const id = parseInt(card.dataset.id);
@@ -3322,7 +3325,7 @@
         closeBtn.title = 'Cancelar';
         closeBtn.innerHTML = '<i class="fas fa-times"></i>';
         closeBtn.addEventListener('pointerdown', function(e) {
-            e.preventDefault(); // Evita selección/arrastre
+            e.preventDefault();
             cerrarModalEdicion();
         });
         container.appendChild(closeBtn);
@@ -3334,11 +3337,8 @@
         saveBtn.title = 'Guardar';
         saveBtn.innerHTML = '<i class="fas fa-save"></i>';
         saveBtn.addEventListener('pointerdown', function(e) {
-            // No prevenimos el default para que el submit se dispare,
-            // pero si no ocurre, lo forzamos manualmente
             const form = document.getElementById('localForm');
             if (form) {
-                // Pequeño retraso para asegurar que el evento táctil no interfiera
                 setTimeout(() => {
                     if (form.requestSubmit) {
                         form.requestSubmit();
@@ -3472,6 +3472,14 @@
                 aplicarRestriccionesDueño();
             }
             actualizarBotonesModal();
+            // Limpiar temporizadores de long press pendientes en la tienda y números
+            document.querySelectorAll('.store-icon, .numero').forEach(el => {
+                if (el._pressTimer) {
+                    clearTimeout(el._pressTimer);
+                    delete el._pressTimer;
+                }
+                el.classList.remove('pressed');
+            });
         }
         if (id === 'adminMainModal') {
             actualizarInfoBackup();
