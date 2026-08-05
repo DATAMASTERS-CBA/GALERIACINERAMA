@@ -12,7 +12,7 @@
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        /* ===== ESTILOS BASE (sin cambios) ===== */
+        /* ===== ESTILOS BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -516,6 +516,7 @@
             background: var(--primary);
             transition: 0.2s;
             font-weight: 600;
+            touch-action: manipulation;
         }
         .card-actions a:hover,
         .card-actions button:hover {
@@ -578,6 +579,7 @@
             justify-content: center;
             font-size: 0.9rem;
             backdrop-filter: blur(4px);
+            touch-action: manipulation;
         }
         .card-admin-actions button:hover {
             transform: scale(1.1);
@@ -605,6 +607,7 @@
             align-items: center;
             gap: 4px;
             backdrop-filter: blur(4px);
+            touch-action: manipulation;
         }
         .card-owner-edit button:hover {
             background: var(--primary);
@@ -676,6 +679,7 @@
             cursor: pointer;
             transition: 0.2s;
             touch-action: manipulation;
+            user-select: none;
         }
         .modal .btn-group .btn-primary {
             background: var(--primary);
@@ -810,6 +814,7 @@
             cursor: pointer;
             font-weight: bold;
             flex-shrink: 0;
+            touch-action: manipulation;
         }
         .image-extra-item .upload-status {
             font-size: 0.8rem;
@@ -1075,6 +1080,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
+            touch-action: manipulation;
         }
         .comunicados-actions .btn-select-all {
             background: var(--primary-light);
@@ -1197,6 +1203,7 @@
             pointer-events: auto;
             background: none;
             border: none;
+            touch-action: manipulation;
         }
         #publicidadOverlay .cerrar-publicidad:hover {
             opacity: 1;
@@ -1674,8 +1681,8 @@
                 </div>
 
                 <div class="btn-group">
-                    <button type="button" class="btn-secondary" onclick="cerrarModalEdicion()">Cancelar</button>
-                    <button type="button" class="btn-primary" onclick="guardarLocal()"><i class="fas fa-save"></i> Guardar</button>
+                    <button type="button" class="btn-secondary" id="cancelarEdicionBtn">Cancelar</button>
+                    <button type="button" class="btn-primary" id="guardarEdicionBtn"><i class="fas fa-save"></i> Guardar</button>
                 </div>
             </form>
         </div>
@@ -2249,7 +2256,7 @@
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.innerHTML = '+ Agregar imagen';
-        addBtn.style.cssText = 'padding:6px 16px; border-radius:30px; border:1px solid var(--border); background:var(--primary-light); color:var(--primary); cursor:pointer; font-weight:600; margin-top:4px;';
+        addBtn.style.cssText = 'padding:6px 16px; border-radius:30px; border:1px solid var(--border); background:var(--primary-light); color:var(--primary); cursor:pointer; font-weight:600; margin-top:4px; touch-action:manipulation;';
         addBtn.addEventListener('click', function () {
             const div = document.createElement('div');
             div.className = 'image-extra-item';
@@ -3221,17 +3228,21 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN
+    //  FUNCIONES DE EDICIÓN (GUARDAR Y CANCELAR)
     // ============================================================
-    function cerrarModalEdicion() {
+    function cerrarModalEdicion(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         closeModal('addLocalModal');
     }
 
-    // ============================================================
-    //  FUNCIÓN GUARDAR LOCAL (usada por el botón type="button")
-    // ============================================================
-    async function guardarLocal() {
-        // Este código es el mismo que estaba en el evento submit del formulario
+    async function guardarLocal(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         if (!isAdmin && !ownerLocalId) {
             showToast('No tienes permisos para guardar cambios.');
             return;
@@ -3364,6 +3375,10 @@
         updateNumeroSelect();
     }
 
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     // ============================================================
     //  DOCUMENT READY
     // ============================================================
@@ -3382,6 +3397,34 @@
         });
         document.getElementById('fLogoFile').addEventListener('change', function() {
             procesarArchivoInput(this, document.getElementById('fLogoUrl'), 'Logo cargado');
+        });
+
+        // Asignar eventos a los botones de edición con prevención de comportamiento predeterminado
+        const guardarBtn = document.getElementById('guardarEdicionBtn');
+        const cancelarBtn = document.getElementById('cancelarEdicionBtn');
+
+        // Usar pointerdown para evitar que el navegador interprete el toque como otra cosa
+        guardarBtn.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            guardarLocal(e);
+        });
+        cancelarBtn.addEventListener('pointerdown', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            cerrarModalEdicion(e);
+        });
+
+        // También evento click como respaldo
+        guardarBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            guardarLocal(e);
+        });
+        cancelarBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            cerrarModalEdicion(e);
         });
 
         loadData().then(() => {
@@ -3419,7 +3462,7 @@
     });
 
     // ============================================================
-    //  RESTO DE FUNCIONES (sin cambios relevantes)
+    //  RESTO DE FUNCIONES (sin cambios)
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
@@ -3904,10 +3947,6 @@
         await saveData();
         renderAll();
         showToast('Local eliminado');
-    }
-
-    function capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     document.getElementById('fAlquiler').addEventListener('change', toggleInmobiliaria);
