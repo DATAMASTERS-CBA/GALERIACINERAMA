@@ -3308,20 +3308,47 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (SIEMPRE ICONOS GRANDES)
+    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (con pointerdown robusto)
     // ============================================================
     function actualizarBotonesModal() {
         const container = document.getElementById('modalBotones');
         if (!container) return;
-        // Siempre usar iconos grandes, tanto para admin como para dueño
-        container.innerHTML = `
-            <button type="button" class="btn-icon close" onclick="cerrarModalEdicion()" title="Cancelar">
-                <i class="fas fa-times"></i>
-            </button>
-            <button type="submit" class="btn-icon save" title="Guardar">
-                <i class="fas fa-save"></i>
-            </button>
-        `;
+        container.innerHTML = ''; // Limpiar
+
+        // Botón Cerrar (X)
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-icon close';
+        closeBtn.title = 'Cancelar';
+        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        closeBtn.addEventListener('pointerdown', function(e) {
+            e.preventDefault(); // Evita selección/arrastre
+            cerrarModalEdicion();
+        });
+        container.appendChild(closeBtn);
+
+        // Botón Guardar (disquete)
+        const saveBtn = document.createElement('button');
+        saveBtn.type = 'submit';
+        saveBtn.className = 'btn-icon save';
+        saveBtn.title = 'Guardar';
+        saveBtn.innerHTML = '<i class="fas fa-save"></i>';
+        saveBtn.addEventListener('pointerdown', function(e) {
+            // No prevenimos el default para que el submit se dispare,
+            // pero si no ocurre, lo forzamos manualmente
+            const form = document.getElementById('localForm');
+            if (form) {
+                // Pequeño retraso para asegurar que el evento táctil no interfiera
+                setTimeout(() => {
+                    if (form.requestSubmit) {
+                        form.requestSubmit();
+                    } else {
+                        form.submit();
+                    }
+                }, 10);
+            }
+        });
+        container.appendChild(saveBtn);
     }
 
     // ============================================================
