@@ -720,16 +720,13 @@
         .modal .btn-group .btn-icon {
             background: transparent;
             border: none;
-            font-size: 1.8rem;
-            padding: 8px 12px;
+            font-size: 1.5rem;
+            padding: 8px;
             cursor: pointer;
             transition: 0.2s;
-            border-radius: 50%;
-            line-height: 1;
         }
         .modal .btn-group .btn-icon:hover {
             transform: scale(1.2);
-            background: rgba(0,0,0,0.05);
         }
         .modal .btn-group .btn-icon.save {
             color: var(--primary);
@@ -962,10 +959,6 @@
             }
             .card-img-wrap {
                 height: 160px;
-            }
-            .modal .btn-group .btn-icon {
-                font-size: 1.5rem;
-                padding: 6px 10px;
             }
         }
 
@@ -1721,7 +1714,7 @@
                 </div>
 
                 <div class="btn-group" id="modalBotones">
-                    <!-- Los botones se reemplazan dinámicamente -->
+                    <!-- Los botones se reemplazan dinámicamente según el modo -->
                 </div>
             </form>
         </div>
@@ -2751,7 +2744,7 @@
                     clearTimeout(storeIcon._pressTimer);
                     delete storeIcon._pressTimer;
                 }
-            }, 3000);
+            }, 3000); // 3 segundos
             storeIcon._pressTimer = pressTimer;
             storeIcon.classList.add('pressed');
         });
@@ -3283,20 +3276,28 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (siempre con iconos)
+    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (según modo)
     // ============================================================
     function actualizarBotonesModal() {
         const container = document.getElementById('modalBotones');
         if (!container) return;
-        // Siempre usar iconos, tanto para admin como para dueño
-        container.innerHTML = `
-            <button type="button" class="btn-icon close" onclick="cerrarModalEdicion()" title="Cancelar">
-                <i class="fas fa-times"></i>
-            </button>
-            <button type="submit" class="btn-icon save" title="Guardar">
-                <i class="fas fa-save"></i>
-            </button>
-        `;
+        if (ownerLocalId) {
+            // Modo dueño: mostrar iconos de X y disquete
+            container.innerHTML = `
+                <button type="button" class="btn-icon close" onclick="cerrarModalEdicion()" title="Cerrar sin guardar">
+                    <i class="fas fa-times"></i>
+                </button>
+                <button type="submit" class="btn-icon save" title="Guardar cambios">
+                    <i class="fas fa-save"></i>
+                </button>
+            `;
+        } else {
+            // Modo admin: botones tradicionales
+            container.innerHTML = `
+                <button type="button" class="btn-secondary" onclick="cerrarModalEdicion()">Cancelar</button>
+                <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
+            `;
+        }
     }
 
     // ============================================================
@@ -3438,6 +3439,7 @@
     function inyectarControlesCarrusel() {
         const container = document.getElementById('controlesCarrusel');
         if (!container) return;
+        // Mantener los valores seleccionados si existen
         const intervaloActual = document.getElementById('intervaloCarrusel') ? document.getElementById('intervaloCarrusel').value : '3';
         const animacionActual = document.getElementById('animacionCarrusel') ? document.getElementById('animacionCarrusel').value : 'fade';
 
@@ -3484,7 +3486,7 @@
             if (el) el.classList.add('owner-hidden');
         });
 
-        // Asegurar que el carrusel esté visible
+        // Asegurar que el carrusel esté visible (ya está por defecto)
         document.getElementById('fieldCarrusel').classList.remove('owner-hidden');
 
         // Habilitar nombre (solo lectura), whatsapp y web editables
@@ -3492,6 +3494,7 @@
         document.getElementById('fWhatsapp').disabled = false;
         document.getElementById('fWeb').disabled = false;
 
+        // Mostrar título específico
         document.getElementById('modalLocalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Editar datos del dueño';
 
         // Asegurar que horarios e imágenes extra estén visibles
@@ -3503,7 +3506,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES
+    //  RENDER LOCALES (con icono de tienda)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
