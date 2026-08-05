@@ -675,6 +675,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
+            touch-action: manipulation;
         }
         .modal .btn-group .btn-primary {
             background: var(--primary);
@@ -1497,7 +1498,7 @@
     <div class="modal-overlay" id="addLocalModal">
         <div class="modal">
             <h2 id="modalLocalTitle"><i class="fas fa-store"></i> Agregar Local</h2>
-            <form id="localForm">
+            <form id="localForm" onsubmit="return false;">
                 <input type="hidden" id="editId" value="">
 
                 <!-- Sección: Nombre (siempre visible) -->
@@ -1674,7 +1675,7 @@
 
                 <div class="btn-group">
                     <button type="button" class="btn-secondary" onclick="cerrarModalEdicion()">Cancelar</button>
-                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
+                    <button type="button" class="btn-primary" onclick="guardarLocal()"><i class="fas fa-save"></i> Guardar</button>
                 </div>
             </form>
         </div>
@@ -1862,9 +1863,8 @@
     let ordenActual = 'abiertos';
     const estadoTemporalMap = new Map();
 
-    // Variables para dueño de local
-    let ownerLocalId = null;      // ID del local que el dueño puede editar
-    let ownerNumero = null;       // Número del local (clave)
+    let ownerLocalId = null;
+    let ownerNumero = null;
 
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
@@ -2222,7 +2222,6 @@
                 }
             });
 
-            // Subir archivo -> convertir a base64 comprimido
             fileInput.addEventListener('change', async function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -2667,7 +2666,6 @@
         const container = document.getElementById('app');
         if (!container) return;
 
-        // Clic en tarjeta para admin (visitas)
         container.addEventListener('click', function(e) {
             const card = e.target.closest('.card');
             if (!card) return;
@@ -2687,7 +2685,6 @@
             }
         });
 
-        // Pulsación larga en número (span .numero) para dueño
         container.addEventListener('pointerdown', function(e) {
             const numeroSpan = e.target.closest('.numero');
             if (!numeroSpan) return;
@@ -2726,7 +2723,6 @@
             }
         });
 
-        // Pulsación larga en badge de estado
         container.addEventListener('pointerdown', function(e) {
             const badge = e.target.closest('.status-badge');
             if (!badge) return;
@@ -2781,7 +2777,6 @@
             showToast('Local no encontrado');
             return;
         }
-        // Limpiar el WhatsApp (solo dígitos) para comparar
         const whatsappLimpio = local.whatsapp ? local.whatsapp.replace(/\D/g, '') : '';
         const claveLimpia = clave.replace(/\D/g, '');
         if (claveLimpia === whatsappLimpio && whatsappLimpio.length > 0) {
@@ -3226,10 +3221,147 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN (sin cambios)
+    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN
     // ============================================================
     function cerrarModalEdicion() {
         closeModal('addLocalModal');
+    }
+
+    // ============================================================
+    //  FUNCIÓN GUARDAR LOCAL (usada por el botón type="button")
+    // ============================================================
+    async function guardarLocal() {
+        // Este código es el mismo que estaba en el evento submit del formulario
+        if (!isAdmin && !ownerLocalId) {
+            showToast('No tienes permisos para guardar cambios.');
+            return;
+        }
+        const id = document.getElementById('editId').value;
+        const localExistente = data.locales.find(l => l.id === parseInt(id));
+        if (!localExistente) {
+            showToast('Local no encontrado');
+            return;
+        }
+
+        let nombre = localExistente.nombre;
+        let rubro = localExistente.rubro;
+        let numero = localExistente.numeroLocal;
+        let ubicacion = localExistente.ubicacion;
+        let enAlquiler = localExistente.enAlquiler;
+        let inmobiliaria = localExistente.inmobiliaria;
+        let colorFondo = localExistente.colorFondo;
+        let descripcion = localExistente.descripcion;
+        let foto = localExistente.foto;
+        let logo = localExistente.logo;
+        let fotoFit = localExistente.fotoFit;
+        let fotoPosX = localExistente.fotoPosX;
+        let fotoPosY = localExistente.fotoPosY;
+        let logoFit = localExistente.logoFit;
+        let logoPosX = localExistente.logoPosX;
+        let logoPosY = localExistente.logoPosY;
+        let mostrarPagina = localExistente.mostrarPagina;
+        let intervalo = localExistente.intervaloCarrusel;
+        let animacion = localExistente.animacionCarrusel;
+
+        if (isAdmin) {
+            nombre = document.getElementById('fNombre').value.trim();
+            rubro = document.getElementById('fRubro').value;
+            numero = document.getElementById('fNumero').value.trim();
+            ubicacion = document.getElementById('fUbicacion').value;
+            enAlquiler = document.getElementById('fAlquiler').checked;
+            inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
+            colorFondo = document.getElementById('fColorFondo').value;
+            descripcion = document.getElementById('fDescripcion').value.trim();
+            mostrarPagina = document.getElementById('fMostrarPagina').checked;
+            intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
+            animacion = document.getElementById('animacionCarrusel').value || 'fade';
+            let fotoFile = document.getElementById('fFotoFile').files[0];
+            if (fotoFile) {
+                try {
+                    foto = await comprimirImagen(fotoFile);
+                } catch (err) {
+                    showToast('Error al procesar foto');
+                    return;
+                }
+            } else {
+                foto = document.getElementById('fFotoUrl').value.trim() || localExistente.foto;
+            }
+            let logoFile = document.getElementById('fLogoFile').files[0];
+            if (logoFile) {
+                try {
+                    logo = await comprimirImagen(logoFile);
+                } catch (err) {
+                    showToast('Error al procesar logo');
+                    return;
+                }
+            } else {
+                logo = document.getElementById('fLogoUrl').value.trim() || localExistente.logo;
+            }
+            fotoFit = document.getElementById('fFotoFit').value;
+            fotoPosX = parseInt(document.getElementById('fFotoPosX').value);
+            fotoPosY = parseInt(document.getElementById('fFotoPosY').value);
+            logoFit = document.getElementById('fLogoFit').value;
+            logoPosX = parseInt(document.getElementById('fLogoPosX').value);
+            logoPosY = parseInt(document.getElementById('fLogoPosY').value);
+        }
+
+        const whatsapp = document.getElementById('fWhatsapp').value.trim();
+        const web = document.getElementById('fWeb').value.trim();
+        const imagenesExtra = obtenerImagenesExtra();
+
+        const horarios = {};
+        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+        dias.forEach(d => {
+            const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
+            const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
+            const cerrado = document.getElementById(`h${capitalize(d)}Cerrado`).checked;
+            horarios[d] = { ini, fin, cerrado };
+        });
+        horarios.feriados = document.getElementById('hFeriados').value.trim();
+
+        const localData = {
+            id: parseInt(id),
+            nombre,
+            rubro,
+            numeroLocal: numero,
+            ubicacion,
+            enAlquiler,
+            inmobiliaria,
+            descripcion,
+            whatsapp,
+            web,
+            colorFondo,
+            foto: foto || DEFAULT_IMAGE_URL,
+            logo: logo || null,
+            fotoFit,
+            fotoPosX,
+            fotoPosY,
+            logoFit,
+            logoPosX,
+            logoPosY,
+            horarios,
+            visitas: localExistente.visitas || 0,
+            mostrarPagina,
+            imagenesExtra: imagenesExtra,
+            intervaloCarrusel: intervalo,
+            animacionCarrusel: animacion
+        };
+
+        const index = data.locales.findIndex(l => l.id === parseInt(id));
+        if (index !== -1) {
+            data.locales[index] = localData;
+        } else {
+            showToast('Error: local no encontrado');
+            return;
+        }
+        await saveData();
+        renderAll();
+        document.getElementById('localForm').reset();
+        document.getElementById('editId').value = '';
+        closeModal('addLocalModal');
+        showToast('Local actualizado');
+        updateRubroSelectInForm();
+        updateNumeroSelect();
     }
 
     // ============================================================
@@ -3245,7 +3377,6 @@
         initOrderControls();
         initThemeButtons();
 
-        // Eventos para foto principal y logo (solo admin)
         document.getElementById('fFotoFile').addEventListener('change', function() {
             procesarArchivoInput(this, document.getElementById('fFotoUrl'), 'Foto cargada');
         });
@@ -3288,7 +3419,7 @@
     });
 
     // ============================================================
-    //  RESTO DE FUNCIONES
+    //  RESTO DE FUNCIONES (sin cambios relevantes)
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
@@ -3348,7 +3479,6 @@
                 renderizarImagenesExtra([]);
             }
             inyectarControlesCarrusel();
-            // Si es dueño, aplicar restricciones
             if (ownerLocalId) {
                 aplicarRestriccionesDueño();
             }
@@ -3402,7 +3532,6 @@
             return;
         }
 
-        // Ocultar campos no permitidos
         const camposOcultar = [
             'fieldRubro', 'fieldNumero', 'fieldUbicacion', 'fieldAlquiler',
             'fieldColor', 'fieldDescripcion', 'fieldFotoAjuste', 'fieldLogoAjuste',
@@ -3413,15 +3542,12 @@
             if (el) el.classList.add('owner-hidden');
         });
 
-        // Habilitar nombre (solo lectura), whatsapp y web editables
         document.getElementById('fNombre').disabled = true;
         document.getElementById('fWhatsapp').disabled = false;
         document.getElementById('fWeb').disabled = false;
 
-        // Mostrar título específico
         document.getElementById('modalLocalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Editar datos del dueño';
 
-        // Asegurar que horarios e imágenes extra estén visibles
         document.getElementById('fieldHorarios').classList.remove('owner-hidden');
         document.getElementById('fieldImagenesExtra').classList.remove('owner-hidden');
         document.getElementById('fieldWhatsapp').classList.remove('owner-hidden');
@@ -3766,7 +3892,6 @@
         document.getElementById('fRubro').value = local.rubro;
         openModal('addLocalModal');
         renderizarImagenesExtra(local.imagenesExtra || []);
-        // Si es dueño, se aplican restricciones en openModal
     }
 
     async function deleteLocal(id) {
@@ -3780,143 +3905,6 @@
         renderAll();
         showToast('Local eliminado');
     }
-
-    document.getElementById('localForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        if (!isAdmin && !ownerLocalId) {
-            showToast('No tienes permisos para guardar cambios.');
-            return;
-        }
-        const id = document.getElementById('editId').value;
-        const localExistente = data.locales.find(l => l.id === parseInt(id));
-        if (!localExistente) {
-            showToast('Local no encontrado');
-            return;
-        }
-
-        // Si es dueño, solo guardar campos permitidos
-        let nombre = localExistente.nombre;
-        let rubro = localExistente.rubro;
-        let numero = localExistente.numeroLocal;
-        let ubicacion = localExistente.ubicacion;
-        let enAlquiler = localExistente.enAlquiler;
-        let inmobiliaria = localExistente.inmobiliaria;
-        let colorFondo = localExistente.colorFondo;
-        let descripcion = localExistente.descripcion;
-        let foto = localExistente.foto;
-        let logo = localExistente.logo;
-        let fotoFit = localExistente.fotoFit;
-        let fotoPosX = localExistente.fotoPosX;
-        let fotoPosY = localExistente.fotoPosY;
-        let logoFit = localExistente.logoFit;
-        let logoPosX = localExistente.logoPosX;
-        let logoPosY = localExistente.logoPosY;
-        let mostrarPagina = localExistente.mostrarPagina;
-        let intervalo = localExistente.intervaloCarrusel;
-        let animacion = localExistente.animacionCarrusel;
-
-        if (isAdmin) {
-            nombre = document.getElementById('fNombre').value.trim();
-            rubro = document.getElementById('fRubro').value;
-            numero = document.getElementById('fNumero').value.trim();
-            ubicacion = document.getElementById('fUbicacion').value;
-            enAlquiler = document.getElementById('fAlquiler').checked;
-            inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
-            colorFondo = document.getElementById('fColorFondo').value;
-            descripcion = document.getElementById('fDescripcion').value.trim();
-            mostrarPagina = document.getElementById('fMostrarPagina').checked;
-            intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
-            animacion = document.getElementById('animacionCarrusel').value || 'fade';
-            let fotoFile = document.getElementById('fFotoFile').files[0];
-            if (fotoFile) {
-                try {
-                    foto = await comprimirImagen(fotoFile);
-                } catch (err) {
-                    showToast('Error al procesar foto');
-                    return;
-                }
-            } else {
-                foto = document.getElementById('fFotoUrl').value.trim() || localExistente.foto;
-            }
-            let logoFile = document.getElementById('fLogoFile').files[0];
-            if (logoFile) {
-                try {
-                    logo = await comprimirImagen(logoFile);
-                } catch (err) {
-                    showToast('Error al procesar logo');
-                    return;
-                }
-            } else {
-                logo = document.getElementById('fLogoUrl').value.trim() || localExistente.logo;
-            }
-            fotoFit = document.getElementById('fFotoFit').value;
-            fotoPosX = parseInt(document.getElementById('fFotoPosX').value);
-            fotoPosY = parseInt(document.getElementById('fFotoPosY').value);
-            logoFit = document.getElementById('fLogoFit').value;
-            logoPosX = parseInt(document.getElementById('fLogoPosX').value);
-            logoPosY = parseInt(document.getElementById('fLogoPosY').value);
-        }
-
-        // Campos que el dueño puede modificar
-        const whatsapp = document.getElementById('fWhatsapp').value.trim();
-        const web = document.getElementById('fWeb').value.trim();
-        const imagenesExtra = obtenerImagenesExtra();
-
-        // Horarios siempre se guardan
-        const horarios = {};
-        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-        dias.forEach(d => {
-            const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
-            const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
-            const cerrado = document.getElementById(`h${capitalize(d)}Cerrado`).checked;
-            horarios[d] = { ini, fin, cerrado };
-        });
-        horarios.feriados = document.getElementById('hFeriados').value.trim();
-
-        const localData = {
-            id: parseInt(id),
-            nombre,
-            rubro,
-            numeroLocal: numero,
-            ubicacion,
-            enAlquiler,
-            inmobiliaria,
-            descripcion,
-            whatsapp,
-            web,
-            colorFondo,
-            foto: foto || DEFAULT_IMAGE_URL,
-            logo: logo || null,
-            fotoFit,
-            fotoPosX,
-            fotoPosY,
-            logoFit,
-            logoPosX,
-            logoPosY,
-            horarios,
-            visitas: localExistente.visitas || 0,
-            mostrarPagina,
-            imagenesExtra: imagenesExtra,
-            intervaloCarrusel: intervalo,
-            animacionCarrusel: animacion
-        };
-
-        const index = data.locales.findIndex(l => l.id === parseInt(id));
-        if (index !== -1) {
-            data.locales[index] = localData;
-        } else {
-            showToast('Error: local no encontrado');
-            return;
-        }
-        await saveData();
-        renderAll();
-        document.getElementById('localForm').reset();
-        document.getElementById('editId').value = '';
-        closeModal('addLocalModal');
-        showToast('Local actualizado');
-        updateRubroSelectInForm();
-        updateNumeroSelect();
-    });
 
     function capitalize(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
@@ -5100,6 +5088,7 @@
     window.toggleTemporalEstado = toggleTemporalEstado;
     window.autenticarDueño = autenticarDueño;
     window.cerrarModalEdicion = cerrarModalEdicion;
+    window.guardarLocal = guardarLocal;
 </script>
 </body>
 </html>
