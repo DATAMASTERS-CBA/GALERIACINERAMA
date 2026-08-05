@@ -3311,7 +3311,7 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (con pointerdown robusto)
+    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (con click en lugar de pointerdown)
     // ============================================================
     function actualizarBotonesModal() {
         const container = document.getElementById('modalBotones');
@@ -3324,7 +3324,7 @@
         closeBtn.className = 'btn-icon close';
         closeBtn.title = 'Cancelar';
         closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        closeBtn.addEventListener('pointerdown', function(e) {
+        closeBtn.addEventListener('click', function(e) {
             e.preventDefault();
             cerrarModalEdicion();
         });
@@ -3332,20 +3332,19 @@
 
         // Botón Guardar (disquete)
         const saveBtn = document.createElement('button');
-        saveBtn.type = 'submit';
+        saveBtn.type = 'button';
         saveBtn.className = 'btn-icon save';
         saveBtn.title = 'Guardar';
         saveBtn.innerHTML = '<i class="fas fa-save"></i>';
-        saveBtn.addEventListener('pointerdown', function(e) {
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             const form = document.getElementById('localForm');
             if (form) {
-                setTimeout(() => {
-                    if (form.requestSubmit) {
-                        form.requestSubmit();
-                    } else {
-                        form.submit();
-                    }
-                }, 10);
+                if (form.requestSubmit) {
+                    form.requestSubmit();
+                } else {
+                    form.submit();
+                }
             }
         });
         container.appendChild(saveBtn);
