@@ -3311,7 +3311,7 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (con click en lugar de pointerdown)
+    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (con click estándar)
     // ============================================================
     function actualizarBotonesModal() {
         const container = document.getElementById('modalBotones');
@@ -3324,8 +3324,10 @@
         closeBtn.className = 'btn-icon close';
         closeBtn.title = 'Cancelar';
         closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        // Evento click estándar (compatible con mouse)
         closeBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             cerrarModalEdicion();
         });
         container.appendChild(closeBtn);
@@ -3336,8 +3338,10 @@
         saveBtn.className = 'btn-icon save';
         saveBtn.title = 'Guardar';
         saveBtn.innerHTML = '<i class="fas fa-save"></i>';
+        // Evento click estándar
         saveBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             const form = document.getElementById('localForm');
             if (form) {
                 if (form.requestSubmit) {
@@ -3406,7 +3410,7 @@
     });
 
     // ============================================================
-    //  RESTO DE FUNCIONES
+    //  RESTO DE FUNCIONES (sin cambios relevantes)
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
@@ -3466,12 +3470,10 @@
                 renderizarImagenesExtra([]);
             }
             inyectarControlesCarrusel();
-            // Si es dueño, aplicar restricciones (excepto carrusel)
             if (ownerLocalId) {
                 aplicarRestriccionesDueño();
             }
             actualizarBotonesModal();
-            // Limpiar temporizadores de long press pendientes en la tienda y números
             document.querySelectorAll('.store-icon, .numero').forEach(el => {
                 if (el._pressTimer) {
                     clearTimeout(el._pressTimer);
@@ -3519,9 +3521,6 @@
         `;
     }
 
-    // ============================================================
-    //  RESTRICCIONES PARA DUEÑO EN EL MODAL DE EDICIÓN (excepto carrusel)
-    // ============================================================
     function aplicarRestriccionesDueño() {
         const editId = document.getElementById('editId').value;
         if (!editId) return;
@@ -3532,7 +3531,6 @@
             return;
         }
 
-        // Ocultar campos no permitidos (NO incluir fieldCarrusel)
         const camposOcultar = [
             'fieldRubro', 'fieldNumero', 'fieldUbicacion', 'fieldAlquiler',
             'fieldColor', 'fieldDescripcion', 'fieldFotoAjuste', 'fieldLogoAjuste',
@@ -3543,17 +3541,14 @@
             if (el) el.classList.add('owner-hidden');
         });
 
-        // Asegurar que el carrusel esté visible
         document.getElementById('fieldCarrusel').classList.remove('owner-hidden');
 
-        // Habilitar nombre (solo lectura), whatsapp y web editables
         document.getElementById('fNombre').disabled = true;
         document.getElementById('fWhatsapp').disabled = false;
         document.getElementById('fWeb').disabled = false;
 
         document.getElementById('modalLocalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Editar datos del dueño';
 
-        // Asegurar que horarios e imágenes extra estén visibles
         document.getElementById('fieldHorarios').classList.remove('owner-hidden');
         document.getElementById('fieldImagenesExtra').classList.remove('owner-hidden');
         document.getElementById('fieldWhatsapp').classList.remove('owner-hidden');
@@ -3562,7 +3557,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES
+    //  RENDER LOCALES (sin cambios)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -3659,7 +3654,6 @@
 
             const horarioIcon = `<span class="horario-text" onclick="event.stopPropagation(); mostrarHorariosCompletos(${local.id})"><i class="far fa-clock"></i> ${horarioHoy}</span>`;
 
-            // Icono de tienda para acceso dueño (solo si no es admin)
             const storeIcon = isAdmin ? '' : `<span class="store-icon" title="Mantén presionado (3s) para acceder como dueño"><i class="fas fa-store"></i></span>`;
 
             let galeriaHtml = '';
@@ -3902,7 +3896,6 @@
         document.getElementById('fRubro').value = local.rubro;
         openModal('addLocalModal');
         renderizarImagenesExtra(local.imagenesExtra || []);
-        // Si es dueño, se aplican restricciones en openModal
     }
 
     async function deleteLocal(id) {
@@ -3930,7 +3923,6 @@
             return;
         }
 
-        // Si es dueño, solo guardar campos permitidos, pero incluye carrusel
         let nombre = localExistente.nombre;
         let rubro = localExistente.rubro;
         let numero = localExistente.numeroLocal;
@@ -3949,7 +3941,6 @@
         let logoPosY = localExistente.logoPosY;
         let mostrarPagina = localExistente.mostrarPagina;
 
-        // Para dueño y admin, leer intervalo y animación
         const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
         const animacion = document.getElementById('animacionCarrusel').value || 'fade';
 
@@ -3993,12 +3984,10 @@
             logoPosY = parseInt(document.getElementById('fLogoPosY').value);
         }
 
-        // Campos que el dueño puede modificar (y el admin también)
         const whatsapp = document.getElementById('fWhatsapp').value.trim();
         const web = document.getElementById('fWeb').value.trim();
         const imagenesExtra = obtenerImagenesExtra();
 
-        // Horarios siempre se guardan
         const horarios = {};
         const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
         dias.forEach(d => {
