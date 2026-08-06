@@ -1459,6 +1459,52 @@
         #fieldCarrusel {
             display: block !important;
         }
+
+        /* ===== NUEVO ESTILO PARA OVERLAY DE ESPERA ===== */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #fff;
+            font-size: 1.8rem;
+            text-align: center;
+            pointer-events: all;
+        }
+        #loadingOverlay.active {
+            display: flex;
+        }
+        #loadingOverlay .spinner {
+            font-size: 5rem;
+            color: #f1c40f;
+            margin-bottom: 20px;
+            animation: spin 1.2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #loadingOverlay .mensaje {
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        #loadingOverlay .sub-mensaje {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+        @media (max-width: 768px) {
+            #loadingOverlay .spinner { font-size: 3.5rem; }
+            #loadingOverlay { font-size: 1.4rem; }
+        }
     </style>
 </head>
 <body>
@@ -3344,20 +3390,57 @@
             e.stopPropagation();
             const form = document.getElementById('localForm');
             if (form) {
-                if (form.requestSubmit) {
-                    form.requestSubmit();
-                } else {
-                    form.submit();
-                }
+                // Disparamos el evento submit del formulario
+                form.dispatchEvent(new Event('submit', { cancelable: true }));
             }
         });
         container.appendChild(saveBtn);
     }
 
     // ============================================================
+    //  FUNCIONES PARA OVERLAY DE ESPERA
+    // ============================================================
+    function crearOverlayEspera() {
+        if (document.getElementById('loadingOverlay')) return;
+        const overlay = document.createElement('div');
+        overlay.id = 'loadingOverlay';
+        overlay.innerHTML = `
+            <div class="spinner"><i class="fas fa-hourglass-half"></i></div>
+            <div class="mensaje">Espere, se están guardando los cambios...</div>
+            <div class="sub-mensaje">No cierre esta ventana</div>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    function mostrarEspera() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.classList.add('active');
+        // Deshabilitar scroll y eventos
+        document.body.style.overflow = 'hidden';
+    }
+
+    function ocultarEspera() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // ============================================================
+    //  MODIFICACIÓN DEL EVENTO SUBMIT DEL FORMULARIO LOCAL
+    // ============================================================
+    // Se reemplaza el listener existente por uno que maneje la espera
+    // El código original ya tiene un listener, lo reemplazamos
+    // Pero como está definido más abajo, lo sobrescribimos después.
+    // Para evitar duplicados, lo eliminamos si existe y agregamos el nuevo.
+    // Lo haremos en el DOMContentLoaded.
+
+    // ============================================================
     //  DOCUMENT READY
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
+        // Crear overlay de espera
+        crearOverlayEspera();
+
         initAdminAccess();
 
         document.getElementById('searchNombre').addEventListener('input', filterLocales);
@@ -3375,6 +3458,166 @@
             procesarArchivoInput(this, document.getElementById('fLogoUrl'), 'Logo cargado');
         });
 
+        // Reemplazar el listener del formulario local con uno que maneje la espera
+        const localForm = document.getElementById('localForm');
+        // Remover listeners anteriores (clonación simple)
+        const newForm = localForm.cloneNode(true);
+        localForm.parentNode.replaceChild(newForm, localForm);
+
+        // Agregar el nuevo listener con manejo de espera
+        newForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Verificar permisos
+            if (!isAdmin && !ownerLocalId) {
+                showToast('No tienes permisos para guardar cambios.');
+                return;
+            }
+
+            // Mostrar overlay de espera
+            mostrarEspera();
+
+            // Obtener datos del formulario
+            const id = document.getElementById('editId').value;
+            const localExistente = data.locales.find(l => l.id === parseInt(id));
+            if (!localExistente) {
+                showToast('Local no encontrado');
+                ocultarEspera();
+                return;
+            }
+
+            let nombre = localExistente.nombre;
+            let rubro = localExistente.rubro;
+            let numero = localExistente.numeroLocal;
+            let ubicacion = localExistente.ubicacion;
+            let enAlquiler = localExistente.enAlquiler;
+            let inmobiliaria = localExistente.inmobiliaria;
+            let colorFondo = localExistente.colorFondo;
+            let descripcion = localExistente.descripcion;
+            let foto = localExistente.foto;
+            let logo = localExistente.logo;
+            let fotoFit = localExistente.fotoFit;
+            let fotoPosX = localExistente.fotoPosX;
+            let fotoPosY = localExistente.fotoPosY;
+            let logoFit = localExistente.logoFit;
+            let logoPosX = localExistente.logoPosX;
+            let logoPosY = localExistente.logoPosY;
+            let mostrarPagina = localExistente.mostrarPagina;
+
+            const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
+            const animacion = document.getElementById('animacionCarrusel').value || 'fade';
+
+            if (isAdmin) {
+                nombre = document.getElementById('fNombre').value.trim();
+                rubro = document.getElementById('fRubro').value;
+                numero = document.getElementById('fNumero').value.trim();
+                ubicacion = document.getElementById('fUbicacion').value;
+                enAlquiler = document.getElementById('fAlquiler').checked;
+                inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
+                colorFondo = document.getElementById('fColorFondo').value;
+                descripcion = document.getElementById('fDescripcion').value.trim();
+                mostrarPagina = document.getElementById('fMostrarPagina').checked;
+                let fotoFile = document.getElementById('fFotoFile').files[0];
+                if (fotoFile) {
+                    try {
+                        foto = await comprimirImagen(fotoFile);
+                    } catch (err) {
+                        showToast('Error al procesar foto');
+                        ocultarEspera();
+                        return;
+                    }
+                } else {
+                    foto = document.getElementById('fFotoUrl').value.trim() || localExistente.foto;
+                }
+                let logoFile = document.getElementById('fLogoFile').files[0];
+                if (logoFile) {
+                    try {
+                        logo = await comprimirImagen(logoFile);
+                    } catch (err) {
+                        showToast('Error al procesar logo');
+                        ocultarEspera();
+                        return;
+                    }
+                } else {
+                    logo = document.getElementById('fLogoUrl').value.trim() || localExistente.logo;
+                }
+                fotoFit = document.getElementById('fFotoFit').value;
+                fotoPosX = parseInt(document.getElementById('fFotoPosX').value);
+                fotoPosY = parseInt(document.getElementById('fFotoPosY').value);
+                logoFit = document.getElementById('fLogoFit').value;
+                logoPosX = parseInt(document.getElementById('fLogoPosX').value);
+                logoPosY = parseInt(document.getElementById('fLogoPosY').value);
+            }
+
+            const whatsapp = document.getElementById('fWhatsapp').value.trim();
+            const web = document.getElementById('fWeb').value.trim();
+            const imagenesExtra = obtenerImagenesExtra();
+
+            const horarios = {};
+            const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+            dias.forEach(d => {
+                const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
+                const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
+                const cerrado = document.getElementById(`h${capitalize(d)}Cerrado`).checked;
+                horarios[d] = { ini, fin, cerrado };
+            });
+            horarios.feriados = document.getElementById('hFeriados').value.trim();
+
+            const localData = {
+                id: parseInt(id),
+                nombre,
+                rubro,
+                numeroLocal: numero,
+                ubicacion,
+                enAlquiler,
+                inmobiliaria,
+                descripcion,
+                whatsapp,
+                web,
+                colorFondo,
+                foto: foto || DEFAULT_IMAGE_URL,
+                logo: logo || null,
+                fotoFit,
+                fotoPosX,
+                fotoPosY,
+                logoFit,
+                logoPosX,
+                logoPosY,
+                horarios,
+                visitas: localExistente.visitas || 0,
+                mostrarPagina,
+                imagenesExtra: imagenesExtra,
+                intervaloCarrusel: intervalo,
+                animacionCarrusel: animacion
+            };
+
+            const index = data.locales.findIndex(l => l.id === parseInt(id));
+            if (index !== -1) {
+                data.locales[index] = localData;
+            } else {
+                showToast('Error: local no encontrado');
+                ocultarEspera();
+                return;
+            }
+
+            try {
+                await saveData();
+                renderAll();
+                document.getElementById('localForm').reset();
+                document.getElementById('editId').value = '';
+                closeModal('addLocalModal');
+                showToast('Local actualizado');
+                updateRubroSelectInForm();
+                updateNumeroSelect();
+            } catch (error) {
+                showToast('Error al guardar los cambios');
+                console.error(error);
+            } finally {
+                ocultarEspera();
+            }
+        });
+
+        // Resto de la inicialización
         loadData().then(() => {
             restaurarEstadosTemporales();
             agregarBotonCambiarClave();
@@ -3909,139 +4152,6 @@
         renderAll();
         showToast('Local eliminado');
     }
-
-    document.getElementById('localForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        if (!isAdmin && !ownerLocalId) {
-            showToast('No tienes permisos para guardar cambios.');
-            return;
-        }
-        const id = document.getElementById('editId').value;
-        const localExistente = data.locales.find(l => l.id === parseInt(id));
-        if (!localExistente) {
-            showToast('Local no encontrado');
-            return;
-        }
-
-        let nombre = localExistente.nombre;
-        let rubro = localExistente.rubro;
-        let numero = localExistente.numeroLocal;
-        let ubicacion = localExistente.ubicacion;
-        let enAlquiler = localExistente.enAlquiler;
-        let inmobiliaria = localExistente.inmobiliaria;
-        let colorFondo = localExistente.colorFondo;
-        let descripcion = localExistente.descripcion;
-        let foto = localExistente.foto;
-        let logo = localExistente.logo;
-        let fotoFit = localExistente.fotoFit;
-        let fotoPosX = localExistente.fotoPosX;
-        let fotoPosY = localExistente.fotoPosY;
-        let logoFit = localExistente.logoFit;
-        let logoPosX = localExistente.logoPosX;
-        let logoPosY = localExistente.logoPosY;
-        let mostrarPagina = localExistente.mostrarPagina;
-
-        const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
-        const animacion = document.getElementById('animacionCarrusel').value || 'fade';
-
-        if (isAdmin) {
-            nombre = document.getElementById('fNombre').value.trim();
-            rubro = document.getElementById('fRubro').value;
-            numero = document.getElementById('fNumero').value.trim();
-            ubicacion = document.getElementById('fUbicacion').value;
-            enAlquiler = document.getElementById('fAlquiler').checked;
-            inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
-            colorFondo = document.getElementById('fColorFondo').value;
-            descripcion = document.getElementById('fDescripcion').value.trim();
-            mostrarPagina = document.getElementById('fMostrarPagina').checked;
-            let fotoFile = document.getElementById('fFotoFile').files[0];
-            if (fotoFile) {
-                try {
-                    foto = await comprimirImagen(fotoFile);
-                } catch (err) {
-                    showToast('Error al procesar foto');
-                    return;
-                }
-            } else {
-                foto = document.getElementById('fFotoUrl').value.trim() || localExistente.foto;
-            }
-            let logoFile = document.getElementById('fLogoFile').files[0];
-            if (logoFile) {
-                try {
-                    logo = await comprimirImagen(logoFile);
-                } catch (err) {
-                    showToast('Error al procesar logo');
-                    return;
-                }
-            } else {
-                logo = document.getElementById('fLogoUrl').value.trim() || localExistente.logo;
-            }
-            fotoFit = document.getElementById('fFotoFit').value;
-            fotoPosX = parseInt(document.getElementById('fFotoPosX').value);
-            fotoPosY = parseInt(document.getElementById('fFotoPosY').value);
-            logoFit = document.getElementById('fLogoFit').value;
-            logoPosX = parseInt(document.getElementById('fLogoPosX').value);
-            logoPosY = parseInt(document.getElementById('fLogoPosY').value);
-        }
-
-        const whatsapp = document.getElementById('fWhatsapp').value.trim();
-        const web = document.getElementById('fWeb').value.trim();
-        const imagenesExtra = obtenerImagenesExtra();
-
-        const horarios = {};
-        const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-        dias.forEach(d => {
-            const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
-            const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
-            const cerrado = document.getElementById(`h${capitalize(d)}Cerrado`).checked;
-            horarios[d] = { ini, fin, cerrado };
-        });
-        horarios.feriados = document.getElementById('hFeriados').value.trim();
-
-        const localData = {
-            id: parseInt(id),
-            nombre,
-            rubro,
-            numeroLocal: numero,
-            ubicacion,
-            enAlquiler,
-            inmobiliaria,
-            descripcion,
-            whatsapp,
-            web,
-            colorFondo,
-            foto: foto || DEFAULT_IMAGE_URL,
-            logo: logo || null,
-            fotoFit,
-            fotoPosX,
-            fotoPosY,
-            logoFit,
-            logoPosX,
-            logoPosY,
-            horarios,
-            visitas: localExistente.visitas || 0,
-            mostrarPagina,
-            imagenesExtra: imagenesExtra,
-            intervaloCarrusel: intervalo,
-            animacionCarrusel: animacion
-        };
-
-        const index = data.locales.findIndex(l => l.id === parseInt(id));
-        if (index !== -1) {
-            data.locales[index] = localData;
-        } else {
-            showToast('Error: local no encontrado');
-            return;
-        }
-        await saveData();
-        renderAll();
-        document.getElementById('localForm').reset();
-        document.getElementById('editId').value = '';
-        closeModal('addLocalModal');
-        showToast('Local actualizado');
-        updateRubroSelectInForm();
-        updateNumeroSelect();
-    });
 
     function capitalize(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
