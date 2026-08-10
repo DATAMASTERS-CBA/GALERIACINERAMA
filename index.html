@@ -9,6 +9,8 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Firebase Auth (NUEVO) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
@@ -1564,8 +1566,10 @@
     <div class="modal-overlay" id="loginModal">
         <div class="modal">
             <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
-            <label>Clave:</label>
-            <input type="password" id="loginClave" placeholder="Ingrese clave">
+            <label>Email:</label>
+            <input type="email" id="loginEmail" placeholder="admin@ejemplo.com">
+            <label>Contraseña:</label>
+            <input type="password" id="loginPassword" placeholder="Ingrese su clave">
             <span class="forgot-link" id="forgotLink">¿Olvidaste tu clave?</span>
             <div class="btn-group">
                 <button class="btn-secondary" onclick="closeModal('loginModal')">Cancelar</button>
@@ -1936,9 +1940,8 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth(); // <-- NUEVO: auth de Firebase
     const docRef = db.collection('galeria').doc('datos');
-
-    const CODIGO_RECUPERACION = 'reset123';
 
     // ============================================================
     //  DATA LAYER
@@ -1955,7 +1958,7 @@
         bannerInterval: 4,
         backups: [],
         lastBackupDate: null,
-        adminClave: 'admin123',
+        // adminClave ELIMINADA - ahora se usa Firebase Auth
         visitasTotales: 0,
         publicidad: {
             activo: false,
@@ -2193,7 +2196,7 @@
             bannerInterval: 4,
             backups: [],
             lastBackupDate: null,
-            adminClave: 'admin123',
+            // adminClave ELIMINADA
             galeriaNombre: 'Galería Cinerama',
             galeriaDireccion: 'Colón 375',
             theme: 'default',
@@ -2507,6 +2510,8 @@
                         data[key] = defaultData[key];
                     }
                 }
+                // Limpiar adminClave por seguridad (si existía)
+                delete data.adminClave;
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
@@ -2529,6 +2534,7 @@
                         for (let key in parsed) {
                             data[key] = parsed[key];
                         }
+                        delete data.adminClave;
                         data.locales.forEach(l => {
                             l.numeroLocal = String(l.numeroLocal);
                             if (l.visitas === undefined) l.visitas = 0;
@@ -2573,7 +2579,6 @@
                             bannerInterval: 4,
                             backups: [],
                             lastBackupDate: null,
-                            adminClave: 'admin123',
                             visitasTotales: 0,
                             publicidad: {
                                 activo: false,
@@ -2603,6 +2608,7 @@
                     for (let key in parsed) {
                         data[key] = parsed[key];
                     }
+                    delete data.adminClave;
                     data.locales.forEach(l => {
                         l.numeroLocal = String(l.numeroLocal);
                         if (l.visitas === undefined) l.visitas = 0;
@@ -2647,7 +2653,6 @@
                         bannerInterval: 4,
                         backups: [],
                         lastBackupDate: null,
-                        adminClave: 'admin123',
                         visitasTotales: 0,
                         publicidad: {
                             activo: false,
@@ -2689,6 +2694,7 @@
                             data[key] = firestoreData[key];
                         }
                     }
+                    delete data.adminClave;
                     data.locales.forEach(l => {
                         l.numeroLocal = String(l.numeroLocal);
                         if (l.visitas === undefined) l.visitas = 0;
@@ -2784,7 +2790,6 @@
         const container = document.getElementById('app');
         if (!container) return;
 
-        // Clic en tarjeta para admin (visitas)
         container.addEventListener('click', function(e) {
             const card = e.target.closest('.card');
             if (!card) return;
@@ -2804,18 +2809,15 @@
             }
         });
 
-        // Pulsación larga en el icono de tienda (store-icon) para acceso dueño (3 segundos)
         container.addEventListener('pointerdown', function(e) {
             const storeIcon = e.target.closest('.store-icon');
             if (!storeIcon) return;
-            // Si el modal de edición está abierto, no hacer nada
             if (document.getElementById('addLocalModal').classList.contains('active')) return;
             const card = storeIcon.closest('.card');
             if (!card) return;
             const id = parseInt(card.dataset.id);
             if (!id) return;
             if (isAdmin) return;
-            // Iniciar temporizador de 3 segundos
             const pressTimer = setTimeout(() => {
                 window._ownerAuthTargetId = id;
                 openModal('ownerAuthModal');
@@ -2849,7 +2851,6 @@
             }
         });
 
-        // Pulsación larga en badge de estado (para inversión temporal) - también se desactiva en edición
         container.addEventListener('pointerdown', function(e) {
             const badge = e.target.closest('.status-badge');
             if (!badge) return;
@@ -2905,7 +2906,6 @@
             showToast('Local no encontrado');
             return;
         }
-        // Limpiar el WhatsApp (solo dígitos) para comparar
         const whatsappLimpio = local.whatsapp ? local.whatsapp.replace(/\D/g, '') : '';
         const claveLimpia = clave.replace(/\D/g, '');
         if (claveLimpia === whatsappLimpio && whatsappLimpio.length > 0) {
@@ -3292,31 +3292,22 @@
     }
 
     // ============================================================
-    //  RECUPERACIÓN DE CLAVE
+    //  RECUPERACIÓN DE CLAVE (NUEVO usando Firebase Auth)
     // ============================================================
-    async function recuperarClave() {
-        const codigo = prompt('Ingrese el código de recuperación:');
-        if (codigo === null) return;
-        if (codigo !== CODIGO_RECUPERACION) {
-            showToast('Código incorrecto');
+    function recuperarClaveAuth() {
+        const email = prompt('Ingrese el email del administrador para restablecer la contraseña:');
+        if (email === null) return;
+        if (!email.trim()) {
+            showToast('Debe ingresar un email.');
             return;
         }
-        const nueva = prompt('Ingrese la nueva clave de administrador:');
-        if (nueva === null) return;
-        if (nueva.length < 4) {
-            showToast('La clave debe tener al menos 4 caracteres');
-            return;
-        }
-        const confirmar = prompt('Confirme la nueva clave:');
-        if (confirmar === null) return;
-        if (nueva !== confirmar) {
-            showToast('Las claves no coinciden');
-            return;
-        }
-        data.adminClave = nueva;
-        await saveData();
-        showToast('Clave restablecida correctamente. Ahora puede iniciar sesión.');
-        document.getElementById('loginClave').value = '';
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                showToast('Correo de restablecimiento enviado a ' + email);
+            })
+            .catch((error) => {
+                showToast('Error: ' + error.message);
+            });
     }
 
     // ============================================================
@@ -3329,7 +3320,8 @@
         const startPress = function(e) {
             pressTimer = setTimeout(() => {
                 openModal('loginModal');
-                document.getElementById('loginClave').value = '';
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
                 pressTimer = null;
             }, 800);
         };
@@ -3350,27 +3342,25 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN (sin cambios)
+    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN
     // ============================================================
     function cerrarModalEdicion() {
         closeModal('addLocalModal');
     }
 
     // ============================================================
-    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL (con click estándar)
+    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL
     // ============================================================
     function actualizarBotonesModal() {
         const container = document.getElementById('modalBotones');
         if (!container) return;
-        container.innerHTML = ''; // Limpiar
+        container.innerHTML = '';
 
-        // Botón Cerrar (X)
         const closeBtn = document.createElement('button');
         closeBtn.type = 'button';
         closeBtn.className = 'btn-icon close';
         closeBtn.title = 'Cancelar';
         closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        // Evento click estándar (compatible con mouse)
         closeBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -3378,19 +3368,16 @@
         });
         container.appendChild(closeBtn);
 
-        // Botón Guardar (disquete)
         const saveBtn = document.createElement('button');
         saveBtn.type = 'button';
         saveBtn.className = 'btn-icon save';
         saveBtn.title = 'Guardar';
         saveBtn.innerHTML = '<i class="fas fa-save"></i>';
-        // Evento click estándar
         saveBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             const form = document.getElementById('localForm');
             if (form) {
-                // Disparamos el evento submit del formulario
                 form.dispatchEvent(new Event('submit', { cancelable: true }));
             }
         });
@@ -3415,7 +3402,6 @@
     function mostrarEspera() {
         const overlay = document.getElementById('loadingOverlay');
         if (overlay) overlay.classList.add('active');
-        // Deshabilitar scroll y eventos
         document.body.style.overflow = 'hidden';
     }
 
@@ -3424,15 +3410,6 @@
         if (overlay) overlay.classList.remove('active');
         document.body.style.overflow = '';
     }
-
-    // ============================================================
-    //  MODIFICACIÓN DEL EVENTO SUBMIT DEL FORMULARIO LOCAL
-    // ============================================================
-    // Se reemplaza el listener existente por uno que maneje la espera
-    // El código original ya tiene un listener, lo reemplazamos
-    // Pero como está definido más abajo, lo sobrescribimos después.
-    // Para evitar duplicados, lo eliminamos si existe y agregamos el nuevo.
-    // Lo haremos en el DOMContentLoaded.
 
     // ============================================================
     //  DOCUMENT READY
@@ -3460,24 +3437,19 @@
 
         // Reemplazar el listener del formulario local con uno que maneje la espera
         const localForm = document.getElementById('localForm');
-        // Remover listeners anteriores (clonación simple)
         const newForm = localForm.cloneNode(true);
         localForm.parentNode.replaceChild(newForm, localForm);
 
-        // Agregar el nuevo listener con manejo de espera
         newForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Verificar permisos
             if (!isAdmin && !ownerLocalId) {
                 showToast('No tienes permisos para guardar cambios.');
                 return;
             }
 
-            // Mostrar overlay de espera
             mostrarEspera();
 
-            // Obtener datos del formulario
             const id = document.getElementById('editId').value;
             const localExistente = data.locales.find(l => l.id === parseInt(id));
             if (!localExistente) {
@@ -3636,7 +3608,8 @@
         document.getElementById('toggleAdminBtn').addEventListener('click', function() {
             if (!isAdmin) {
                 openModal('loginModal');
-                document.getElementById('loginClave').value = '';
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
             } else {
                 openModal('adminMainModal');
             }
@@ -3650,6 +3623,9 @@
                 }
             });
         });
+
+        // Recuperación de clave con Firebase Auth
+        document.getElementById('forgotLink').addEventListener('click', recuperarClaveAuth);
     });
 
     // ============================================================
@@ -5011,12 +4987,74 @@
     }
 
     function logoutAdmin() {
-        isAdmin = false;
-        ownerLocalId = null;
-        ownerNumero = null;
-        document.getElementById('logoutBtn').style.display = 'none';
-        showToast('Sesión cerrada');
-        renderAll();
+        auth.signOut().then(() => {
+            isAdmin = false;
+            ownerLocalId = null;
+            ownerNumero = null;
+            document.getElementById('logoutBtn').style.display = 'none';
+            showToast('Sesión cerrada');
+            renderAll();
+        }).catch((error) => {
+            showToast('Error al cerrar sesión: ' + error.message);
+        });
+    }
+
+    // ============================================================
+    //  LOGIN ADMIN (NUEVO con Firebase Auth)
+    // ============================================================
+    async function loginAdmin() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (!email || !password) {
+            showToast('Completa todos los campos');
+            return;
+        }
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            isAdmin = true;
+            ownerLocalId = null;
+            ownerNumero = null;
+            closeModal('loginModal');
+            showToast('Acceso concedido');
+            document.getElementById('logoutBtn').style.display = 'flex';
+            await verificarBackupAutomatico();
+            openModal('adminMainModal');
+            document.getElementById('themeStatus').textContent = data.autoTheme ? 'Modo automático activado' : `Tema actual: ${data.theme}`;
+            renderAll();
+            // Iniciar snapshot listener
+            docRef.onSnapshot(function(doc) {
+                if (doc.exists && dataLoaded) {
+                    const firestoreData = doc.data();
+                    const defaultData = getDefaultData();
+                    for (let key in defaultData) {
+                        if (firestoreData[key] !== undefined) {
+                            data[key] = firestoreData[key];
+                        }
+                    }
+                    delete data.adminClave;
+                    data.locales.forEach(l => {
+                        l.numeroLocal = String(l.numeroLocal);
+                        if (l.visitas === undefined) l.visitas = 0;
+                        if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                        l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                        if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                        if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                    });
+                    if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                    if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                    if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
+                        data.publicidad.textos = defaultData.publicidad.textos;
+                    }
+                    localStorage.setItem('galeriaData', JSON.stringify(data));
+                    renderAll();
+                    if (document.getElementById('visitNumber')) {
+                        actualizarNumeroVisitante(data.visitasTotales || 0, false);
+                    }
+                }
+            });
+        } catch (error) {
+            showToast('Email o contraseña incorrectos: ' + error.message);
+        }
     }
 
     // ============================================================
@@ -5108,6 +5146,7 @@
         data.bannerInterval = backupData.bannerInterval || 4;
         data.visitasTotales = backupData.visitasTotales || 0;
         data.publicidad = backupData.publicidad || getDefaultData().publicidad;
+        delete data.adminClave;
         data.locales.forEach(l => {
             l.numeroLocal = String(l.numeroLocal);
             if (l.visitas === undefined) l.visitas = 0;
@@ -5193,11 +5232,11 @@
                 }
                 const backupsActuales = data.backups;
                 const lastBackup = data.lastBackupDate;
-                const adminClaveActual = data.adminClave;
+                // adminClave ya no se usa
                 data = importedData;
                 data.backups = backupsActuales;
                 data.lastBackupDate = lastBackup;
-                data.adminClave = adminClaveActual;
+                delete data.adminClave;
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
@@ -5222,83 +5261,50 @@
     }
 
     // ============================================================
-    //  CAMBIAR CLAVE
+    //  CAMBIAR CLAVE (NUEVO para Firebase Auth)
     // ============================================================
     async function cambiarClave() {
         if (!isAdmin) {
             showToast('Solo el administrador puede cambiar la clave.');
             return;
         }
-        const actual = prompt('Ingrese la clave actual:');
+        // Obtener el email del usuario autenticado
+        const user = auth.currentUser;
+        if (!user) {
+            showToast('No hay usuario autenticado. Inicia sesión nuevamente.');
+            return;
+        }
+        const email = user.email;
+        const actual = prompt('Ingrese la contraseña actual:');
         if (actual === null) return;
-        if (actual !== data.adminClave) {
-            showToast('Clave actual incorrecta');
+
+        // Re-autenticar antes de cambiar
+        const credential = firebase.auth.EmailAuthProvider.credential(email, actual);
+        try {
+            await user.reauthenticateWithCredential(credential);
+        } catch (error) {
+            showToast('Contraseña actual incorrecta: ' + error.message);
             return;
         }
-        const nueva = prompt('Ingrese la nueva clave:');
+
+        const nueva = prompt('Ingrese la nueva contraseña (mínimo 6 caracteres):');
         if (nueva === null) return;
-        if (nueva.length < 4) {
-            showToast('La clave debe tener al menos 4 caracteres');
+        if (nueva.length < 6) {
+            showToast('La contraseña debe tener al menos 6 caracteres');
             return;
         }
-        const confirmar = prompt('Confirme la nueva clave:');
+        const confirmar = prompt('Confirme la nueva contraseña:');
         if (confirmar === null) return;
         if (nueva !== confirmar) {
-            showToast('Las claves no coinciden');
+            showToast('Las contraseñas no coinciden');
             return;
         }
-        data.adminClave = nueva;
-        await saveData();
-        showToast('Clave cambiada exitosamente');
-    }
 
-    // ============================================================
-    //  LOGIN
-    // ============================================================
-    async function loginAdmin() {
-        const clave = document.getElementById('loginClave').value;
-        if (clave === data.adminClave) {
-            isAdmin = true;
-            ownerLocalId = null;
-            ownerNumero = null;
-            closeModal('loginModal');
-            showToast('Acceso concedido');
-            document.getElementById('logoutBtn').style.display = 'flex';
-            await verificarBackupAutomatico();
-            openModal('adminMainModal');
-            document.getElementById('themeStatus').textContent = data.autoTheme ? 'Modo automático activado' : `Tema actual: ${data.theme}`;
-            renderAll();
-            docRef.onSnapshot(function(doc) {
-                if (doc.exists && dataLoaded) {
-                    const firestoreData = doc.data();
-                    const defaultData = getDefaultData();
-                    for (let key in defaultData) {
-                        if (firestoreData[key] !== undefined) {
-                            data[key] = firestoreData[key];
-                        }
-                    }
-                    data.locales.forEach(l => {
-                        l.numeroLocal = String(l.numeroLocal);
-                        if (l.visitas === undefined) l.visitas = 0;
-                        if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                        l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
-                        if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
-                        if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
-                    });
-                    if (data.visitasTotales === undefined) data.visitasTotales = 0;
-                    if (!data.publicidad) data.publicidad = defaultData.publicidad;
-                    if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
-                        data.publicidad.textos = defaultData.publicidad.textos;
-                    }
-                    localStorage.setItem('galeriaData', JSON.stringify(data));
-                    renderAll();
-                    if (document.getElementById('visitNumber')) {
-                        actualizarNumeroVisitante(data.visitasTotales || 0, false);
-                    }
-                }
-            });
-        } else {
-            showToast('Clave incorrecta');
+        try {
+            await user.updatePassword(nueva);
+            showToast('Contraseña cambiada exitosamente');
+        } catch (error) {
+            showToast('Error al cambiar la contraseña: ' + error.message);
         }
     }
 
@@ -5323,7 +5329,7 @@
     window.updateBannerInterval = updateBannerInterval;
     window.shareLocal = shareLocal;
     window.openImageZoom = openImageZoom;
-    window.recuperarClave = recuperarClave;
+    window.recuperarClaveAuth = recuperarClaveAuth;
     window.mostrarHorariosCompletos = mostrarHorariosCompletos;
     window.actualizarVisitasTotales = actualizarVisitasTotales;
     window.guardarPublicidad = guardarPublicidad;
