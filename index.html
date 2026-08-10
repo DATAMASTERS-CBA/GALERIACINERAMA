@@ -1001,19 +1001,6 @@
             color: var(--primary);
         }
 
-        .forgot-link {
-            display: block;
-            text-align: right;
-            margin-top: 8px;
-            color: var(--primary);
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: underline;
-        }
-        .forgot-link:hover {
-            opacity: 0.7;
-        }
-
         .visitas-container {
             margin-top: 20px;
             padding: 15px;
@@ -1560,13 +1547,12 @@
     <div id="loadingMsg">Cargando datos desde la nube...</div>
     <div class="grid" id="localsGrid" style="display:none;"></div>
 
-    <!-- ===== MODAL LOGIN ===== -->
+    <!-- ===== MODAL LOGIN (sin enlace de recuperación) ===== -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal">
             <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
             <label>Clave:</label>
             <input type="password" id="loginClave" placeholder="Ingrese clave">
-            <span class="forgot-link" id="forgotLink">¿Olvidaste tu clave?</span>
             <div class="btn-group">
                 <button class="btn-secondary" onclick="closeModal('loginModal')">Cancelar</button>
                 <button class="btn-primary" onclick="loginAdmin()">Ingresar</button>
@@ -1880,7 +1866,7 @@
         </div>
     </div>
 
-    <!-- ===== MODAL CONFIGURACIÓN ===== -->
+    <!-- ===== MODAL CONFIGURACIÓN (sin campo de código de recuperación) ===== -->
     <div class="modal-overlay" id="configModal">
         <div class="modal">
             <h2><i class="fas fa-cog"></i> Configuración de la Galería</h2>
@@ -1889,8 +1875,6 @@
                 <input type="text" id="configNombre" value="Galería Cinerama">
                 <label>Dirección</label>
                 <input type="text" id="configDireccion" value="Colón 375">
-                <label>Código de recuperación</label>
-                <input type="text" id="configResetCode" placeholder="Código para restablecer clave">
                 <div class="btn-group">
                     <button type="button" class="btn-secondary" onclick="closeModal('configModal')">Cancelar</button>
                     <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar</button>
@@ -1941,7 +1925,7 @@
     const docRef = db.collection('galeria').doc('datos');
 
     // ============================================================
-    //  DATA LAYER
+    //  DATA LAYER - Sin valores por defecto para adminClave
     // ============================================================
     let data = {
         locales: [],
@@ -1955,8 +1939,7 @@
         bannerInterval: 4,
         backups: [],
         lastBackupDate: null,
-        adminClave: 'admin123',
-        resetCode: 'reset123',  // <--- NUEVO: código de recuperación almacenado en Firestore
+        // adminClave se obtiene solo de Firestore; no hay valor por defecto
         visitasTotales: 0,
         publicidad: {
             activo: false,
@@ -2194,8 +2177,7 @@
             bannerInterval: 4,
             backups: [],
             lastBackupDate: null,
-            adminClave: 'admin123',
-            resetCode: 'reset123',  // <--- NUEVO
+            // adminClave no incluido
             galeriaNombre: 'Galería Cinerama',
             galeriaDireccion: 'Colón 375',
             theme: 'default',
@@ -2509,8 +2491,8 @@
                         data[key] = defaultData[key];
                     }
                 }
-                // Asegurar que resetCode exista
-                if (!data.resetCode) data.resetCode = 'reset123';
+                // adminClave debe venir de Firestore; si no existe, se queda undefined
+                data.adminClave = firestoreData.adminClave;
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
@@ -2526,79 +2508,14 @@
                 }
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
-                const stored = localStorage.getItem('galeriaData');
-                if (stored) {
-                    try {
-                        const parsed = JSON.parse(stored);
-                        for (let key in parsed) {
-                            data[key] = parsed[key];
-                        }
-                        if (!data.resetCode) data.resetCode = 'reset123';
-                        data.locales.forEach(l => {
-                            l.numeroLocal = String(l.numeroLocal);
-                            if (l.visitas === undefined) l.visitas = 0;
-                            if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                            l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
-                            if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
-                            if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
-                        });
-                        if (data.visitasTotales === undefined) data.visitasTotales = 0;
-                        if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
-                        if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
-                            data.publicidad.textos = getDefaultData().publicidad.textos;
-                        }
-                    } catch (e) {
-                        console.error('Error al parsear localStorage:', e);
-                        if (!isAdmin) {
-                            document.getElementById('loadingMsg').textContent = 'No se pudieron cargar los datos. Contacta al administrador.';
-                            return;
-                        }
-                    }
-                } else {
-                    if (!isAdmin) {
-                        document.getElementById('loadingMsg').textContent = 'No hay datos disponibles. Contacta al administrador.';
-                        return;
-                    }
-                    const cargarMuestra = confirm('No se encontraron datos en la nube. ¿Deseas cargar los locales de muestra? (Cancelar para empezar vacío)');
-                    if (cargarMuestra) {
-                        const defaultData = getDefaultData();
-                        for (let key in defaultData) {
-                            data[key] = defaultData[key];
-                        }
-                    } else {
-                        data = {
-                            locales: [],
-                            banners: [],
-                            rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
-                            theme: 'default',
-                            autoTheme: false,
-                            nextId: 1,
-                            galeriaNombre: 'Galería Cinerama',
-                            galeriaDireccion: 'Colón 375',
-                            bannerInterval: 4,
-                            backups: [],
-                            lastBackupDate: null,
-                            adminClave: 'admin123',
-                            resetCode: 'reset123',
-                            visitasTotales: 0,
-                            publicidad: {
-                                activo: false,
-                                tipo: 'texto',
-                                contenido: '¡Gran Liquidación!',
-                                duracion: 5,
-                                imagenUrl: '',
-                                efecto: 'confeti',
-                                textos: [
-                                    { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
-                                    { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
-                                    { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-                                ]
-                            }
-                        };
-                    }
-                    await docRef.set(data);
-                    localStorage.setItem('galeriaData', JSON.stringify(data));
+                // Si no existe el documento, crearlo con estructura básica
+                const defaultData = getDefaultData();
+                for (let key in defaultData) {
+                    data[key] = defaultData[key];
                 }
+                // No asignar adminClave por defecto
+                await docRef.set(data);
+                localStorage.setItem('galeriaData', JSON.stringify(data));
             }
         } catch (error) {
             console.error('Error cargando desde Firestore:', error);
@@ -2609,7 +2526,6 @@
                     for (let key in parsed) {
                         data[key] = parsed[key];
                     }
-                    if (!data.resetCode) data.resetCode = 'reset123';
                     data.locales.forEach(l => {
                         l.numeroLocal = String(l.numeroLocal);
                         if (l.visitas === undefined) l.visitas = 0;
@@ -2626,52 +2542,22 @@
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                     if (!isAdmin) {
-                        document.getElementById('loadingMsg').textContent = 'Error de conexión y sin datos locales. Contacta al administrador.';
+                        document.getElementById('loadingMsg').textContent = 'No se pudieron cargar los datos. Contacta al administrador.';
                         return;
                     }
                 }
             } else {
                 if (!isAdmin) {
-                    document.getElementById('loadingMsg').textContent = 'Error de conexión y sin datos locales. Contacta al administrador.';
+                    document.getElementById('loadingMsg').textContent = 'No hay datos disponibles. Contacta al administrador.';
                     return;
                 }
-                const cargarMuestra = confirm('No se pudo conectar a la nube y no hay datos locales. ¿Cargar datos de muestra?');
-                if (cargarMuestra) {
-                    const defaultData = getDefaultData();
-                    for (let key in defaultData) {
-                        data[key] = defaultData[key];
-                    }
-                } else {
-                    data = {
-                        locales: [],
-                        banners: [],
-                        rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
-                        theme: 'default',
-                        autoTheme: false,
-                        nextId: 1,
-                        galeriaNombre: 'Galería Cinerama',
-                        galeriaDireccion: 'Colón 375',
-                        bannerInterval: 4,
-                        backups: [],
-                        lastBackupDate: null,
-                        adminClave: 'admin123',
-                        resetCode: 'reset123',
-                        visitasTotales: 0,
-                        publicidad: {
-                            activo: false,
-                            tipo: 'texto',
-                            contenido: '¡Gran Liquidación!',
-                            duracion: 5,
-                            imagenUrl: '',
-                            efecto: 'confeti',
-                            textos: [
-                                { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
-                                { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
-                                { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-                            ]
-                        }
-                    };
+                const defaultData = getDefaultData();
+                for (let key in defaultData) {
+                    data[key] = defaultData[key];
                 }
+                // No asignar adminClave
+                await docRef.set(data);
+                localStorage.setItem('galeriaData', JSON.stringify(data));
             }
         }
         dataLoaded = true;
@@ -2697,7 +2583,7 @@
                             data[key] = firestoreData[key];
                         }
                     }
-                    if (!data.resetCode) data.resetCode = 'reset123';
+                    data.adminClave = firestoreData.adminClave;
                     data.locales.forEach(l => {
                         l.numeroLocal = String(l.numeroLocal);
                         if (l.visitas === undefined) l.visitas = 0;
@@ -3295,33 +3181,8 @@
     }
 
     // ============================================================
-    //  RECUPERACIÓN DE CLAVE (NUEVO: usa resetCode de Firestore)
+    //  RECUPERACIÓN DE CLAVE ELIMINADA - ya no existe
     // ============================================================
-    async function recuperarClave() {
-        const codigo = prompt('Ingrese el código de recuperación:');
-        if (codigo === null) return;
-        const resetCodeActual = data.resetCode || 'reset123';
-        if (codigo !== resetCodeActual) {
-            showToast('Código incorrecto');
-            return;
-        }
-        const nueva = prompt('Ingrese la nueva clave de administrador:');
-        if (nueva === null) return;
-        if (nueva.length < 4) {
-            showToast('La clave debe tener al menos 4 caracteres');
-            return;
-        }
-        const confirmar = prompt('Confirme la nueva clave:');
-        if (confirmar === null) return;
-        if (nueva !== confirmar) {
-            showToast('Las claves no coinciden');
-            return;
-        }
-        data.adminClave = nueva;
-        await saveData();
-        showToast('Clave restablecida correctamente. Ahora puede iniciar sesión.');
-        document.getElementById('loginClave').value = '';
-    }
 
     // ============================================================
     //  EVENTO DE CLIC LARGO EN EL TÍTULO PARA ACCESO ADMIN
@@ -3631,8 +3492,7 @@
             });
         });
 
-        // Enlace de recuperación actualizado
-        document.getElementById('forgotLink').addEventListener('click', recuperarClave);
+        // Enlace de recuperación eliminado
     });
 
     // ============================================================
@@ -3715,11 +3575,6 @@
             agregarBotonComunicados();
             agregarEditorVisitasTotales();
             agregarSeccionPublicidad();
-            // Cargar el código de recuperación en el modal de configuración
-            document.getElementById('configResetCode').value = data.resetCode || 'reset123';
-        }
-        if (id === 'configModal') {
-            document.getElementById('configResetCode').value = data.resetCode || 'reset123';
         }
     }
 
@@ -4486,7 +4341,7 @@
     carousel.addEventListener('mouseleave', startBannerTimer);
 
     // ============================================================
-    //  CONFIGURACIÓN (incluye resetCode)
+    //  CONFIGURACIÓN (sin resetCode)
     // ============================================================
     document.getElementById('configForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -4496,7 +4351,6 @@
         }
         const nombre = document.getElementById('configNombre').value.trim();
         const direccion = document.getElementById('configDireccion').value.trim();
-        const resetCode = document.getElementById('configResetCode').value.trim();
 
         if (!nombre) {
             showToast('El nombre no puede estar vacío');
@@ -4504,9 +4358,6 @@
         }
         data.galeriaNombre = nombre;
         data.galeriaDireccion = direccion;
-        if (resetCode) {
-            data.resetCode = resetCode;
-        }
         await saveData();
         document.getElementById('galeriaNombre').innerHTML = `<i class="fas fa-store-alt"></i> ${nombre}`;
         document.getElementById('galeriaDireccion').textContent = direccion;
@@ -4997,7 +4848,6 @@
             agregarBotonComunicados();
             agregarEditorVisitasTotales();
             agregarSeccionPublicidad();
-            document.getElementById('configResetCode').value = data.resetCode || 'reset123';
         }
         if (document.getElementById('visitNumber')) {
             actualizarNumeroVisitante(data.visitasTotales || 0, false);
@@ -5102,7 +4952,7 @@
         data.bannerInterval = backupData.bannerInterval || 4;
         data.visitasTotales = backupData.visitasTotales || 0;
         data.publicidad = backupData.publicidad || getDefaultData().publicidad;
-        data.resetCode = backupData.resetCode || 'reset123';
+        data.adminClave = backupData.adminClave; // mantiene la clave de Firestore
         data.locales.forEach(l => {
             l.numeroLocal = String(l.numeroLocal);
             if (l.visitas === undefined) l.visitas = 0;
@@ -5192,8 +5042,7 @@
                 data = importedData;
                 data.backups = backupsActuales;
                 data.lastBackupDate = lastBackup;
-                data.adminClave = adminClaveActual;
-                data.resetCode = importedData.resetCode || 'reset123';
+                data.adminClave = adminClaveActual; // preservar la clave actual
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
@@ -5218,7 +5067,7 @@
     }
 
     // ============================================================
-    //  CAMBIAR CLAVE
+    //  CAMBIAR CLAVE (actualiza en Firestore)
     // ============================================================
     async function cambiarClave() {
         if (!isAdmin) {
@@ -5249,10 +5098,14 @@
     }
 
     // ============================================================
-    //  LOGIN
+    //  LOGIN (usa data.adminClave desde Firestore)
     // ============================================================
     async function loginAdmin() {
         const clave = document.getElementById('loginClave').value;
+        if (!data.adminClave) {
+            showToast('No hay clave configurada en el sistema. Contacta al administrador.');
+            return;
+        }
         if (clave === data.adminClave) {
             isAdmin = true;
             ownerLocalId = null;
@@ -5273,7 +5126,7 @@
                             data[key] = firestoreData[key];
                         }
                     }
-                    if (!data.resetCode) data.resetCode = 'reset123';
+                    data.adminClave = firestoreData.adminClave;
                     data.locales.forEach(l => {
                         l.numeroLocal = String(l.numeroLocal);
                         if (l.visitas === undefined) l.visitas = 0;
@@ -5320,7 +5173,7 @@
     window.updateBannerInterval = updateBannerInterval;
     window.shareLocal = shareLocal;
     window.openImageZoom = openImageZoom;
-    window.recuperarClave = recuperarClave;
+    // recuperarClave ya no existe
     window.mostrarHorariosCompletos = mostrarHorariosCompletos;
     window.actualizarVisitasTotales = actualizarVisitasTotales;
     window.guardarPublicidad = guardarPublicidad;
