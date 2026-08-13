@@ -1276,6 +1276,23 @@
             transform: rotate(-90deg);
             transform-origin: 50% 50%;
         }
+        /* Indicador de imagen actual / total */
+        #publicidadOverlay .contador-imagenes {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.8);
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.4);
+            padding: 6px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            z-index: 12;
+            pointer-events: none;
+        }
 
         @media (max-width: 768px) {
             #publicidadOverlay .cerrar-publicidad {
@@ -1290,6 +1307,11 @@
                 right: 15px;
                 width: 40px;
                 height: 40px;
+            }
+            #publicidadOverlay .contador-imagenes {
+                font-size: 1rem;
+                bottom: 20px;
+                padding: 4px 12px;
             }
         }
 
@@ -2017,7 +2039,7 @@
             duracion: 5,
             imagenes: [],
             efecto: 'confeti',
-            efectoImagen: 'explosion', // nuevo campo
+            efectoImagen: 'explosion',
             textos: [
                 { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
@@ -3010,7 +3032,7 @@
     }
 
     // ============================================================
-    //  PUBLICIDAD - CON MÚLTIPLES IMÁGENES Y EFECTOS
+    //  PUBLICIDAD - CON MÚLTIPLES IMÁGENES Y EFECTOS, Y CONTADOR SECUENCIAL
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -3154,6 +3176,7 @@
                     <circle class="circle-progress" id="progressCircle" cx="24" cy="24" r="20"
                         stroke-dasharray="125.6" stroke-dashoffset="0"/>
                 </svg>
+                <div class="contador-imagenes" id="contadorImagenes"></div>
             `;
             document.body.appendChild(overlay);
             document.getElementById('cerrarPublicidadBtn').addEventListener('click', cerrarPublicidad);
@@ -3164,15 +3187,32 @@
 
         const contenido = document.getElementById('publicidadContenido');
         let imagenUrl = '';
+        let totalImagenes = 0;
+        let indiceActual = 0;
+
         if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
-            const randomIndex = Math.floor(Math.random() * data.publicidad.imagenes.length);
-            imagenUrl = data.publicidad.imagenes[randomIndex];
+            totalImagenes = data.publicidad.imagenes.length;
+            // Obtener índice actual de localStorage o iniciar en 0
+            let idx = parseInt(localStorage.getItem('pubImageIndex')) || 0;
+            // Asegurar que el índice esté dentro del rango
+            if (idx >= totalImagenes) idx = 0;
+            indiceActual = idx;
+            imagenUrl = data.publicidad.imagenes[idx];
+            // Incrementar para la próxima vez
+            idx = (idx + 1) % totalImagenes;
+            localStorage.setItem('pubImageIndex', idx);
         }
 
         if (imagenUrl) {
-            // Aplicar efecto de imagen
             const efecto = data.publicidad.efectoImagen || 'explosion';
-            contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad pub-img pub-effect-${efecto}" onerror="this.style.display='none'">`;
+            contenido.innerHTML = `
+                <img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad pub-img pub-effect-${efecto}" onerror="this.style.display='none'">
+            `;
+            // Mostrar contador
+            const contador = document.getElementById('contadorImagenes');
+            if (contador) {
+                contador.textContent = `📸 ${indiceActual+1} / ${totalImagenes}`;
+            }
         } else {
             // Fallback a texto
             const textos = data.publicidad.textos || [
@@ -3188,6 +3228,8 @@
                 }
             });
             contenido.innerHTML = html || '<div class="texto-neon">¡Sin texto!</div>';
+            const contador = document.getElementById('contadorImagenes');
+            if (contador) contador.textContent = '';
         }
 
         overlay.classList.add('active');
@@ -4701,7 +4743,6 @@
                 <select id="pubEfecto" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                     ${Object.keys(EFECTOS_CONFETI).map(e => `<option value="${e}" ${pub.efecto === e ? 'selected' : ''}>${e}</option>`).join('')}
                 </select>
-                <!-- Nuevo selector de efecto de imagen (visible solo cuando tipo es imagen) -->
                 <select id="pubEfectoImagen" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color); display:${pub.tipo === 'imagen' ? 'inline-block' : 'none'};">
                     <option value="explosion" ${pub.efectoImagen === 'explosion' ? 'selected' : ''}>🧨 Explosión</option>
                     <option value="zoom" ${pub.efectoImagen === 'zoom' ? 'selected' : ''}>🔍 Zoom</option>
@@ -4711,7 +4752,7 @@
                 <button onclick="guardarPublicidad()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Guardar</button>
             </div>
             <div style="margin-top:8px; border-top:1px solid var(--border); padding-top:10px;">
-                <label style="font-weight:600;">Imágenes (solo para tipo Imagen)</label>
+                <label style="font-weight:600;">Imágenes (solo para tipo Imagen) <span style="font-weight:normal; opacity:0.7;">(total: ${imagenes.length})</span></label>
                 <div id="listaImagenesPublicidad" style="display:flex; flex-direction:column; gap:6px; margin:6px 0;">
                     ${imagenes.map((url, idx) => `
                         <div style="display:flex; gap:8px; align-items:center;">
@@ -4765,7 +4806,6 @@
                 <button class="btn-remove-img" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;"><i class="fas fa-times"></i></button>
             `;
             lista.appendChild(div);
-            // Evento para eliminar
             div.querySelector('.btn-remove-img').addEventListener('click', function() {
                 if (lista.children.length > 1) {
                     div.remove();
@@ -4773,7 +4813,6 @@
                     showToast('Debe quedar al menos una imagen');
                 }
             });
-            // Evento para comprimir archivo
             div.querySelector('.pub-img-file').addEventListener('change', async function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -4789,6 +4828,8 @@
                     showToast('Error al procesar imagen');
                 }
             });
+            // Actualizar contador de imágenes
+            actualizarContadorImagenesAdmin();
         });
 
         // Asignar eventos a los botones eliminar existentes y a los inputs de archivo
@@ -4797,6 +4838,7 @@
                 const lista = document.getElementById('listaImagenesPublicidad');
                 if (lista.children.length > 1) {
                     this.closest('div').remove();
+                    actualizarContadorImagenesAdmin();
                 } else {
                     showToast('Debe quedar al menos una imagen');
                 }
@@ -4820,6 +4862,18 @@
                 }
             });
         });
+        // Inicializar contador
+        actualizarContadorImagenesAdmin();
+    }
+
+    function actualizarContadorImagenesAdmin() {
+        const lista = document.getElementById('listaImagenesPublicidad');
+        if (!lista) return;
+        const total = lista.children.length;
+        const label = document.querySelector('#publicidadAdminContainer label[style*="font-weight:600;"] span');
+        if (label) {
+            label.textContent = `(total: ${total})`;
+        }
     }
 
     async function guardarPublicidad() {
@@ -4882,6 +4936,9 @@
         } else {
             cerrarPublicidad();
         }
+        // Reiniciar el índice de imágenes en localStorage para que el usuario vea la primera imagen de nuevo (opcional)
+        // Si se guarda con nuevas imágenes, es mejor resetear para que empiece desde 0.
+        localStorage.setItem('pubImageIndex', '0');
     }
 
     // ============================================================
