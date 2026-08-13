@@ -1193,135 +1193,103 @@
             font-style: italic;
         }
 
-        /* ===== PUBLICIDAD OVERLAY ===== */
+        /* ===== PUBLICIDAD OVERLAY MEJORADO ===== */
         #publicidadOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             z-index: 99999;
             display: none;
             justify-content: center;
             align-items: center;
             pointer-events: none;
-            overflow: hidden;
         }
         #publicidadOverlay.active {
             display: flex;
             pointer-events: auto;
         }
         #publicidadOverlay .contenido {
-            text-align: center;
-            padding: 0;
-            max-width: 100%;
-            max-height: 100%;
-            overflow: hidden;
-            animation: publicidadEntrada 0.6s ease;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            height: 100%;
+            position: relative;
+            background: #000;
         }
-        @keyframes publicidadEntrada {
-            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        /* Imagen publicitaria: en móvil ocupa toda la pantalla con cover, en escritorio tamaño real */
         #publicidadOverlay .imagen-publicidad {
             width: 100%;
             height: 100%;
-            object-fit: cover;  /* por defecto para móvil */
-            max-width: 100vw;
-            max-height: 100vh;
-            border-radius: 0;
-            box-shadow: none;
-            display: block;
+            object-fit: contain;  /* Ajusta sin deformar */
+            max-width: 100%;
+            max-height: 100%;
         }
-
-        /* En escritorio (pantallas más grandes) mostramos la imagen a su tamaño real */
-        @media (min-width: 769px) {
-            #publicidadOverlay .imagen-publicidad {
-                object-fit: none;   /* sin escalado */
-                width: auto;
-                height: auto;
-                max-width: 90vw;
-                max-height: 90vh;
-                border-radius: 12px;
-                box-shadow: 0 0 40px rgba(255,255,255,0.3);
-            }
-        }
-
         /* Botón de cerrar con círculo de progreso */
         #publicidadOverlay .cerrar-publicidad {
             position: absolute;
             top: 20px;
             right: 20px;
-            width: 50px;
-            height: 50px;
-            background: rgba(0,0,0,0.5);
+            width: 48px;
+            height: 48px;
+            background: rgba(0,0,0,0.6);
             border: none;
             border-radius: 50%;
             color: #fff;
             font-size: 1.8rem;
             cursor: pointer;
-            pointer-events: auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10;
             backdrop-filter: blur(4px);
-            transition: 0.2s;
+            transition: 0.3s;
+            z-index: 10;
             padding: 0;
-            line-height: 1;
         }
         #publicidadOverlay .cerrar-publicidad:hover {
             background: rgba(255,0,0,0.7);
-            transform: scale(1.05);
+            transform: scale(1.1);
         }
         /* SVG del círculo de progreso */
         #publicidadOverlay .progress-ring {
             position: absolute;
-            top: -4px;
-            left: -4px;
-            width: 58px;
-            height: 58px;
-            transform: rotate(-90deg);
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
             pointer-events: none;
+            z-index: 11;
         }
-        #publicidadOverlay .progress-ring .bg {
+        #publicidadOverlay .progress-ring .circle-bg {
             fill: none;
             stroke: rgba(255,255,255,0.2);
-            stroke-width: 3;
+            stroke-width: 4;
         }
-        #publicidadOverlay .progress-ring .progress {
+        #publicidadOverlay .progress-ring .circle-progress {
             fill: none;
             stroke: #fff;
-            stroke-width: 3;
+            stroke-width: 4;
             stroke-linecap: round;
             transition: stroke-dashoffset 0.3s linear;
-        }
-
-        /* Texto neon (para modo texto, se mantiene) */
-        #publicidadOverlay .texto-neon {
-            font-weight: 900;
-            color: #fff;
-            text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px #0fa, 0 0 82px #0fa, 0 0 92px #0fa, 0 0 102px #0fa, 0 0 151px #0fa;
-            letter-spacing: 2px;
-            line-height: 1.3;
-            word-break: break-word;
-            display: inline-block;
-            margin: 4px;
-            padding: 4px 12px;
-            border-radius: 8px;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
         }
 
         @media (max-width: 768px) {
-            #publicidadOverlay .texto-neon {
-                font-size: inherit;
+            #publicidadOverlay .cerrar-publicidad {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.4rem;
+            }
+            #publicidadOverlay .progress-ring {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
             }
         }
 
@@ -1966,7 +1934,7 @@
     <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
 
-    <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente con el círculo de progreso) ===== -->
+    <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente) ===== -->
 </div>
 
 <script>
@@ -1987,7 +1955,7 @@
     const docRef = db.collection('galeria').doc('datos');
 
     // ============================================================
-    //  DATA LAYER
+    //  DATA LAYER - Sin valores por defecto para adminClave
     // ============================================================
     let data = {
         locales: [],
@@ -2001,14 +1969,13 @@
         bannerInterval: 4,
         backups: [],
         lastBackupDate: null,
-        // adminClave se obtiene solo de Firestore
         visitasTotales: 0,
         publicidad: {
             activo: false,
             tipo: 'texto',
             contenido: '¡Gran Liquidación!',
             duracion: 5,
-            imagenes: [],         // lista de URLs de imágenes
+            imagenes: [],           // LISTA DE URLS DE IMAGEN
             efecto: 'confeti',
             textos: [
                 { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
@@ -2563,10 +2530,10 @@
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                     data.publicidad.textos = defaultData.publicidad.textos;
                 }
-                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
                 const defaultData = getDefaultData();
@@ -2595,10 +2562,10 @@
                     });
                     if (data.visitasTotales === undefined) data.visitasTotales = 0;
                     if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = getDefaultData().publicidad.textos;
                     }
-                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                     if (!isAdmin) {
@@ -2653,10 +2620,10 @@
                     });
                     if (data.visitasTotales === undefined) data.visitasTotales = 0;
                     if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
-                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
@@ -2733,7 +2700,7 @@
     }
 
     // ============================================================
-    //  LISTENERS
+    //  LISTENERS (con desactivación al abrir modal de edición)
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
@@ -2837,7 +2804,7 @@
     }
 
     // ============================================================
-    //  AUTENTICACIÓN DE DUEÑO
+    //  AUTENTICACIÓN DE DUEÑO (clave = WhatsApp)
     // ============================================================
     function autenticarDueño() {
         const clave = document.getElementById('ownerClave').value.trim();
@@ -2998,7 +2965,7 @@
     }
 
     // ============================================================
-    //  PUBLICIDAD (con lista de imágenes y círculo de progreso)
+    //  PUBLICIDAD - CON MÚLTIPLES IMÁGENES Y CÍRCULO DE PROGRESO
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -3125,11 +3092,9 @@
 
     function mostrarPublicidad() {
         if (!data.publicidad || !data.publicidad.activo) return;
-        // Si es tipo imagen y no hay imágenes, no hacer nada
+
+        // Si es tipo imagen pero no hay imágenes, no mostrar
         if (data.publicidad.tipo === 'imagen' && (!data.publicidad.imagenes || data.publicidad.imagenes.length === 0)) {
-            // Desactivar temporalmente para no molestar
-            data.publicidad.activo = false;
-            saveData();
             return;
         }
 
@@ -3138,41 +3103,33 @@
             overlay = document.createElement('div');
             overlay.id = 'publicidadOverlay';
             overlay.innerHTML = `
-                <button class="cerrar-publicidad" id="cerrarPublicidadBtn">
-                    <i class="fas fa-times"></i>
-                    <svg class="progress-ring" viewBox="0 0 60 60">
-                        <circle class="bg" cx="30" cy="30" r="26" />
-                        <circle class="progress" id="progressCircle" cx="30" cy="30" r="26"
-                                stroke-dasharray="163.36" stroke-dashoffset="0" />
-                    </svg>
-                </button>
                 <div class="contenido" id="publicidadContenido"></div>
+                <button class="cerrar-publicidad" id="cerrarPublicidadBtn">&times;</button>
+                <svg class="progress-ring" viewBox="0 0 48 48">
+                    <circle class="circle-bg" cx="24" cy="24" r="20"/>
+                    <circle class="circle-progress" id="progressCircle" cx="24" cy="24" r="20"
+                        stroke-dasharray="125.6" stroke-dashoffset="0"/>
+                </svg>
             `;
             document.body.appendChild(overlay);
-            // Evento para cerrar manualmente
-            document.getElementById('cerrarPublicidadBtn').addEventListener('click', function(e) {
-                e.stopPropagation();
-                cerrarPublicidad();
-            });
+            document.getElementById('cerrarPublicidadBtn').addEventListener('click', cerrarPublicidad);
             overlay.addEventListener('click', function(e) {
                 if (e.target === this) cerrarPublicidad();
             });
         }
 
         const contenido = document.getElementById('publicidadContenido');
-        // Elegir una imagen al azar de la lista
-        if (data.publicidad.tipo === 'imagen') {
-            const imagenes = data.publicidad.imagenes.filter(url => url && url.trim() !== '');
-            if (imagenes.length === 0) {
-                // No hay imágenes, desactivar y salir
-                data.publicidad.activo = false;
-                saveData();
-                return;
-            }
-            const urlAleatoria = imagenes[Math.floor(Math.random() * imagenes.length)];
-            contenido.innerHTML = `<img src="${urlAleatoria}" alt="Publicidad" class="imagen-publicidad" onerror="this.src='${DEFAULT_IMAGE_URL}'">`;
+        // Seleccionar imagen aleatoria
+        let imagenUrl = '';
+        if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
+            const randomIndex = Math.floor(Math.random() * data.publicidad.imagenes.length);
+            imagenUrl = data.publicidad.imagenes[randomIndex];
+        }
+
+        if (imagenUrl) {
+            contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad" onerror="this.style.display='none'">`;
         } else {
-            // Modo texto
+            // Fallback a texto si no hay imagen
             const textos = data.publicidad.textos || [
                 { texto: data.publicidad.contenido, fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
@@ -3191,33 +3148,31 @@
         overlay.classList.add('active');
         dispararConfeti(data.publicidad.efecto || 'confeti');
 
-        // Configurar el círculo de progreso
-        const duracion = data.publicidad.duracion || 5;
-        const progressCircle = document.getElementById('progressCircle');
-        if (progressCircle) {
-            const circumference = 2 * Math.PI * 26; // 163.36 aprox
-            progressCircle.style.strokeDasharray = circumference;
-            progressCircle.style.strokeDashoffset = 0;
-            let startTime = Date.now();
-            const totalTime = duracion * 1000;
+        // Iniciar el círculo de progreso
+        const duracion = (data.publicidad.duracion || 5) * 1000;
+        const circle = document.getElementById('progressCircle');
+        if (circle) {
+            const circumference = 2 * Math.PI * 20; // radio 20
+            circle.style.strokeDasharray = circumference;
+            circle.style.strokeDashoffset = 0;
+            const startTime = Date.now();
 
             function actualizarProgreso() {
                 const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / totalTime, 1);
-                const offset = circumference * (1 - progress);
-                progressCircle.style.strokeDashoffset = offset;
+                const progress = Math.min(elapsed / duracion, 1);
+                const offset = circumference * progress;
+                circle.style.strokeDashoffset = offset;
                 if (progress < 1) {
                     requestAnimationFrame(actualizarProgreso);
                 }
             }
-            actualizarProgreso();
+            requestAnimationFrame(actualizarProgreso);
         }
 
-        // Temporizador para cerrar automáticamente
         if (window._publicidadTimer) clearTimeout(window._publicidadTimer);
         window._publicidadTimer = setTimeout(() => {
             cerrarPublicidad();
-        }, duracion * 1000);
+        }, duracion);
     }
 
     function cerrarPublicidad() {
@@ -3227,7 +3182,6 @@
             clearTimeout(window._publicidadTimer);
             window._publicidadTimer = null;
         }
-        // Detener confeti si es necesario (no hay función, pero se detiene solo)
     }
 
     function dispararConfeti(effectName) {
@@ -3247,7 +3201,6 @@
             drift: drift
         });
 
-        // Efectos adicionales para algunos tipos
         if (['fuegoartificial', 'arcoiris', 'diadelnino'].includes(effectName)) {
             setTimeout(() => {
                 confetti({
@@ -3299,7 +3252,7 @@
     }
 
     // ============================================================
-    //  ADMIN ACCESS (clic largo en título)
+    //  EVENTO DE CLIC LARGO EN EL TÍTULO PARA ACCESO ADMIN
     // ============================================================
     function initAdminAccess() {
         const titulo = document.getElementById('galeriaNombre');
@@ -3329,12 +3282,15 @@
     }
 
     // ============================================================
-    //  MODALES Y BOTONES
+    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN
     // ============================================================
     function cerrarModalEdicion() {
         closeModal('addLocalModal');
     }
 
+    // ============================================================
+    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL
+    // ============================================================
     function actualizarBotonesModal() {
         const container = document.getElementById('modalBotones');
         if (!container) return;
@@ -3369,7 +3325,7 @@
     }
 
     // ============================================================
-    //  OVERLAY DE ESPERA
+    //  FUNCIONES PARA OVERLAY DE ESPERA
     // ============================================================
     function crearOverlayEspera() {
         if (document.getElementById('loadingOverlay')) return;
@@ -3752,7 +3708,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES
+    //  RENDER LOCALES (sin cambios)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -4663,7 +4619,7 @@
     }
 
     // ============================================================
-    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (con lista de imágenes)
+    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (con múltiples imágenes)
     // ============================================================
     function agregarSeccionPublicidad() {
         if (!isAdmin) return;
@@ -4683,6 +4639,8 @@
             { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
             { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
         ];
+
+        // Lista de imágenes
         const imagenes = pub.imagenes || [];
 
         let html = `
@@ -4695,96 +4653,70 @@
                     <option value="texto" ${pub.tipo === 'texto' ? 'selected' : ''}>Texto</option>
                     <option value="imagen" ${pub.tipo === 'imagen' ? 'selected' : ''}>Imagen</option>
                 </select>
-                <input type="text" id="pubContenido" value="${pub.contenido}" placeholder="Texto o URL de imagen (modo texto)" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <input type="text" id="pubContenido" value="${pub.contenido}" placeholder="Texto o URL de imagen" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                 <label style="display:flex; align-items:center; gap:4px;">Duración (seg): <input type="number" id="pubDuracion" value="${pub.duracion}" style="width:60px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);"></label>
                 <select id="pubEfecto" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                     ${Object.keys(EFECTOS_CONFETI).map(e => `<option value="${e}" ${pub.efecto === e ? 'selected' : ''}>${e}</option>`).join('')}
                 </select>
                 <button onclick="guardarPublicidad()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Guardar</button>
             </div>
-        `;
-
-        // Sección de imágenes (solo visible cuando tipo es imagen)
-        html += `
-            <div id="publicidadImagenesSection" style="${pub.tipo === 'imagen' ? 'display:block;' : 'display:none;'} margin-top:10px;">
-                <label style="font-weight:600;">Lista de imágenes (URLs):</label>
-                <div id="publicidadImagenesList" style="display:flex; flex-direction:column; gap:6px; margin-top:6px;">
-        `;
-        if (imagenes.length === 0) {
-            html += `<div class="pub-imagen-item" style="display:flex; gap:6px; align-items:center;">
-                <input type="url" class="pub-imagen-url" placeholder="https://ejemplo.com/imagen.jpg" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                <button type="button" class="pub-remove-imagen" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold; display:none;">×</button>
-            </div>`;
-        } else {
-            imagenes.forEach((url, idx) => {
-                html += `<div class="pub-imagen-item" style="display:flex; gap:6px; align-items:center;">
-                    <input type="url" class="pub-imagen-url" value="${url}" placeholder="https://ejemplo.com/imagen.jpg" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                    <button type="button" class="pub-remove-imagen" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold;">×</button>
-                </div>`;
-            });
-        }
-        html += `
+            <div style="margin-top:8px; border-top:1px solid var(--border); padding-top:10px;">
+                <label style="font-weight:600;">Imágenes (solo para tipo Imagen)</label>
+                <div id="listaImagenesPublicidad" style="display:flex; flex-direction:column; gap:6px; margin:6px 0;">
+                    ${imagenes.map((url, idx) => `
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="url" class="pub-img-url" value="${url}" placeholder="URL de imagen" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                            <button class="btn-remove-img" data-idx="${idx}" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;"><i class="fas fa-times"></i></button>
+                        </div>
+                    `).join('')}
                 </div>
-                <button type="button" id="pubAddImagenBtn" style="margin-top:6px; padding:4px 16px; border-radius:30px; border:1px solid var(--border); background:var(--primary-light); color:var(--primary); cursor:pointer; font-weight:600;"><i class="fas fa-plus"></i> Agregar imagen</button>
+                <button id="agregarImgPublicidad" style="padding:4px 16px; border-radius:30px; border:1px solid var(--border); background:var(--primary-light); color:var(--primary); cursor:pointer; font-weight:600;"><i class="fas fa-plus"></i> Agregar imagen</button>
             </div>
-        `;
-
-        // Textos para modo texto
-        html += `
-            <div id="publicidadTextosSection" style="${pub.tipo === 'texto' ? 'display:block;' : 'display:none;'} margin-top:10px;">
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
                 <label style="font-weight:600;">Textos (hasta 3 líneas):</label>
                 ${[0,1,2].map(i => `
-                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:4px;">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
                         <input type="text" class="pub-texto" data-idx="${i}" value="${textos[i]?.texto || ''}" placeholder="Texto ${i+1}" style="flex:2; min-width:120px; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                         <select class="pub-fuente" data-idx="${i}" style="padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                             ${['Arial','Verdana','Georgia','Courier New','Impact','Comic Sans MS','Times New Roman'].map(f => `<option value="${f}" ${textos[i]?.fuente === f ? 'selected' : ''}>${f}</option>`).join('')}
                         </select>
                         <input type="number" class="pub-tamano" data-idx="${i}" value="${textos[i]?.tamaño || 36}" placeholder="Tamaño" style="width:70px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                         <input type="color" class="pub-color" data-idx="${i}" value="${textos[i]?.color || '#ffffff'}" style="width:40px; height:40px; padding:0; border-radius:50%; border:1px solid var(--border);">
-                        <input type="text" class="pub-fondo" data-idx="${i}" value="${textos[i]?.fondo || 'transparente'}" placeholder="Fondo" style="width:80px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                        <input type="text" class="pub-fondo" data-idx="${i}" value="${textos[i]?.fondo || 'transparente'}" placeholder="Fondo (color o transparente)" style="width:100px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                     </div>
                 `).join('')}
             </div>
+            <p style="margin-top:8px; font-size:0.9rem; opacity:0.7;">Al activar, se mostrará al cargar la página con el efecto seleccionado.</p>
         `;
-
         container.innerHTML = html;
         backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
 
-        // Event listeners para mostrar/ocultar secciones según tipo
-        document.getElementById('pubTipo').addEventListener('change', function() {
-            const tipo = this.value;
-            document.getElementById('publicidadImagenesSection').style.display = tipo === 'imagen' ? 'block' : 'none';
-            document.getElementById('publicidadTextosSection').style.display = tipo === 'texto' ? 'block' : 'none';
-        });
-
-        // Agregar imagen
-        document.getElementById('pubAddImagenBtn').addEventListener('click', function() {
-            const list = document.getElementById('publicidadImagenesList');
-            const item = document.createElement('div');
-            item.className = 'pub-imagen-item';
-            item.style.cssText = 'display:flex; gap:6px; align-items:center;';
-            item.innerHTML = `
-                <input type="url" class="pub-imagen-url" placeholder="https://ejemplo.com/imagen.jpg" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                <button type="button" class="pub-remove-imagen" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold;">×</button>
+        // Event listeners para agregar/eliminar imágenes
+        document.getElementById('agregarImgPublicidad').addEventListener('click', function() {
+            const lista = document.getElementById('listaImagenesPublicidad');
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex; gap:8px; align-items:center;';
+            div.innerHTML = `
+                <input type="url" class="pub-img-url" placeholder="URL de imagen" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <button class="btn-remove-img" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;"><i class="fas fa-times"></i></button>
             `;
-            list.appendChild(item);
-            // Evento para eliminar
-            item.querySelector('.pub-remove-imagen').addEventListener('click', function() {
-                if (list.children.length > 1) {
-                    item.remove();
+            lista.appendChild(div);
+            // Asignar evento eliminar al nuevo botón
+            div.querySelector('.btn-remove-img').addEventListener('click', function() {
+                if (lista.children.length > 1) {
+                    div.remove();
                 } else {
                     showToast('Debe quedar al menos una imagen');
                 }
             });
         });
 
-        // Eliminar imágenes existentes
-        document.querySelectorAll('.pub-remove-imagen').forEach(btn => {
+        // Asignar eventos a los botones eliminar existentes
+        document.querySelectorAll('#listaImagenesPublicidad .btn-remove-img').forEach(btn => {
             btn.addEventListener('click', function() {
-                const list = document.getElementById('publicidadImagenesList');
-                const item = this.closest('.pub-imagen-item');
-                if (list.children.length > 1) {
-                    item.remove();
+                const lista = document.getElementById('listaImagenesPublicidad');
+                if (lista.children.length > 1) {
+                    this.closest('div').remove();
                 } else {
                     showToast('Debe quedar al menos una imagen');
                 }
@@ -4803,7 +4735,15 @@
         const duracion = parseInt(document.getElementById('pubDuracion').value) || 5;
         const efecto = document.getElementById('pubEfecto').value;
 
-        // Recoger textos
+        // Obtener lista de imágenes
+        const imagenInputs = document.querySelectorAll('#listaImagenesPublicidad .pub-img-url');
+        const imagenes = [];
+        imagenInputs.forEach(inp => {
+            const url = inp.value.trim();
+            if (url) imagenes.push(url);
+        });
+
+        // Obtener textos
         const textos = [];
         document.querySelectorAll('.pub-texto').forEach(inp => {
             const idx = parseInt(inp.dataset.idx);
@@ -4815,26 +4755,21 @@
             textos[idx] = { texto, fuente, tamaño, color, fondo };
         });
 
-        // Recoger imágenes
-        const imagenes = [];
-        document.querySelectorAll('.pub-imagen-url').forEach(inp => {
-            const url = inp.value.trim();
-            if (url) imagenes.push(url);
-        });
-
-        if (tipo === 'texto' && textos.every(t => !t.texto)) {
-            showToast('Al menos un texto debe tener contenido.');
-            return;
-        }
+        // Validaciones
         if (tipo === 'imagen' && imagenes.length === 0) {
             showToast('Agrega al menos una imagen.');
             return;
         }
+        if (tipo === 'texto' && textos.every(t => !t.texto)) {
+            showToast('Al menos un texto debe tener contenido.');
+            return;
+        }
 
+        // Si tipo imagen, usamos la primera imagen como contenido por compatibilidad, pero no es necesario para la visualización
         data.publicidad = {
             activo,
             tipo,
-            contenido: tipo === 'imagen' ? imagenes[0] : textos[0]?.texto || '',
+            contenido: tipo === 'imagen' ? (imagenes[0] || '') : textos[0]?.texto || '',
             duracion,
             imagenes: imagenes,
             efecto,
@@ -5322,10 +5257,10 @@
                     });
                     if (data.visitasTotales === undefined) data.visitasTotales = 0;
                     if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
-                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
