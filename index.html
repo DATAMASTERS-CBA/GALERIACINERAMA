@@ -1193,7 +1193,6 @@
             font-style: italic;
         }
 
-        /* ===== PUBLICIDAD OVERLAY MEJORADO ===== */
         #publicidadOverlay {
             position: fixed;
             top: 0;
@@ -1206,90 +1205,127 @@
             justify-content: center;
             align-items: center;
             pointer-events: none;
+            padding: 0;
+            margin: 0;
         }
         #publicidadOverlay.active {
             display: flex;
             pointer-events: auto;
         }
         #publicidadOverlay .contenido {
+            position: relative;
             width: 100%;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
             background: #000;
         }
         #publicidadOverlay .imagen-publicidad {
             width: 100%;
             height: 100%;
-            object-fit: contain;  /* Ajusta sin deformar */
-            max-width: 100%;
-            max-height: 100%;
+            object-fit: contain;
+            max-width: 100vw;
+            max-height: 100vh;
+            display: block;
+            background: #000;
+        }
+        /* Spinner de carga */
+        #publicidadOverlay .spinner-carga {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: #fff;
+            z-index: 10;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
         /* Botón de cerrar con círculo de progreso */
         #publicidadOverlay .cerrar-publicidad {
             position: absolute;
             top: 20px;
             right: 20px;
-            width: 48px;
-            height: 48px;
-            background: rgba(0,0,0,0.6);
+            width: 60px;
+            height: 60px;
+            background: none;
             border: none;
-            border-radius: 50%;
-            color: #fff;
-            font-size: 1.8rem;
             cursor: pointer;
+            z-index: 20;
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(4px);
-            transition: 0.3s;
-            z-index: 10;
-            padding: 0;
+            pointer-events: auto;
         }
-        #publicidadOverlay .cerrar-publicidad:hover {
-            background: rgba(255,0,0,0.7);
-            transform: scale(1.1);
-        }
-        /* SVG del círculo de progreso */
-        #publicidadOverlay .progress-ring {
+        #publicidadOverlay .cerrar-publicidad svg {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 48px;
-            height: 48px;
-            pointer-events: none;
-            z-index: 11;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
         }
-        #publicidadOverlay .progress-ring .circle-bg {
+        #publicidadOverlay .cerrar-publicidad svg circle {
             fill: none;
-            stroke: rgba(255,255,255,0.2);
-            stroke-width: 4;
-        }
-        #publicidadOverlay .progress-ring .circle-progress {
-            fill: none;
-            stroke: #fff;
             stroke-width: 4;
             stroke-linecap: round;
+        }
+        #publicidadOverlay .cerrar-publicidad svg .bg {
+            stroke: rgba(255,255,255,0.3);
+        }
+        #publicidadOverlay .cerrar-publicidad svg .progress {
+            stroke: #fff;
+            stroke-dasharray: 176; /* 2 * PI * radio (28) */
+            stroke-dashoffset: 0;
             transition: stroke-dashoffset 0.3s linear;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
+        }
+        #publicidadOverlay .cerrar-publicidad .icono-x {
+            color: #fff;
+            font-size: 2rem;
+            z-index: 5;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+        #publicidadOverlay .cerrar-publicidad .tiempo-restante {
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            pointer-events: none;
         }
 
         @media (max-width: 768px) {
             #publicidadOverlay .cerrar-publicidad {
+                width: 50px;
+                height: 50px;
                 top: 15px;
                 right: 15px;
-                width: 40px;
-                height: 40px;
-                font-size: 1.4rem;
             }
-            #publicidadOverlay .progress-ring {
-                top: 15px;
-                right: 15px;
-                width: 40px;
-                height: 40px;
+            #publicidadOverlay .cerrar-publicidad .icono-x {
+                font-size: 1.5rem;
+            }
+            #publicidadOverlay .cerrar-publicidad .tiempo-restante {
+                width: 22px;
+                height: 22px;
+                font-size: 0.6rem;
+                bottom: -6px;
+                right: -6px;
+            }
+            #publicidadOverlay .spinner-carga {
+                font-size: 2rem;
             }
         }
 
@@ -1477,7 +1513,7 @@
             display: block !important;
         }
 
-        /* ===== OVERLAY DE ESPERA ===== */
+        /* ===== NUEVO ESTILO PARA OVERLAY DE ESPERA ===== */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -1521,6 +1557,62 @@
         @media (max-width: 768px) {
             #loadingOverlay .spinner { font-size: 3.5rem; }
             #loadingOverlay { font-size: 1.4rem; }
+        }
+
+        /* Estilos para la lista de imágenes en publicidad */
+        .pub-imagenes-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .pub-imagen-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 4px 8px;
+            background: var(--input-bg);
+            border-radius: 30px;
+            border: 1px solid var(--border);
+        }
+        .pub-imagen-item input[type="url"] {
+            flex: 1;
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-color);
+            border-radius: 30px;
+        }
+        .pub-imagen-item button {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .pub-agregar-imagen {
+            margin-top: 6px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .pub-agregar-imagen:hover {
+            background: var(--primary);
+            color: #fff;
         }
     </style>
 </head>
@@ -1955,7 +2047,7 @@
     const docRef = db.collection('galeria').doc('datos');
 
     // ============================================================
-    //  DATA LAYER - Sin valores por defecto para adminClave
+    //  DATA LAYER
     // ============================================================
     let data = {
         locales: [],
@@ -1975,7 +2067,7 @@
             tipo: 'texto',
             contenido: '¡Gran Liquidación!',
             duracion: 5,
-            imagenes: [],           // LISTA DE URLS DE IMAGEN
+            imagenes: [], // lista de URLs de imágenes
             efecto: 'confeti',
             textos: [
                 { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
@@ -2228,7 +2320,7 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA COMPRIMIR Y CONVERTIR IMAGEN A BASE64
+    //  FUNCIONES DE IMAGEN (comprimir, etc.)
     // ============================================================
     function comprimirImagen(file, maxWidth = 800, quality = 0.7) {
         return new Promise((resolve, reject) => {
@@ -2264,9 +2356,6 @@
         });
     }
 
-    // ============================================================
-    //  FUNCIONES PARA IMÁGENES EXTRA (con base64)
-    // ============================================================
     function normalizarImagenesExtra(imagenes) {
         if (!Array.isArray(imagenes)) return [];
         return imagenes.map(item => {
@@ -2481,9 +2570,6 @@
         return result;
     }
 
-    // ============================================================
-    //  FUNCIÓN PARA SUBIR FOTO/LOGO PRINCIPAL (con base64)
-    // ============================================================
     async function procesarArchivoInput(fileInput, urlInput, mensajeExito = 'Imagen cargada') {
         const file = fileInput.files[0];
         if (!file) return;
@@ -2530,10 +2616,10 @@
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 if (!data.publicidad) data.publicidad = defaultData.publicidad;
-                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                     data.publicidad.textos = defaultData.publicidad.textos;
                 }
+                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
                 const defaultData = getDefaultData();
@@ -2562,10 +2648,10 @@
                     });
                     if (data.visitasTotales === undefined) data.visitasTotales = 0;
                     if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
-                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = getDefaultData().publicidad.textos;
                     }
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                     if (!isAdmin) {
@@ -2595,7 +2681,9 @@
         initVisitCounter();
         await incrementarVisitaGlobal(true);
         initGlobalVisitListeners();
-        if (data.publicidad && data.publicidad.activo) {
+        if (data.publicidad && data.publicidad.activo && data.publicidad.tipo === 'imagen' && data.publicidad.imagenes && data.publicidad.imagenes.length > 0) {
+            mostrarPublicidad();
+        } else if (data.publicidad && data.publicidad.activo && data.publicidad.tipo === 'texto') {
             mostrarPublicidad();
         }
 
@@ -2620,10 +2708,10 @@
                     });
                     if (data.visitasTotales === undefined) data.visitasTotales = 0;
                     if (!data.publicidad) data.publicidad = defaultData.publicidad;
-                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
@@ -2700,7 +2788,7 @@
     }
 
     // ============================================================
-    //  LISTENERS (con desactivación al abrir modal de edición)
+    //  LISTENERS
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
@@ -2804,7 +2892,7 @@
     }
 
     // ============================================================
-    //  AUTENTICACIÓN DE DUEÑO (clave = WhatsApp)
+    //  AUTENTICACIÓN DE DUEÑO
     // ============================================================
     function autenticarDueño() {
         const clave = document.getElementById('ownerClave').value.trim();
@@ -2891,7 +2979,7 @@
     }
 
     // ============================================================
-    //  ESTADO DEL LOCAL (con temporal)
+    //  ESTADO DEL LOCAL
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
@@ -2965,7 +3053,7 @@
     }
 
     // ============================================================
-    //  PUBLICIDAD - CON MÚLTIPLES IMÁGENES Y CÍRCULO DE PROGRESO
+    //  PUBLICIDAD (mejorada)
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -3090,10 +3178,11 @@
         }
     };
 
+    let publicidadTimer = null;
+
     function mostrarPublicidad() {
         if (!data.publicidad || !data.publicidad.activo) return;
-
-        // Si es tipo imagen pero no hay imágenes, no mostrar
+        // Si es tipo imagen y no hay imágenes, no mostrar
         if (data.publicidad.tipo === 'imagen' && (!data.publicidad.imagenes || data.publicidad.imagenes.length === 0)) {
             return;
         }
@@ -3103,37 +3192,61 @@
             overlay = document.createElement('div');
             overlay.id = 'publicidadOverlay';
             overlay.innerHTML = `
-                <div class="contenido" id="publicidadContenido"></div>
-                <button class="cerrar-publicidad" id="cerrarPublicidadBtn">&times;</button>
-                <svg class="progress-ring" viewBox="0 0 48 48">
-                    <circle class="circle-bg" cx="24" cy="24" r="20"/>
-                    <circle class="circle-progress" id="progressCircle" cx="24" cy="24" r="20"
-                        stroke-dasharray="125.6" stroke-dashoffset="0"/>
-                </svg>
+                <div class="contenido" id="publicidadContenido">
+                    <div class="spinner-carga" id="pubSpinner"><i class="fas fa-spinner"></i></div>
+                    <img class="imagen-publicidad" id="pubImagen" src="" alt="Publicidad" style="display:none;">
+                    <button class="cerrar-publicidad" id="pubCerrar" title="Cerrar">
+                        <svg viewBox="0 0 60 60">
+                            <circle class="bg" cx="30" cy="30" r="28"/>
+                            <circle class="progress" cx="30" cy="30" r="28" stroke-dasharray="176" stroke-dashoffset="0"/>
+                        </svg>
+                        <span class="icono-x"><i class="fas fa-times"></i></span>
+                        <span class="tiempo-restante" id="pubTiempoRestante">0</span>
+                    </button>
+                </div>
             `;
             document.body.appendChild(overlay);
-            document.getElementById('cerrarPublicidadBtn').addEventListener('click', cerrarPublicidad);
-            overlay.addEventListener('click', function(e) {
-                if (e.target === this) cerrarPublicidad();
+            // Evento cerrar
+            document.getElementById('pubCerrar').addEventListener('click', function(e) {
+                e.stopPropagation();
+                cerrarPublicidad();
             });
         }
 
         const contenido = document.getElementById('publicidadContenido');
-        // Seleccionar imagen aleatoria
-        let imagenUrl = '';
-        if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
-            const randomIndex = Math.floor(Math.random() * data.publicidad.imagenes.length);
-            imagenUrl = data.publicidad.imagenes[randomIndex];
+        const spinner = document.getElementById('pubSpinner');
+        const img = document.getElementById('pubImagen');
+        const cerrarBtn = document.getElementById('pubCerrar');
+        const tiempoRestante = document.getElementById('pubTiempoRestante');
+
+        // Limpiar temporizadores previos
+        if (publicidadTimer) {
+            clearInterval(publicidadTimer);
+            publicidadTimer = null;
+        }
+        if (window._publicidadTimer) {
+            clearTimeout(window._publicidadTimer);
+            window._publicidadTimer = null;
         }
 
-        if (imagenUrl) {
-            contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad" onerror="this.style.display='none'">`;
+        // Ocultar imagen y mostrar spinner
+        img.style.display = 'none';
+        spinner.style.display = 'block';
+        overlay.classList.remove('active');
+
+        // Elegir imagen aleatoria si es tipo imagen
+        let urlImagen = '';
+        if (data.publicidad.tipo === 'imagen') {
+            const imagenes = data.publicidad.imagenes.filter(url => url && url.trim() !== '');
+            if (imagenes.length === 0) return;
+            const idx = Math.floor(Math.random() * imagenes.length);
+            urlImagen = imagenes[idx];
         } else {
-            // Fallback a texto si no hay imagen
+            // Modo texto: no usamos imagen
+            // Para mantener compatibilidad, se muestra el texto con el diseño antiguo
+            // Pero aquí solo mejoramos la imagen, así que si es texto, mostramos el texto normal
             const textos = data.publicidad.textos || [
-                { texto: data.publicidad.contenido, fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
-                { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
-                { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
+                { texto: data.publicidad.contenido, fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' }
             ];
             let html = '';
             textos.forEach((t, idx) => {
@@ -3143,36 +3256,65 @@
                 }
             });
             contenido.innerHTML = html || '<div class="texto-neon">¡Sin texto!</div>';
+            overlay.classList.add('active');
+            dispararConfeti(data.publicidad.efecto || 'confeti');
+            const duracion = (data.publicidad.duracion || 5) * 1000;
+            iniciarCronometro(duracion, cerrarBtn, tiempoRestante);
+            window._publicidadTimer = setTimeout(() => {
+                cerrarPublicidad();
+            }, duracion);
+            return;
         }
 
-        overlay.classList.add('active');
-        dispararConfeti(data.publicidad.efecto || 'confeti');
+        // Cargar imagen
+        img.src = urlImagen;
+        img.onload = function() {
+            spinner.style.display = 'none';
+            img.style.display = 'block';
+            overlay.classList.add('active');
+            // Disparar confeti
+            dispararConfeti(data.publicidad.efecto || 'confeti');
+            // Iniciar cronómetro
+            const duracion = (data.publicidad.duracion || 5) * 1000;
+            iniciarCronometro(duracion, cerrarBtn, tiempoRestante);
+            window._publicidadTimer = setTimeout(() => {
+                cerrarPublicidad();
+            }, duracion);
+        };
+        img.onerror = function() {
+            spinner.style.display = 'none';
+            // Si falla la imagen, mostrar un mensaje de error y cerrar
+            showToast('Error al cargar la imagen publicitaria');
+            overlay.classList.remove('active');
+        };
+    }
 
-        // Iniciar el círculo de progreso
-        const duracion = (data.publicidad.duracion || 5) * 1000;
-        const circle = document.getElementById('progressCircle');
-        if (circle) {
-            const circumference = 2 * Math.PI * 20; // radio 20
-            circle.style.strokeDasharray = circumference;
-            circle.style.strokeDashoffset = 0;
-            const startTime = Date.now();
-
-            function actualizarProgreso() {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duracion, 1);
-                const offset = circumference * progress;
-                circle.style.strokeDashoffset = offset;
-                if (progress < 1) {
-                    requestAnimationFrame(actualizarProgreso);
+    function iniciarCronometro(duracionMs, cerrarBtn, tiempoRestante) {
+        const totalSegundos = duracionMs / 1000;
+        let segundosRestantes = totalSegundos;
+        const actualizar = () => {
+            const porcentaje = (segundosRestantes / totalSegundos) * 100;
+            const offset = 176 - (176 * porcentaje / 100);
+            const progressCircle = cerrarBtn.querySelector('.progress');
+            if (progressCircle) {
+                progressCircle.style.strokeDashoffset = offset;
+            }
+            if (tiempoRestante) {
+                tiempoRestante.textContent = Math.ceil(segundosRestantes);
+            }
+            segundosRestantes -= 0.5;
+            if (segundosRestantes <= 0) {
+                clearInterval(publicidadTimer);
+                publicidadTimer = null;
+                if (tiempoRestante) tiempoRestante.textContent = '0';
+                const progressCircle = cerrarBtn.querySelector('.progress');
+                if (progressCircle) {
+                    progressCircle.style.strokeDashoffset = 0;
                 }
             }
-            requestAnimationFrame(actualizarProgreso);
-        }
-
-        if (window._publicidadTimer) clearTimeout(window._publicidadTimer);
-        window._publicidadTimer = setTimeout(() => {
-            cerrarPublicidad();
-        }, duracion);
+        };
+        actualizar();
+        publicidadTimer = setInterval(actualizar, 500);
     }
 
     function cerrarPublicidad() {
@@ -3182,6 +3324,15 @@
             clearTimeout(window._publicidadTimer);
             window._publicidadTimer = null;
         }
+        if (publicidadTimer) {
+            clearInterval(publicidadTimer);
+            publicidadTimer = null;
+        }
+        // Ocultar imagen y spinner
+        const img = document.getElementById('pubImagen');
+        const spinner = document.getElementById('pubSpinner');
+        if (img) img.style.display = 'none';
+        if (spinner) spinner.style.display = 'none';
     }
 
     function dispararConfeti(effectName) {
@@ -3252,7 +3403,206 @@
     }
 
     // ============================================================
-    //  EVENTO DE CLIC LARGO EN EL TÍTULO PARA ACCESO ADMIN
+    //  ADMIN - Sección Publicidad (con lista de imágenes)
+    // ============================================================
+    function agregarSeccionPublicidad() {
+        if (!isAdmin) return;
+        const modal = document.getElementById('adminMainModal');
+        let container = document.getElementById('publicidadAdminContainer');
+        if (container) return;
+
+        const backupDiv = modal.querySelector('.modal > div:last-child');
+        if (!backupDiv) return;
+
+        container = document.createElement('div');
+        container.id = 'publicidadAdminContainer';
+        container.style.cssText = 'margin-top:15px; padding:15px; background:var(--input-bg); border-radius:var(--radius); border:1px solid var(--border);';
+        const pub = data.publicidad;
+        const textos = pub.textos || [
+            { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
+            { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
+            { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
+        ];
+        let imagenesList = '';
+        const imagenes = pub.imagenes || [];
+        if (imagenes.length > 0) {
+            imagenesList = imagenes.map((url, idx) => `
+                <div class="pub-imagen-item">
+                    <input type="url" class="pub-imagen-url" value="${url}" placeholder="URL de imagen">
+                    <button class="pub-eliminar-imagen" data-idx="${idx}">✕</button>
+                </div>
+            `).join('');
+        } else {
+            imagenesList = `<div class="pub-imagen-item"><input type="url" class="pub-imagen-url" value="" placeholder="URL de imagen"><button class="pub-eliminar-imagen" style="display:none;">✕</button></div>`;
+        }
+
+        let html = `
+            <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-bullhorn"></i> Publicidad</h3>
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:10px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                    <input type="checkbox" id="pubActivo" ${pub.activo ? 'checked' : ''}> Activar
+                </label>
+                <select id="pubTipo" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                    <option value="texto" ${pub.tipo === 'texto' ? 'selected' : ''}>Texto</option>
+                    <option value="imagen" ${pub.tipo === 'imagen' ? 'selected' : ''}>Imagen</option>
+                </select>
+                <input type="text" id="pubContenido" value="${pub.contenido}" placeholder="Texto o URL de imagen" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <label style="display:flex; align-items:center; gap:4px;">Duración (seg): <input type="number" id="pubDuracion" value="${pub.duracion}" style="width:60px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);"></label>
+                <select id="pubEfecto" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                    ${Object.keys(EFECTOS_CONFETI).map(e => `<option value="${e}" ${pub.efecto === e ? 'selected' : ''}>${e}</option>`).join('')}
+                </select>
+                <button onclick="guardarPublicidad()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Guardar</button>
+            </div>
+            <div id="pubImagenesContainer" style="margin-top:8px;">
+                <label style="font-weight:600;">Lista de imágenes (solo para tipo Imagen):</label>
+                <div class="pub-imagenes-lista" id="pubImagenesLista">
+                    ${imagenesList}
+                </div>
+                <button class="pub-agregar-imagen" id="pubAgregarImagen"><i class="fas fa-plus"></i> Agregar imagen</button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px; display:none;" id="pubTextosContainer">
+                <label style="font-weight:600;">Textos (hasta 3 líneas):</label>
+                ${[0,1,2].map(i => `
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                        <input type="text" class="pub-texto" data-idx="${i}" value="${textos[i]?.texto || ''}" placeholder="Texto ${i+1}" style="flex:2; min-width:120px; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                        <select class="pub-fuente" data-idx="${i}" style="padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                            ${['Arial','Verdana','Georgia','Courier New','Impact','Comic Sans MS','Times New Roman'].map(f => `<option value="${f}" ${textos[i]?.fuente === f ? 'selected' : ''}>${f}</option>`).join('')}
+                        </select>
+                        <input type="number" class="pub-tamano" data-idx="${i}" value="${textos[i]?.tamaño || 36}" placeholder="Tamaño" style="width:70px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                        <input type="color" class="pub-color" data-idx="${i}" value="${textos[i]?.color || '#ffffff'}" style="width:40px; height:40px; padding:0; border-radius:50%; border:1px solid var(--border);">
+                        <input type="text" class="pub-fondo" data-idx="${i}" value="${textos[i]?.fondo || 'transparente'}" placeholder="Fondo (color o transparente)" style="width:100px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                    </div>
+                `).join('')}
+            </div>
+            <p style="margin-top:8px; font-size:0.9rem; opacity:0.7;">Al activar, se mostrará al cargar la página con el efecto seleccionado.</p>
+        `;
+        container.innerHTML = html;
+        backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
+
+        // Eventos para agregar/eliminar imágenes
+        const agregarBtn = container.querySelector('#pubAgregarImagen');
+        if (agregarBtn) {
+            agregarBtn.addEventListener('click', function() {
+                const lista = document.getElementById('pubImagenesLista');
+                const item = document.createElement('div');
+                item.className = 'pub-imagen-item';
+                item.innerHTML = `
+                    <input type="url" class="pub-imagen-url" value="" placeholder="URL de imagen">
+                    <button class="pub-eliminar-imagen">✕</button>
+                `;
+                lista.appendChild(item);
+                // Evento eliminar para el nuevo botón
+                const elimBtn = item.querySelector('.pub-eliminar-imagen');
+                elimBtn.addEventListener('click', function() {
+                    if (lista.children.length > 1) {
+                        item.remove();
+                    } else {
+                        showToast('Debe quedar al menos un campo de imagen.');
+                    }
+                });
+            });
+        }
+
+        // Eventos para eliminar imágenes existentes
+        container.querySelectorAll('.pub-eliminar-imagen').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const lista = document.getElementById('pubImagenesLista');
+                const items = lista.querySelectorAll('.pub-imagen-item');
+                if (items.length > 1) {
+                    this.closest('.pub-imagen-item').remove();
+                } else {
+                    showToast('Debe quedar al menos un campo de imagen.');
+                }
+            });
+        });
+
+        // Mostrar/ocultar sección según tipo
+        const tipoSelect = document.getElementById('pubTipo');
+        const imagenContainer = document.getElementById('pubImagenesContainer');
+        const textoContainer = document.getElementById('pubTextosContainer');
+        if (tipoSelect && imagenContainer && textoContainer) {
+            const toggle = () => {
+                if (tipoSelect.value === 'imagen') {
+                    imagenContainer.style.display = 'block';
+                    textoContainer.style.display = 'none';
+                } else {
+                    imagenContainer.style.display = 'none';
+                    textoContainer.style.display = 'block';
+                }
+            };
+            tipoSelect.addEventListener('change', toggle);
+            toggle();
+        }
+    }
+
+    async function guardarPublicidad() {
+        if (!isAdmin) {
+            showToast('Solo el administrador puede guardar configuración de publicidad.');
+            return;
+        }
+        const activo = document.getElementById('pubActivo').checked;
+        const tipo = document.getElementById('pubTipo').value;
+        const contenido = document.getElementById('pubContenido').value.trim();
+        const duracion = parseInt(document.getElementById('pubDuracion').value) || 5;
+        const efecto = document.getElementById('pubEfecto').value;
+
+        // Obtener lista de imágenes
+        const imagenesUrls = [];
+        document.querySelectorAll('.pub-imagen-url').forEach(input => {
+            const url = input.value.trim();
+            if (url) imagenesUrls.push(url);
+        });
+
+        const textos = [];
+        document.querySelectorAll('.pub-texto').forEach(inp => {
+            const idx = parseInt(inp.dataset.idx);
+            const texto = inp.value.trim();
+            const fuente = document.querySelector(`.pub-fuente[data-idx="${idx}"]`).value;
+            const tamaño = document.querySelector(`.pub-tamano[data-idx="${idx}"]`).value || 36;
+            const color = document.querySelector(`.pub-color[data-idx="${idx}"]`).value;
+            const fondo = document.querySelector(`.pub-fondo[data-idx="${idx}"]`).value.trim() || 'transparente';
+            textos[idx] = { texto, fuente, tamaño, color, fondo };
+        });
+
+        if (tipo === 'texto' && textos.every(t => !t.texto)) {
+            showToast('Al menos un texto debe tener contenido.');
+            return;
+        }
+        if (tipo === 'imagen' && imagenesUrls.length === 0) {
+            showToast('Debe agregar al menos una URL de imagen.');
+            return;
+        }
+        if (tipo === 'imagen') {
+            // Validar URLs
+            for (let url of imagenesUrls) {
+                if (!url.match(/^https?:\/\/.+/)) {
+                    showToast('URL de imagen inválida: ' + url);
+                    return;
+                }
+            }
+        }
+
+        data.publicidad = {
+            activo,
+            tipo,
+            contenido: tipo === 'imagen' ? (imagenesUrls[0] || '') : (textos[0]?.texto || ''),
+            duracion,
+            imagenes: tipo === 'imagen' ? imagenesUrls : [],
+            efecto,
+            textos
+        };
+        await saveData();
+        showToast('Configuración de publicidad guardada.');
+        if (activo) {
+            cerrarPublicidad();
+            setTimeout(() => mostrarPublicidad(), 300);
+        } else {
+            cerrarPublicidad();
+        }
+    }
+
+    // ============================================================
+    //  ADMIN ACCESO (clic largo en título)
     // ============================================================
     function initAdminAccess() {
         const titulo = document.getElementById('galeriaNombre');
@@ -3282,321 +3632,8 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN
+    //  FUNCIONES MODALES Y DE RENDER (reutilizadas)
     // ============================================================
-    function cerrarModalEdicion() {
-        closeModal('addLocalModal');
-    }
-
-    // ============================================================
-    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL
-    // ============================================================
-    function actualizarBotonesModal() {
-        const container = document.getElementById('modalBotones');
-        if (!container) return;
-        container.innerHTML = '';
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'btn-icon close';
-        closeBtn.title = 'Cancelar';
-        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        closeBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            cerrarModalEdicion();
-        });
-        container.appendChild(closeBtn);
-
-        const saveBtn = document.createElement('button');
-        saveBtn.type = 'button';
-        saveBtn.className = 'btn-icon save';
-        saveBtn.title = 'Guardar';
-        saveBtn.innerHTML = '<i class="fas fa-save"></i>';
-        saveBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const form = document.getElementById('localForm');
-            if (form) {
-                form.dispatchEvent(new Event('submit', { cancelable: true }));
-            }
-        });
-        container.appendChild(saveBtn);
-    }
-
-    // ============================================================
-    //  FUNCIONES PARA OVERLAY DE ESPERA
-    // ============================================================
-    function crearOverlayEspera() {
-        if (document.getElementById('loadingOverlay')) return;
-        const overlay = document.createElement('div');
-        overlay.id = 'loadingOverlay';
-        overlay.innerHTML = `
-            <div class="spinner"><i class="fas fa-hourglass-half"></i></div>
-            <div class="mensaje">Espere, se están guardando los cambios...</div>
-            <div class="sub-mensaje">No cierre esta ventana</div>
-        `;
-        document.body.appendChild(overlay);
-    }
-
-    function mostrarEspera() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function ocultarEspera() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    // ============================================================
-    //  DOCUMENT READY
-    // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        crearOverlayEspera();
-
-        initAdminAccess();
-
-        document.getElementById('searchNombre').addEventListener('input', filterLocales);
-        document.getElementById('searchRubro').addEventListener('change', filterLocales);
-        document.getElementById('searchNumero').addEventListener('change', filterLocales);
-        document.getElementById('searchUbicacion').addEventListener('change', filterLocales);
-        initOrderControls();
-        initThemeButtons();
-
-        document.getElementById('fFotoFile').addEventListener('change', function() {
-            procesarArchivoInput(this, document.getElementById('fFotoUrl'), 'Foto cargada');
-        });
-        document.getElementById('fLogoFile').addEventListener('change', function() {
-            procesarArchivoInput(this, document.getElementById('fLogoUrl'), 'Logo cargado');
-        });
-
-        const localForm = document.getElementById('localForm');
-        const newForm = localForm.cloneNode(true);
-        localForm.parentNode.replaceChild(newForm, localForm);
-
-        newForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            if (!isAdmin && !ownerLocalId) {
-                showToast('No tienes permisos para guardar cambios.');
-                return;
-            }
-
-            mostrarEspera();
-
-            const id = document.getElementById('editId').value;
-            const localExistente = data.locales.find(l => l.id === parseInt(id));
-            if (!localExistente) {
-                showToast('Local no encontrado');
-                ocultarEspera();
-                return;
-            }
-
-            let nombre = localExistente.nombre;
-            let rubro = localExistente.rubro;
-            let numero = localExistente.numeroLocal;
-            let ubicacion = localExistente.ubicacion;
-            let enAlquiler = localExistente.enAlquiler;
-            let inmobiliaria = localExistente.inmobiliaria;
-            let colorFondo = localExistente.colorFondo;
-            let descripcion = localExistente.descripcion;
-            let foto = localExistente.foto;
-            let logo = localExistente.logo;
-            let fotoFit = localExistente.fotoFit;
-            let fotoPosX = localExistente.fotoPosX;
-            let fotoPosY = localExistente.fotoPosY;
-            let logoFit = localExistente.logoFit;
-            let logoPosX = localExistente.logoPosX;
-            let logoPosY = localExistente.logoPosY;
-            let mostrarPagina = localExistente.mostrarPagina;
-
-            const intervalo = parseInt(document.getElementById('intervaloCarrusel').value) || 3;
-            const animacion = document.getElementById('animacionCarrusel').value || 'fade';
-
-            if (isAdmin) {
-                nombre = document.getElementById('fNombre').value.trim();
-                rubro = document.getElementById('fRubro').value;
-                numero = document.getElementById('fNumero').value.trim();
-                ubicacion = document.getElementById('fUbicacion').value;
-                enAlquiler = document.getElementById('fAlquiler').checked;
-                inmobiliaria = document.getElementById('fInmobiliaria').value.trim();
-                colorFondo = document.getElementById('fColorFondo').value;
-                descripcion = document.getElementById('fDescripcion').value.trim();
-                mostrarPagina = document.getElementById('fMostrarPagina').checked;
-                let fotoFile = document.getElementById('fFotoFile').files[0];
-                if (fotoFile) {
-                    try {
-                        foto = await comprimirImagen(fotoFile);
-                    } catch (err) {
-                        showToast('Error al procesar foto');
-                        ocultarEspera();
-                        return;
-                    }
-                } else {
-                    foto = document.getElementById('fFotoUrl').value.trim() || localExistente.foto;
-                }
-                let logoFile = document.getElementById('fLogoFile').files[0];
-                if (logoFile) {
-                    try {
-                        logo = await comprimirImagen(logoFile);
-                    } catch (err) {
-                        showToast('Error al procesar logo');
-                        ocultarEspera();
-                        return;
-                    }
-                } else {
-                    logo = document.getElementById('fLogoUrl').value.trim() || localExistente.logo;
-                }
-                fotoFit = document.getElementById('fFotoFit').value;
-                fotoPosX = parseInt(document.getElementById('fFotoPosX').value);
-                fotoPosY = parseInt(document.getElementById('fFotoPosY').value);
-                logoFit = document.getElementById('fLogoFit').value;
-                logoPosX = parseInt(document.getElementById('fLogoPosX').value);
-                logoPosY = parseInt(document.getElementById('fLogoPosY').value);
-            }
-
-            const whatsapp = document.getElementById('fWhatsapp').value.trim();
-            const web = document.getElementById('fWeb').value.trim();
-            const imagenesExtra = obtenerImagenesExtra();
-
-            const horarios = {};
-            const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
-            dias.forEach(d => {
-                const ini = document.getElementById(`h${capitalize(d)}Ini`).value;
-                const fin = document.getElementById(`h${capitalize(d)}Fin`).value;
-                const cerrado = document.getElementById(`h${capitalize(d)}Cerrado`).checked;
-                horarios[d] = { ini, fin, cerrado };
-            });
-            horarios.feriados = document.getElementById('hFeriados').value.trim();
-
-            const localData = {
-                id: parseInt(id),
-                nombre,
-                rubro,
-                numeroLocal: numero,
-                ubicacion,
-                enAlquiler,
-                inmobiliaria,
-                descripcion,
-                whatsapp,
-                web,
-                colorFondo,
-                foto: foto || DEFAULT_IMAGE_URL,
-                logo: logo || null,
-                fotoFit,
-                fotoPosX,
-                fotoPosY,
-                logoFit,
-                logoPosX,
-                logoPosY,
-                horarios,
-                visitas: localExistente.visitas || 0,
-                mostrarPagina,
-                imagenesExtra: imagenesExtra,
-                intervaloCarrusel: intervalo,
-                animacionCarrusel: animacion
-            };
-
-            const index = data.locales.findIndex(l => l.id === parseInt(id));
-            if (index !== -1) {
-                data.locales[index] = localData;
-            } else {
-                showToast('Error: local no encontrado');
-                ocultarEspera();
-                return;
-            }
-
-            try {
-                await saveData();
-                renderAll();
-                document.getElementById('localForm').reset();
-                document.getElementById('editId').value = '';
-                closeModal('addLocalModal');
-                showToast('Local actualizado');
-                updateRubroSelectInForm();
-                updateNumeroSelect();
-            } catch (error) {
-                showToast('Error al guardar los cambios');
-                console.error(error);
-            } finally {
-                ocultarEspera();
-            }
-        });
-
-        loadData().then(() => {
-            restaurarEstadosTemporales();
-            agregarBotonCambiarClave();
-            const observer = new MutationObserver(() => {
-                if (document.getElementById('adminMainModal').classList.contains('active')) {
-                    agregarBotonCambiarClave();
-                    agregarBotonComunicados();
-                    renderVisitasPanel();
-                    agregarEditorVisitasTotales();
-                    agregarSeccionPublicidad();
-                }
-            });
-            observer.observe(document.getElementById('adminMainModal'), { attributes: true, attributeFilter: ['class'] });
-        });
-
-        document.getElementById('toggleAdminBtn').addEventListener('click', function() {
-            if (!isAdmin) {
-                openModal('loginModal');
-                document.getElementById('loginClave').value = '';
-            } else {
-                openModal('adminMainModal');
-            }
-        });
-
-        document.getElementById('logoutBtn').addEventListener('click', logoutAdmin);
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('active');
-                }
-            });
-        });
-    });
-
-    // ============================================================
-    //  RESTO DE FUNCIONES (sin cambios relevantes)
-    // ============================================================
-    function applyTheme(theme) {
-        const body = document.body;
-        body.className = '';
-        if (theme === 'dark') body.classList.add('dark');
-        else if (theme === 'colorful') body.classList.add('colorful');
-        else if (theme === 'festive') body.classList.add('festive');
-        data.theme = theme;
-        saveData();
-        document.getElementById('themeStatus').textContent = `Tema actual: ${theme}`;
-    }
-
-    function detectFestiveTheme() {
-        const now = new Date();
-        const mes = now.getMonth() + 1;
-        const dia = now.getDate();
-        if ((mes === 12 && dia >= 20 && dia <= 31) || (mes === 1 && dia <= 2)) return 'festive';
-        return null;
-    }
-
-    function checkAutoTheme() {
-        if (data.autoTheme) {
-            const festive = detectFestiveTheme();
-            if (festive) {
-                applyTheme(festive);
-                document.getElementById('themeStatus').textContent += ' (festivo automático)';
-            } else {
-                if (data.theme !== 'festive') applyTheme(data.theme);
-                else applyTheme('default');
-            }
-        } else {
-            applyTheme(data.theme);
-        }
-    }
-
     function openModal(id) {
         document.getElementById(id).classList.add('active');
         if (id === 'rubrosModal') renderRubrosList();
@@ -3645,6 +3682,43 @@
 
     function closeModal(id) {
         document.getElementById(id).classList.remove('active');
+    }
+
+    function actualizarBotonesModal() {
+        const container = document.getElementById('modalBotones');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-icon close';
+        closeBtn.title = 'Cancelar';
+        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            cerrarModalEdicion();
+        });
+        container.appendChild(closeBtn);
+
+        const saveBtn = document.createElement('button');
+        saveBtn.type = 'button';
+        saveBtn.className = 'btn-icon save';
+        saveBtn.title = 'Guardar';
+        saveBtn.innerHTML = '<i class="fas fa-save"></i>';
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const form = document.getElementById('localForm');
+            if (form) {
+                form.dispatchEvent(new Event('submit', { cancelable: true }));
+            }
+        });
+        container.appendChild(saveBtn);
+    }
+
+    function cerrarModalEdicion() {
+        closeModal('addLocalModal');
     }
 
     function inyectarControlesCarrusel() {
@@ -4467,6 +4541,40 @@
         });
     }
 
+    function applyTheme(theme) {
+        const body = document.body;
+        body.className = '';
+        if (theme === 'dark') body.classList.add('dark');
+        else if (theme === 'colorful') body.classList.add('colorful');
+        else if (theme === 'festive') body.classList.add('festive');
+        data.theme = theme;
+        saveData();
+        document.getElementById('themeStatus').textContent = `Tema actual: ${theme}`;
+    }
+
+    function detectFestiveTheme() {
+        const now = new Date();
+        const mes = now.getMonth() + 1;
+        const dia = now.getDate();
+        if ((mes === 12 && dia >= 20 && dia <= 31) || (mes === 1 && dia <= 2)) return 'festive';
+        return null;
+    }
+
+    function checkAutoTheme() {
+        if (data.autoTheme) {
+            const festive = detectFestiveTheme();
+            if (festive) {
+                applyTheme(festive);
+                document.getElementById('themeStatus').textContent += ' (festivo automático)';
+            } else {
+                if (data.theme !== 'festive') applyTheme(data.theme);
+                else applyTheme('default');
+            }
+        } else {
+            applyTheme(data.theme);
+        }
+    }
+
     // ============================================================
     //  SHARE
     // ============================================================
@@ -4616,173 +4724,6 @@
         await saveData();
         actualizarNumeroVisitante(nuevo, true);
         showToast('Contador actualizado a ' + nuevo);
-    }
-
-    // ============================================================
-    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (con múltiples imágenes)
-    // ============================================================
-    function agregarSeccionPublicidad() {
-        if (!isAdmin) return;
-        const modal = document.getElementById('adminMainModal');
-        let container = document.getElementById('publicidadAdminContainer');
-        if (container) return;
-
-        const backupDiv = modal.querySelector('.modal > div:last-child');
-        if (!backupDiv) return;
-
-        container = document.createElement('div');
-        container.id = 'publicidadAdminContainer';
-        container.style.cssText = 'margin-top:15px; padding:15px; background:var(--input-bg); border-radius:var(--radius); border:1px solid var(--border);';
-        const pub = data.publicidad;
-        const textos = pub.textos || [
-            { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
-            { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
-            { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-        ];
-
-        // Lista de imágenes
-        const imagenes = pub.imagenes || [];
-
-        let html = `
-            <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-bullhorn"></i> Publicidad</h3>
-            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:10px;">
-                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                    <input type="checkbox" id="pubActivo" ${pub.activo ? 'checked' : ''}> Activar
-                </label>
-                <select id="pubTipo" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                    <option value="texto" ${pub.tipo === 'texto' ? 'selected' : ''}>Texto</option>
-                    <option value="imagen" ${pub.tipo === 'imagen' ? 'selected' : ''}>Imagen</option>
-                </select>
-                <input type="text" id="pubContenido" value="${pub.contenido}" placeholder="Texto o URL de imagen" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                <label style="display:flex; align-items:center; gap:4px;">Duración (seg): <input type="number" id="pubDuracion" value="${pub.duracion}" style="width:60px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);"></label>
-                <select id="pubEfecto" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                    ${Object.keys(EFECTOS_CONFETI).map(e => `<option value="${e}" ${pub.efecto === e ? 'selected' : ''}>${e}</option>`).join('')}
-                </select>
-                <button onclick="guardarPublicidad()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Guardar</button>
-            </div>
-            <div style="margin-top:8px; border-top:1px solid var(--border); padding-top:10px;">
-                <label style="font-weight:600;">Imágenes (solo para tipo Imagen)</label>
-                <div id="listaImagenesPublicidad" style="display:flex; flex-direction:column; gap:6px; margin:6px 0;">
-                    ${imagenes.map((url, idx) => `
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <input type="url" class="pub-img-url" value="${url}" placeholder="URL de imagen" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                            <button class="btn-remove-img" data-idx="${idx}" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;"><i class="fas fa-times"></i></button>
-                        </div>
-                    `).join('')}
-                </div>
-                <button id="agregarImgPublicidad" style="padding:4px 16px; border-radius:30px; border:1px solid var(--border); background:var(--primary-light); color:var(--primary); cursor:pointer; font-weight:600;"><i class="fas fa-plus"></i> Agregar imagen</button>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
-                <label style="font-weight:600;">Textos (hasta 3 líneas):</label>
-                ${[0,1,2].map(i => `
-                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                        <input type="text" class="pub-texto" data-idx="${i}" value="${textos[i]?.texto || ''}" placeholder="Texto ${i+1}" style="flex:2; min-width:120px; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                        <select class="pub-fuente" data-idx="${i}" style="padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                            ${['Arial','Verdana','Georgia','Courier New','Impact','Comic Sans MS','Times New Roman'].map(f => `<option value="${f}" ${textos[i]?.fuente === f ? 'selected' : ''}>${f}</option>`).join('')}
-                        </select>
-                        <input type="number" class="pub-tamano" data-idx="${i}" value="${textos[i]?.tamaño || 36}" placeholder="Tamaño" style="width:70px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                        <input type="color" class="pub-color" data-idx="${i}" value="${textos[i]?.color || '#ffffff'}" style="width:40px; height:40px; padding:0; border-radius:50%; border:1px solid var(--border);">
-                        <input type="text" class="pub-fondo" data-idx="${i}" value="${textos[i]?.fondo || 'transparente'}" placeholder="Fondo (color o transparente)" style="width:100px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                    </div>
-                `).join('')}
-            </div>
-            <p style="margin-top:8px; font-size:0.9rem; opacity:0.7;">Al activar, se mostrará al cargar la página con el efecto seleccionado.</p>
-        `;
-        container.innerHTML = html;
-        backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
-
-        // Event listeners para agregar/eliminar imágenes
-        document.getElementById('agregarImgPublicidad').addEventListener('click', function() {
-            const lista = document.getElementById('listaImagenesPublicidad');
-            const div = document.createElement('div');
-            div.style.cssText = 'display:flex; gap:8px; align-items:center;';
-            div.innerHTML = `
-                <input type="url" class="pub-img-url" placeholder="URL de imagen" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
-                <button class="btn-remove-img" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;"><i class="fas fa-times"></i></button>
-            `;
-            lista.appendChild(div);
-            // Asignar evento eliminar al nuevo botón
-            div.querySelector('.btn-remove-img').addEventListener('click', function() {
-                if (lista.children.length > 1) {
-                    div.remove();
-                } else {
-                    showToast('Debe quedar al menos una imagen');
-                }
-            });
-        });
-
-        // Asignar eventos a los botones eliminar existentes
-        document.querySelectorAll('#listaImagenesPublicidad .btn-remove-img').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const lista = document.getElementById('listaImagenesPublicidad');
-                if (lista.children.length > 1) {
-                    this.closest('div').remove();
-                } else {
-                    showToast('Debe quedar al menos una imagen');
-                }
-            });
-        });
-    }
-
-    async function guardarPublicidad() {
-        if (!isAdmin) {
-            showToast('Solo el administrador puede guardar configuración de publicidad.');
-            return;
-        }
-        const activo = document.getElementById('pubActivo').checked;
-        const tipo = document.getElementById('pubTipo').value;
-        const contenido = document.getElementById('pubContenido').value.trim();
-        const duracion = parseInt(document.getElementById('pubDuracion').value) || 5;
-        const efecto = document.getElementById('pubEfecto').value;
-
-        // Obtener lista de imágenes
-        const imagenInputs = document.querySelectorAll('#listaImagenesPublicidad .pub-img-url');
-        const imagenes = [];
-        imagenInputs.forEach(inp => {
-            const url = inp.value.trim();
-            if (url) imagenes.push(url);
-        });
-
-        // Obtener textos
-        const textos = [];
-        document.querySelectorAll('.pub-texto').forEach(inp => {
-            const idx = parseInt(inp.dataset.idx);
-            const texto = inp.value.trim();
-            const fuente = document.querySelector(`.pub-fuente[data-idx="${idx}"]`).value;
-            const tamaño = document.querySelector(`.pub-tamano[data-idx="${idx}"]`).value || 36;
-            const color = document.querySelector(`.pub-color[data-idx="${idx}"]`).value;
-            const fondo = document.querySelector(`.pub-fondo[data-idx="${idx}"]`).value.trim() || 'transparente';
-            textos[idx] = { texto, fuente, tamaño, color, fondo };
-        });
-
-        // Validaciones
-        if (tipo === 'imagen' && imagenes.length === 0) {
-            showToast('Agrega al menos una imagen.');
-            return;
-        }
-        if (tipo === 'texto' && textos.every(t => !t.texto)) {
-            showToast('Al menos un texto debe tener contenido.');
-            return;
-        }
-
-        // Si tipo imagen, usamos la primera imagen como contenido por compatibilidad, pero no es necesario para la visualización
-        data.publicidad = {
-            activo,
-            tipo,
-            contenido: tipo === 'imagen' ? (imagenes[0] || '') : textos[0]?.texto || '',
-            duracion,
-            imagenes: imagenes,
-            efecto,
-            textos
-        };
-        await saveData();
-        showToast('Configuración de publicidad guardada.');
-        if (activo) {
-            cerrarPublicidad();
-            setTimeout(() => mostrarPublicidad(), 300);
-        } else {
-            cerrarPublicidad();
-        }
     }
 
     // ============================================================
@@ -5081,6 +5022,7 @@
             if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
             if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
         });
+        if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
         await saveData();
         renderAll();
         closeModal('restoreModal');
@@ -5173,6 +5115,7 @@
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
+                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 await saveData();
                 renderAll();
                 showToast('Datos importados correctamente');
@@ -5257,10 +5200,10 @@
                     });
                     if (data.visitasTotales === undefined) data.visitasTotales = 0;
                     if (!data.publicidad) data.publicidad = defaultData.publicidad;
-                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
