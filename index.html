@@ -1223,7 +1223,7 @@
         #publicidadOverlay .imagen-publicidad {
             width: 100%;
             height: 100%;
-            object-fit: contain;  /* Ajusta sin deformar */
+            object-fit: contain;
             max-width: 100%;
             max-height: 100%;
         }
@@ -1521,6 +1521,46 @@
         @media (max-width: 768px) {
             #loadingOverlay .spinner { font-size: 3.5rem; }
             #loadingOverlay { font-size: 1.4rem; }
+        }
+
+        /* ===== EFECTOS PARA LA IMAGEN DE PUBLICIDAD ===== */
+        .pub-img {
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform, opacity;
+        }
+        /* Explosión */
+        .pub-effect-explosion {
+            animation: explosion 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes explosion {
+            0% { transform: scale(0.1) rotate(-5deg); opacity: 0; filter: blur(10px); }
+            40% { transform: scale(1.2) rotate(2deg); opacity: 1; filter: blur(0); }
+            70% { transform: scale(0.95) rotate(-1deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        /* Zoom */
+        .pub-effect-zoom {
+            animation: zoomInPub 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes zoomInPub {
+            0% { transform: scale(0.2); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        /* Rotación */
+        .pub-effect-rotate {
+            animation: rotateIn 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes rotateIn {
+            0% { transform: rotate(-180deg) scale(0.3); opacity: 0; }
+            100% { transform: rotate(0deg) scale(1); opacity: 1; }
+        }
+        /* Desvanecido */
+        .pub-effect-fade {
+            animation: fadeInPub 0.6s ease forwards;
+        }
+        @keyframes fadeInPub {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
@@ -1975,8 +2015,9 @@
             tipo: 'texto',
             contenido: '¡Gran Liquidación!',
             duracion: 5,
-            imagenes: [],           // LISTA DE URLS DE IMAGEN
+            imagenes: [],
             efecto: 'confeti',
+            efectoImagen: 'explosion', // nuevo campo
             textos: [
                 { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
@@ -2218,6 +2259,7 @@
                 duracion: 5,
                 imagenes: [],
                 efecto: 'confeti',
+                efectoImagen: 'explosion',
                 textos: [
                     { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                     { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
@@ -2534,6 +2576,7 @@
                 if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                     data.publicidad.textos = defaultData.publicidad.textos;
                 }
+                if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
                 const defaultData = getDefaultData();
@@ -2566,6 +2609,7 @@
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = getDefaultData().publicidad.textos;
                     }
+                    if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                     if (!isAdmin) {
@@ -2624,6 +2668,7 @@
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
+                    if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
@@ -2965,7 +3010,7 @@
     }
 
     // ============================================================
-    //  PUBLICIDAD - CON MÚLTIPLES IMÁGENES Y CÍRCULO DE PROGRESO
+    //  PUBLICIDAD - CON MÚLTIPLES IMÁGENES Y EFECTOS
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -3093,7 +3138,6 @@
     function mostrarPublicidad() {
         if (!data.publicidad || !data.publicidad.activo) return;
 
-        // Si es tipo imagen pero no hay imágenes, no mostrar
         if (data.publicidad.tipo === 'imagen' && (!data.publicidad.imagenes || data.publicidad.imagenes.length === 0)) {
             return;
         }
@@ -3119,7 +3163,6 @@
         }
 
         const contenido = document.getElementById('publicidadContenido');
-        // Seleccionar imagen aleatoria
         let imagenUrl = '';
         if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
             const randomIndex = Math.floor(Math.random() * data.publicidad.imagenes.length);
@@ -3127,9 +3170,11 @@
         }
 
         if (imagenUrl) {
-            contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad" onerror="this.style.display='none'">`;
+            // Aplicar efecto de imagen
+            const efecto = data.publicidad.efectoImagen || 'explosion';
+            contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad pub-img pub-effect-${efecto}" onerror="this.style.display='none'">`;
         } else {
-            // Fallback a texto si no hay imagen
+            // Fallback a texto
             const textos = data.publicidad.textos || [
                 { texto: data.publicidad.contenido, fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
@@ -3148,11 +3193,10 @@
         overlay.classList.add('active');
         dispararConfeti(data.publicidad.efecto || 'confeti');
 
-        // Iniciar el círculo de progreso
         const duracion = (data.publicidad.duracion || 5) * 1000;
         const circle = document.getElementById('progressCircle');
         if (circle) {
-            const circumference = 2 * Math.PI * 20; // radio 20
+            const circumference = 2 * Math.PI * 20;
             circle.style.strokeDasharray = circumference;
             circle.style.strokeDashoffset = 0;
             const startTime = Date.now();
@@ -4619,7 +4663,7 @@
     }
 
     // ============================================================
-    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (con múltiples imágenes)
+    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (con múltiples imágenes y efectos)
     // ============================================================
     function agregarSeccionPublicidad() {
         if (!isAdmin) return;
@@ -4640,7 +4684,6 @@
             { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
         ];
 
-        // Lista de imágenes
         const imagenes = pub.imagenes || [];
 
         let html = `
@@ -4658,6 +4701,13 @@
                 <select id="pubEfecto" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                     ${Object.keys(EFECTOS_CONFETI).map(e => `<option value="${e}" ${pub.efecto === e ? 'selected' : ''}>${e}</option>`).join('')}
                 </select>
+                <!-- Nuevo selector de efecto de imagen (visible solo cuando tipo es imagen) -->
+                <select id="pubEfectoImagen" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color); display:${pub.tipo === 'imagen' ? 'inline-block' : 'none'};">
+                    <option value="explosion" ${pub.efectoImagen === 'explosion' ? 'selected' : ''}>🧨 Explosión</option>
+                    <option value="zoom" ${pub.efectoImagen === 'zoom' ? 'selected' : ''}>🔍 Zoom</option>
+                    <option value="rotate" ${pub.efectoImagen === 'rotate' ? 'selected' : ''}>🔄 Rotación</option>
+                    <option value="fade" ${pub.efectoImagen === 'fade' ? 'selected' : ''}>🌫️ Desvanecido</option>
+                </select>
                 <button onclick="guardarPublicidad()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Guardar</button>
             </div>
             <div style="margin-top:8px; border-top:1px solid var(--border); padding-top:10px;">
@@ -4665,7 +4715,9 @@
                 <div id="listaImagenesPublicidad" style="display:flex; flex-direction:column; gap:6px; margin:6px 0;">
                     ${imagenes.map((url, idx) => `
                         <div style="display:flex; gap:8px; align-items:center;">
-                            <input type="url" class="pub-img-url" value="${url}" placeholder="URL de imagen" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                            <input type="url" class="pub-img-url" value="${url}" placeholder="URL de imagen" style="flex:2; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                            <input type="file" class="pub-img-file" accept="image/*" style="flex:1; min-width:100px; padding:4px;">
+                            <span class="pub-upload-status" style="font-size:0.8rem; color:var(--primary);"></span>
                             <button class="btn-remove-img" data-idx="${idx}" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;"><i class="fas fa-times"></i></button>
                         </div>
                     `).join('')}
@@ -4691,17 +4743,29 @@
         container.innerHTML = html;
         backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
 
-        // Event listeners para agregar/eliminar imágenes
+        // Mostrar/ocultar selector de efecto de imagen según tipo
+        document.getElementById('pubTipo').addEventListener('change', function() {
+            const efectoImg = document.getElementById('pubEfectoImagen');
+            if (this.value === 'imagen') {
+                efectoImg.style.display = 'inline-block';
+            } else {
+                efectoImg.style.display = 'none';
+            }
+        });
+
+        // Agregar imagen (con file input para compresión)
         document.getElementById('agregarImgPublicidad').addEventListener('click', function() {
             const lista = document.getElementById('listaImagenesPublicidad');
             const div = document.createElement('div');
             div.style.cssText = 'display:flex; gap:8px; align-items:center;';
             div.innerHTML = `
-                <input type="url" class="pub-img-url" placeholder="URL de imagen" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <input type="url" class="pub-img-url" placeholder="URL de imagen" style="flex:2; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <input type="file" class="pub-img-file" accept="image/*" style="flex:1; min-width:100px; padding:4px;">
+                <span class="pub-upload-status" style="font-size:0.8rem; color:var(--primary);"></span>
                 <button class="btn-remove-img" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;"><i class="fas fa-times"></i></button>
             `;
             lista.appendChild(div);
-            // Asignar evento eliminar al nuevo botón
+            // Evento para eliminar
             div.querySelector('.btn-remove-img').addEventListener('click', function() {
                 if (lista.children.length > 1) {
                     div.remove();
@@ -4709,9 +4773,25 @@
                     showToast('Debe quedar al menos una imagen');
                 }
             });
+            // Evento para comprimir archivo
+            div.querySelector('.pub-img-file').addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const status = div.querySelector('.pub-upload-status');
+                status.textContent = '⏳ Comprimiendo...';
+                try {
+                    const base64 = await comprimirImagen(file, 800, 0.7);
+                    div.querySelector('.pub-img-url').value = base64;
+                    status.textContent = '✅';
+                    showToast('Imagen comprimida y cargada');
+                } catch (err) {
+                    status.textContent = '❌ Error';
+                    showToast('Error al procesar imagen');
+                }
+            });
         });
 
-        // Asignar eventos a los botones eliminar existentes
+        // Asignar eventos a los botones eliminar existentes y a los inputs de archivo
         document.querySelectorAll('#listaImagenesPublicidad .btn-remove-img').forEach(btn => {
             btn.addEventListener('click', function() {
                 const lista = document.getElementById('listaImagenesPublicidad');
@@ -4719,6 +4799,24 @@
                     this.closest('div').remove();
                 } else {
                     showToast('Debe quedar al menos una imagen');
+                }
+            });
+        });
+        document.querySelectorAll('#listaImagenesPublicidad .pub-img-file').forEach((fileInput, idx) => {
+            fileInput.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const div = this.closest('div');
+                const status = div.querySelector('.pub-upload-status');
+                status.textContent = '⏳ Comprimiendo...';
+                try {
+                    const base64 = await comprimirImagen(file, 800, 0.7);
+                    div.querySelector('.pub-img-url').value = base64;
+                    status.textContent = '✅';
+                    showToast('Imagen comprimida y cargada');
+                } catch (err) {
+                    status.textContent = '❌ Error';
+                    showToast('Error al procesar imagen');
                 }
             });
         });
@@ -4734,8 +4832,9 @@
         const contenido = document.getElementById('pubContenido').value.trim();
         const duracion = parseInt(document.getElementById('pubDuracion').value) || 5;
         const efecto = document.getElementById('pubEfecto').value;
+        const efectoImagen = document.getElementById('pubEfectoImagen').value;
 
-        // Obtener lista de imágenes
+        // Obtener lista de imágenes (desde los campos URL, que pueden ser base64 o URLs)
         const imagenInputs = document.querySelectorAll('#listaImagenesPublicidad .pub-img-url');
         const imagenes = [];
         imagenInputs.forEach(inp => {
@@ -4765,7 +4864,6 @@
             return;
         }
 
-        // Si tipo imagen, usamos la primera imagen como contenido por compatibilidad, pero no es necesario para la visualización
         data.publicidad = {
             activo,
             tipo,
@@ -4773,6 +4871,7 @@
             duracion,
             imagenes: imagenes,
             efecto,
+            efectoImagen: tipo === 'imagen' ? efectoImagen : 'explosion',
             textos
         };
         await saveData();
@@ -5261,6 +5360,7 @@
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
+                    if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
