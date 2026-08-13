@@ -12,7 +12,7 @@
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        /* ===== ESTILOS BASE (sin cambios) ===== */
+        /* ===== ESTILOS BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -494,7 +494,6 @@
             pointer-events: none;
         }
 
-        /* Icono de tienda para acceso dueño */
         .store-icon {
             cursor: pointer;
             font-size: 1.2rem;
@@ -717,7 +716,7 @@
         .modal .btn-group .btn-danger:hover {
             transform: scale(1.05);
         }
-        /* ===== BOTONES ICONO GRANDES ===== */
+
         .btn-icon {
             background: var(--bg-card);
             border: 2px solid var(--border);
@@ -1193,34 +1192,37 @@
             font-style: italic;
         }
 
+        /* ===== PUBLICIDAD OVERLAY ===== */
         #publicidadOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.85);
             z-index: 99999;
             display: none;
             justify-content: center;
             align-items: center;
             pointer-events: none;
+            overflow: hidden;
         }
         #publicidadOverlay.active {
             display: flex;
             pointer-events: auto;
         }
         #publicidadOverlay .contenido {
-            text-align: center;
-            padding: 30px;
-            max-width: 90%;
-            max-height: 90%;
-            overflow: hidden;
-            animation: publicidadEntrada 0.6s ease;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        @keyframes publicidadEntrada {
-            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        #publicidadOverlay .imagen-publicidad {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
         #publicidadOverlay .texto-neon {
             font-weight: 900;
@@ -1234,12 +1236,6 @@
             padding: 4px 12px;
             border-radius: 8px;
         }
-        #publicidadOverlay .imagen-publicidad {
-            max-width: 80%;
-            max-height: 70vh;
-            border-radius: 20px;
-            box-shadow: 0 0 40px rgba(255,255,255,0.3);
-        }
         #publicidadOverlay .cerrar-publicidad {
             position: absolute;
             top: 20px;
@@ -1252,6 +1248,7 @@
             pointer-events: auto;
             background: none;
             border: none;
+            z-index: 10;
         }
         #publicidadOverlay .cerrar-publicidad:hover {
             opacity: 1;
@@ -1287,6 +1284,7 @@
             border-color: var(--primary);
             box-shadow: 0 0 8px var(--primary);
         }
+
         .carrusel-imagenes {
             position: relative;
             width: 100%;
@@ -1438,16 +1436,13 @@
             opacity: 1;
         }
 
-        /* Ocultar campos para dueño (excepto carrusel) */
         .owner-hidden {
             display: none !important;
         }
-        /* Asegurar que el carrusel siempre se muestre */
         #fieldCarrusel {
             display: block !important;
         }
 
-        /* ===== NUEVO ESTILO PARA OVERLAY DE ESPERA ===== */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -1491,6 +1486,59 @@
         @media (max-width: 768px) {
             #loadingOverlay .spinner { font-size: 3.5rem; }
             #loadingOverlay { font-size: 1.4rem; }
+        }
+
+        /* ===== ESTILOS PARA LA LISTA DE IMÁGENES EN PUBLICIDAD ===== */
+        .pub-imagenes-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 8px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+        .pub-imagen-item {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .pub-imagen-item input[type="url"] {
+            flex: 1;
+            min-width: 150px;
+        }
+        .pub-imagen-item button {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .pub-imagen-item button:hover {
+            transform: scale(1.1);
+        }
+        .pub-agregar-imagen {
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: var(--primary-light);
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+            margin-top: 4px;
+        }
+        .pub-agregar-imagen:hover {
+            background: var(--primary);
+            color: #fff;
         }
     </style>
 </head>
@@ -1547,7 +1595,7 @@
     <div id="loadingMsg">Cargando datos desde la nube...</div>
     <div class="grid" id="localsGrid" style="display:none;"></div>
 
-    <!-- ===== MODAL LOGIN (sin enlace de recuperación) ===== -->
+    <!-- ===== MODAL LOGIN ===== -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal">
             <h2><i class="fas fa-lock"></i> Acceso Administrador</h2>
@@ -1605,13 +1653,11 @@
             <form id="localForm">
                 <input type="hidden" id="editId" value="">
 
-                <!-- Sección: Nombre (siempre visible) -->
                 <div id="fieldNombre">
                     <label>Nombre *</label>
                     <input type="text" id="fNombre" required>
                 </div>
 
-                <!-- Sección: Rubro + botón editar (solo admin) -->
                 <div id="fieldRubro">
                     <label>Rubro *</label>
                     <div style="display:flex; gap:8px; align-items:center;">
@@ -1620,13 +1666,11 @@
                     </div>
                 </div>
 
-                <!-- Sección: Número de local (solo admin) -->
                 <div id="fieldNumero">
                     <label>Número de local *</label>
                     <input type="text" id="fNumero" required placeholder="Ej: S17, 12, A3">
                 </div>
 
-                <!-- Sección: Ubicación (solo admin) -->
                 <div id="fieldUbicacion">
                     <label>Ubicación</label>
                     <select id="fUbicacion">
@@ -1637,7 +1681,6 @@
                     </select>
                 </div>
 
-                <!-- Sección: Alquiler (solo admin) -->
                 <div id="fieldAlquiler">
                     <label>¿En alquiler?</label>
                     <div style="display:flex; align-items:center; gap:10px;">
@@ -1650,31 +1693,26 @@
                     </div>
                 </div>
 
-                <!-- Sección: WhatsApp (siempre visible para dueño y admin) -->
                 <div id="fieldWhatsapp">
                     <label>WhatsApp (con código país, ej: 5491112345678)</label>
                     <input type="text" id="fWhatsapp" placeholder="5491112345678">
                 </div>
 
-                <!-- Sección: Web (siempre visible para dueño y admin) -->
                 <div id="fieldWeb">
                     <label>Sitio web</label>
                     <input type="url" id="fWeb" placeholder="https://...">
                 </div>
 
-                <!-- Sección: Color de fondo (solo admin) -->
                 <div id="fieldColor">
                     <label>Color de fondo para logo</label>
                     <input type="color" id="fColorFondo" value="#2563eb">
                 </div>
 
-                <!-- Sección: Descripción (solo admin) -->
                 <div id="fieldDescripcion">
                     <label>Descripción</label>
                     <textarea id="fDescripcion" rows="2"></textarea>
                 </div>
 
-                <!-- Sección: Ajuste foto principal (solo admin) -->
                 <div id="fieldFotoAjuste">
                     <label>Ajuste de la foto principal</label>
                     <div class="image-adjust-group">
@@ -1701,7 +1739,6 @@
                     </div>
                 </div>
 
-                <!-- Sección: Ajuste logo (solo admin) -->
                 <div id="fieldLogoAjuste">
                     <label>Ajuste del logo</label>
                     <div class="image-adjust-group">
@@ -1728,7 +1765,6 @@
                     </div>
                 </div>
 
-                <!-- Sección: Horarios (siempre visible para dueño y admin) -->
                 <div id="fieldHorarios">
                     <label>Horarios (marcar cerrado si no atiende)</label>
                     <div class="horario-grid">
@@ -1744,13 +1780,11 @@
                     <input type="text" id="hFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
                 </div>
 
-                <!-- Sección: Imágenes adicionales (siempre visible para dueño y admin) -->
                 <div id="fieldImagenesExtra">
                     <label>Imágenes adicionales (URL o subir archivo)</label>
                     <div id="imagenesExtraContainer"></div>
                 </div>
 
-                <!-- Sección: Mostrar en página (solo admin) -->
                 <div id="fieldMostrarPagina">
                     <label style="display:flex; align-items:center; gap:10px; margin-top:12px;">
                         <input type="checkbox" id="fMostrarPagina" checked style="width:auto;">
@@ -1758,28 +1792,23 @@
                     </label>
                 </div>
 
-                <!-- Sección: Foto principal (solo admin) -->
                 <div id="fieldFoto">
                     <label>Foto (URL o subir archivo)</label>
                     <input type="file" id="fFotoFile" accept="image/*" capture="environment">
                     <input type="text" id="fFotoUrl" placeholder="O pegar URL de imagen" style="margin-top:6px;">
                 </div>
 
-                <!-- Sección: Logo (solo admin) -->
                 <div id="fieldLogo">
                     <label>Logo (URL o subir archivo)</label>
                     <input type="file" id="fLogoFile" accept="image/*" capture="environment">
                     <input type="text" id="fLogoUrl" placeholder="O pegar URL de logo" style="margin-top:6px;">
                 </div>
 
-                <!-- Controles del carrusel (visible para admin y dueño) -->
                 <div id="fieldCarrusel">
                     <div id="controlesCarrusel"></div>
                 </div>
 
-                <div class="btn-group" id="modalBotones">
-                    <!-- Los botones se reemplazan dinámicamente (siempre iconos grandes) -->
-                </div>
+                <div class="btn-group" id="modalBotones"></div>
             </form>
         </div>
     </div>
@@ -1866,7 +1895,7 @@
         </div>
     </div>
 
-    <!-- ===== MODAL CONFIGURACIÓN (sin campo de código de recuperación) ===== -->
+    <!-- ===== MODAL CONFIGURACIÓN ===== -->
     <div class="modal-overlay" id="configModal">
         <div class="modal">
             <h2><i class="fas fa-cog"></i> Configuración de la Galería</h2>
@@ -1904,7 +1933,7 @@
     <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
 
-    <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente) ===== -->
+    <!-- ===== OVERLAY DE PUBLICIDAD (se llena dinámicamente) ===== -->
 </div>
 
 <script>
@@ -1925,7 +1954,7 @@
     const docRef = db.collection('galeria').doc('datos');
 
     // ============================================================
-    //  DATA LAYER - Sin valores por defecto para adminClave
+    //  DATA LAYER
     // ============================================================
     let data = {
         locales: [],
@@ -1939,20 +1968,21 @@
         bannerInterval: 4,
         backups: [],
         lastBackupDate: null,
-        // adminClave se obtiene solo de Firestore; no hay valor por defecto
+        adminClave: null,
         visitasTotales: 0,
         publicidad: {
             activo: false,
-            tipo: 'texto',
+            tipo: 'texto',          // 'texto' o 'imagen'
             contenido: '¡Gran Liquidación!',
             duracion: 5,
-            imagenUrl: '',
+            imagenUrl: '',          // se mantiene por compatibilidad
             efecto: 'confeti',
             textos: [
                 { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-            ]
+            ],
+            imagenes: []            // <-- NUEVO: lista de URLs de imágenes
         }
     };
 
@@ -1964,7 +1994,6 @@
     let ordenActual = 'abiertos';
     const estadoTemporalMap = new Map();
 
-    // Variables para dueño de local
     let ownerLocalId = null;
     let ownerNumero = null;
 
@@ -2177,7 +2206,7 @@
             bannerInterval: 4,
             backups: [],
             lastBackupDate: null,
-            // adminClave no incluido
+            adminClave: null,
             galeriaNombre: 'Galería Cinerama',
             galeriaDireccion: 'Colón 375',
             theme: 'default',
@@ -2194,13 +2223,14 @@
                     { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                     { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
                     { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-                ]
+                ],
+                imagenes: []
             }
         };
     }
 
     // ============================================================
-    //  FUNCIÓN PARA COMPRIMIR Y CONVERTIR IMAGEN A BASE64
+    //  FUNCIONES AUXILIARES (imágenes, etc.)
     // ============================================================
     function comprimirImagen(file, maxWidth = 800, quality = 0.7) {
         return new Promise((resolve, reject) => {
@@ -2236,9 +2266,6 @@
         });
     }
 
-    // ============================================================
-    //  FUNCIONES PARA IMÁGENES EXTRA (con base64)
-    // ============================================================
     function normalizarImagenesExtra(imagenes) {
         if (!Array.isArray(imagenes)) return [];
         return imagenes.map(item => {
@@ -2385,14 +2412,14 @@
             selectFit.style.color = 'var(--text-color)';
             selectFit.style.flex = '0.5';
             selectFit.style.minWidth = '80px';
-            const fitOptions = [
+            const fitOptions2 = [
                 { value: 'cover', label: 'Cubrir' },
                 { value: 'contain', label: 'Contener' },
                 { value: 'none', label: 'Normal' },
                 { value: 'fill', label: 'Rellenar' },
                 { value: 'scale-down', label: 'Reducir' }
             ];
-            fitOptions.forEach(opt => {
+            fitOptions2.forEach(opt => {
                 const option = document.createElement('option');
                 option.value = opt.value;
                 option.textContent = opt.label;
@@ -2453,9 +2480,6 @@
         return result;
     }
 
-    // ============================================================
-    //  FUNCIÓN PARA SUBIR FOTO/LOGO PRINCIPAL (con base64)
-    // ============================================================
     async function procesarArchivoInput(fileInput, urlInput, mensajeExito = 'Imagen cargada') {
         const file = fileInput.files[0];
         if (!file) return;
@@ -2491,7 +2515,6 @@
                         data[key] = defaultData[key];
                     }
                 }
-                // adminClave debe venir de Firestore; si no existe, se queda undefined
                 data.adminClave = firestoreData.adminClave;
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
@@ -2506,14 +2529,14 @@
                 if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                     data.publicidad.textos = defaultData.publicidad.textos;
                 }
+                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             } else {
-                // Si no existe el documento, crearlo con estructura básica
                 const defaultData = getDefaultData();
                 for (let key in defaultData) {
                     data[key] = defaultData[key];
                 }
-                // No asignar adminClave por defecto
+                data.adminClave = null;
                 await docRef.set(data);
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             }
@@ -2539,6 +2562,7 @@
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = getDefaultData().publicidad.textos;
                     }
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 } catch (e) {
                     console.error('Error al parsear localStorage:', e);
                     if (!isAdmin) {
@@ -2555,7 +2579,7 @@
                 for (let key in defaultData) {
                     data[key] = defaultData[key];
                 }
-                // No asignar adminClave
+                data.adminClave = null;
                 await docRef.set(data);
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             }
@@ -2597,6 +2621,7 @@
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
@@ -2673,7 +2698,7 @@
     }
 
     // ============================================================
-    //  LISTENERS (con desactivación al abrir modal de edición)
+    //  LISTENERS
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
@@ -2777,7 +2802,7 @@
     }
 
     // ============================================================
-    //  AUTENTICACIÓN DE DUEÑO (clave = WhatsApp)
+    //  AUTENTICACIÓN DE DUEÑO
     // ============================================================
     function autenticarDueño() {
         const clave = document.getElementById('ownerClave').value.trim();
@@ -2864,7 +2889,7 @@
     }
 
     // ============================================================
-    //  ESTADO DEL LOCAL (con temporal)
+    //  ESTADO DEL LOCAL
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
@@ -2938,7 +2963,7 @@
     }
 
     // ============================================================
-    //  PUBLICIDAD (sin cambios)
+    //  PUBLICIDAD (con imágenes múltiples y pantalla completa)
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -3065,6 +3090,12 @@
 
     function mostrarPublicidad() {
         if (!data.publicidad || !data.publicidad.activo) return;
+        
+        // Si es tipo imagen pero no hay imágenes, no mostrar
+        if (data.publicidad.tipo === 'imagen' && (!data.publicidad.imagenes || data.publicidad.imagenes.length === 0)) {
+            return;
+        }
+
         let overlay = document.getElementById('publicidadOverlay');
         if (!overlay) {
             overlay = document.createElement('div');
@@ -3077,9 +3108,14 @@
         }
 
         const contenido = document.getElementById('publicidadContenido');
-        if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenUrl) {
-            contenido.innerHTML = `<img src="${data.publicidad.imagenUrl}" alt="Publicidad" class="imagen-publicidad">`;
+        if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
+            // Seleccionar imagen aleatoria
+            const imagenes = data.publicidad.imagenes.filter(u => u && u.trim() !== '');
+            if (imagenes.length === 0) return;
+            const randomImg = imagenes[Math.floor(Math.random() * imagenes.length)];
+            contenido.innerHTML = `<img src="${randomImg}" alt="Publicidad" class="imagen-publicidad">`;
         } else {
+            // Modo texto
             const textos = data.publicidad.textos || [
                 { texto: data.publicidad.contenido, fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
@@ -3181,10 +3217,6 @@
     }
 
     // ============================================================
-    //  RECUPERACIÓN DE CLAVE ELIMINADA - ya no existe
-    // ============================================================
-
-    // ============================================================
     //  EVENTO DE CLIC LARGO EN EL TÍTULO PARA ACCESO ADMIN
     // ============================================================
     function initAdminAccess() {
@@ -3215,15 +3247,12 @@
     }
 
     // ============================================================
-    //  FUNCIÓN PARA CERRAR MODAL DE EDICIÓN
+    //  FUNCIONES PARA CERRAR MODAL DE EDICIÓN Y BOTONES
     // ============================================================
     function cerrarModalEdicion() {
         closeModal('addLocalModal');
     }
 
-    // ============================================================
-    //  FUNCIÓN PARA ACTUALIZAR BOTONES DEL MODAL
-    // ============================================================
     function actualizarBotonesModal() {
         const container = document.getElementById('modalBotones');
         if (!container) return;
@@ -3258,7 +3287,7 @@
     }
 
     // ============================================================
-    //  FUNCIONES PARA OVERLAY DE ESPERA
+    //  OVERLAY DE ESPERA
     // ============================================================
     function crearOverlayEspera() {
         if (document.getElementById('loadingOverlay')) return;
@@ -3491,12 +3520,10 @@
                 }
             });
         });
-
-        // Enlace de recuperación eliminado
     });
 
     // ============================================================
-    //  RESTO DE FUNCIONES (sin cambios relevantes)
+    //  RESTO DE FUNCIONES
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
@@ -3643,7 +3670,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES (sin cambios)
+    //  RENDER LOCALES
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -4341,7 +4368,7 @@
     carousel.addEventListener('mouseleave', startBannerTimer);
 
     // ============================================================
-    //  CONFIGURACIÓN (sin resetCode)
+    //  CONFIGURACIÓN
     // ============================================================
     document.getElementById('configForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -4529,7 +4556,7 @@
             <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-edit"></i> Editar contador global de visitas</h3>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                 <label style="font-weight:600;">Visitante n°:</label>
-                <input type="number" id="inputVisitasTotales" value="${data.visitasTotales}" style="width:120px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <input type="number" id="inputVisitasTotales" value="${data.visitasTotales}" style="width:120px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg_card); color:var(--text-color);">
                 <button onclick="actualizarVisitasTotales()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Actualizar</button>
             </div>
         `;
@@ -4554,7 +4581,7 @@
     }
 
     // ============================================================
-    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN
+    //  SECCIÓN PUBLICIDAD EN PANEL ADMIN (con lista de imágenes)
     // ============================================================
     function agregarSeccionPublicidad() {
         if (!isAdmin) return;
@@ -4574,6 +4601,8 @@
             { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
             { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
         ];
+        const imagenes = pub.imagenes || [];
+
         let html = `
             <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-bullhorn"></i> Publicidad</h3>
             <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:10px;">
@@ -4584,14 +4613,32 @@
                     <option value="texto" ${pub.tipo === 'texto' ? 'selected' : ''}>Texto</option>
                     <option value="imagen" ${pub.tipo === 'imagen' ? 'selected' : ''}>Imagen</option>
                 </select>
-                <input type="text" id="pubContenido" value="${pub.contenido}" placeholder="Texto o URL de imagen" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <input type="text" id="pubContenido" value="${pub.contenido}" placeholder="Texto o URL de imagen (opcional)" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                 <label style="display:flex; align-items:center; gap:4px;">Duración (seg): <input type="number" id="pubDuracion" value="${pub.duracion}" style="width:60px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);"></label>
                 <select id="pubEfecto" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                     ${Object.keys(EFECTOS_CONFETI).map(e => `<option value="${e}" ${pub.efecto === e ? 'selected' : ''}>${e}</option>`).join('')}
                 </select>
                 <button onclick="guardarPublicidad()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Guardar</button>
             </div>
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+            <div id="pubImagenesContainer" style="margin-top:10px;">
+                <label style="font-weight:600;">Lista de imágenes (URLs) <span style="font-weight:400; opacity:0.7;">(al menos una URL para modo imagen)</span></label>
+                <div class="pub-imagenes-lista" id="pubImagenesLista">
+                    ${imagenes.map((url, idx) => `
+                        <div class="pub-imagen-item">
+                            <input type="url" class="pub-imagen-url" value="${url}" placeholder="https://ejemplo.com/imagen.jpg">
+                            <button class="pub-eliminar-imagen" data-idx="${idx}">✕</button>
+                        </div>
+                    `).join('')}
+                    ${imagenes.length === 0 ? `
+                        <div class="pub-imagen-item">
+                            <input type="url" class="pub-imagen-url" value="" placeholder="https://ejemplo.com/imagen.jpg">
+                            <button class="pub-eliminar-imagen" data-idx="0" style="display:none;">✕</button>
+                        </div>
+                    ` : ''}
+                </div>
+                <button type="button" class="pub-agregar-imagen" id="pubAgregarImagen">+ Agregar imagen</button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
                 <label style="font-weight:600;">Textos (hasta 3 líneas):</label>
                 ${[0,1,2].map(i => `
                     <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
@@ -4609,6 +4656,60 @@
         `;
         container.innerHTML = html;
         backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
+
+        // Delegar eventos para agregar/eliminar imágenes
+        document.getElementById('pubAgregarImagen').addEventListener('click', function() {
+            const lista = document.getElementById('pubImagenesLista');
+            const item = document.createElement('div');
+            item.className = 'pub-imagen-item';
+            item.innerHTML = `
+                <input type="url" class="pub-imagen-url" value="" placeholder="https://ejemplo.com/imagen.jpg">
+                <button class="pub-eliminar-imagen">✕</button>
+            `;
+            lista.appendChild(item);
+            actualizarBotonesEliminarImagen();
+        });
+
+        function actualizarBotonesEliminarImagen() {
+            document.querySelectorAll('.pub-eliminar-imagen').forEach(btn => {
+                btn.removeEventListener('click', eliminarImagen);
+                btn.addEventListener('click', eliminarImagen);
+            });
+        }
+
+        function eliminarImagen(e) {
+            const btn = e.currentTarget;
+            const item = btn.closest('.pub-imagen-item');
+            const lista = document.getElementById('pubImagenesLista');
+            if (lista.querySelectorAll('.pub-imagen-item').length > 1) {
+                item.remove();
+            } else {
+                const input = item.querySelector('.pub-imagen-url');
+                input.value = '';
+                btn.style.display = 'none';
+            }
+            // Asegurar que todos los botones tengan el evento
+            actualizarBotonesEliminarImagen();
+        }
+
+        // Inicializar eventos
+        actualizarBotonesEliminarImagen();
+
+        // Mostrar/ocultar según tipo
+        document.getElementById('pubTipo').addEventListener('change', function() {
+            const tipo = this.value;
+            const containerImagenes = document.getElementById('pubImagenesContainer');
+            const containerTextos = container.querySelector('.pub-texto')?.closest('div')?.parentNode;
+            if (tipo === 'imagen') {
+                containerImagenes.style.display = 'block';
+                if (containerTextos) containerTextos.style.display = 'none';
+            } else {
+                containerImagenes.style.display = 'none';
+                if (containerTextos) containerTextos.style.display = 'block';
+            }
+        });
+        // Trigger inicial
+        document.getElementById('pubTipo').dispatchEvent(new Event('change'));
     }
 
     async function guardarPublicidad() {
@@ -4633,27 +4734,31 @@
             textos[idx] = { texto, fuente, tamaño, color, fondo };
         });
 
+        // Obtener imágenes
+        const imagenesUrls = [];
+        document.querySelectorAll('.pub-imagen-url').forEach(inp => {
+            const url = inp.value.trim();
+            if (url) imagenesUrls.push(url);
+        });
+
         if (tipo === 'texto' && textos.every(t => !t.texto)) {
             showToast('Al menos un texto debe tener contenido.');
             return;
         }
-        if (tipo === 'imagen' && !contenido) {
-            showToast('Ingresa una URL de imagen.');
-            return;
-        }
-        if (tipo === 'imagen' && contenido && !contenido.match(/^https?:\/\/.+/)) {
-            showToast('Ingresa una URL de imagen válida.');
+        if (tipo === 'imagen' && imagenesUrls.length === 0) {
+            showToast('Agrega al menos una URL de imagen.');
             return;
         }
 
         data.publicidad = {
             activo,
             tipo,
-            contenido: tipo === 'imagen' ? contenido : textos[0]?.texto || '',
+            contenido: tipo === 'imagen' ? imagenesUrls[0] : textos[0]?.texto || '',
             duracion,
-            imagenUrl: tipo === 'imagen' ? contenido : '',
+            imagenUrl: tipo === 'imagen' ? imagenesUrls[0] : '',
             efecto,
-            textos
+            textos,
+            imagenes: imagenesUrls
         };
         await saveData();
         showToast('Configuración de publicidad guardada.');
@@ -4952,7 +5057,7 @@
         data.bannerInterval = backupData.bannerInterval || 4;
         data.visitasTotales = backupData.visitasTotales || 0;
         data.publicidad = backupData.publicidad || getDefaultData().publicidad;
-        data.adminClave = backupData.adminClave; // mantiene la clave de Firestore
+        data.adminClave = backupData.adminClave;
         data.locales.forEach(l => {
             l.numeroLocal = String(l.numeroLocal);
             if (l.visitas === undefined) l.visitas = 0;
@@ -5042,7 +5147,7 @@
                 data = importedData;
                 data.backups = backupsActuales;
                 data.lastBackupDate = lastBackup;
-                data.adminClave = adminClaveActual; // preservar la clave actual
+                data.adminClave = adminClaveActual;
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
@@ -5053,6 +5158,7 @@
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
+                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 await saveData();
                 renderAll();
                 showToast('Datos importados correctamente');
@@ -5067,7 +5173,7 @@
     }
 
     // ============================================================
-    //  CAMBIAR CLAVE (actualiza en Firestore)
+    //  CAMBIAR CLAVE
     // ============================================================
     async function cambiarClave() {
         if (!isAdmin) {
@@ -5098,7 +5204,7 @@
     }
 
     // ============================================================
-    //  LOGIN (usa data.adminClave desde Firestore)
+    //  LOGIN
     // ============================================================
     async function loginAdmin() {
         const clave = document.getElementById('loginClave').value;
@@ -5140,6 +5246,7 @@
                     if (!data.publicidad.textos || data.publicidad.textos.length < 3) {
                         data.publicidad.textos = defaultData.publicidad.textos;
                     }
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                     localStorage.setItem('galeriaData', JSON.stringify(data));
                     renderAll();
                     if (document.getElementById('visitNumber')) {
@@ -5173,7 +5280,6 @@
     window.updateBannerInterval = updateBannerInterval;
     window.shareLocal = shareLocal;
     window.openImageZoom = openImageZoom;
-    // recuperarClave ya no existe
     window.mostrarHorariosCompletos = mostrarHorariosCompletos;
     window.actualizarVisitasTotales = actualizarVisitasTotales;
     window.guardarPublicidad = guardarPublicidad;
@@ -5186,5 +5292,6 @@
     window.autenticarDueño = autenticarDueño;
     window.cerrarModalEdicion = cerrarModalEdicion;
 </script>
+
 </body>
 </html>
