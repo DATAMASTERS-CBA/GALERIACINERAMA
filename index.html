@@ -12,7 +12,7 @@
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        /* ===== ESTILOS BASE ===== */
+        /* ===== ESTILOS BASE (sin cambios) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -494,6 +494,7 @@
             pointer-events: none;
         }
 
+        /* Icono de tienda para acceso dueño */
         .store-icon {
             cursor: pointer;
             font-size: 1.2rem;
@@ -716,7 +717,7 @@
         .modal .btn-group .btn-danger:hover {
             transform: scale(1.05);
         }
-
+        /* ===== BOTONES ICONO GRANDES ===== */
         .btn-icon {
             background: var(--bg-card);
             border: 2px solid var(--border);
@@ -1199,7 +1200,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.8);
             z-index: 99999;
             display: none;
             justify-content: center;
@@ -1212,18 +1213,99 @@
             pointer-events: auto;
         }
         #publicidadOverlay .contenido {
-            width: 100%;
-            height: 100%;
+            text-align: center;
+            padding: 0;
+            max-width: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            animation: publicidadEntrada 0.6s ease;
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 100%;
+            height: 100%;
         }
+        @keyframes publicidadEntrada {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* Imagen publicitaria: en móvil ocupa toda la pantalla con cover, en escritorio tamaño real */
         #publicidadOverlay .imagen-publicidad {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover;  /* por defecto para móvil */
+            max-width: 100vw;
+            max-height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
             display: block;
         }
+
+        /* En escritorio (pantallas más grandes) mostramos la imagen a su tamaño real */
+        @media (min-width: 769px) {
+            #publicidadOverlay .imagen-publicidad {
+                object-fit: none;   /* sin escalado */
+                width: auto;
+                height: auto;
+                max-width: 90vw;
+                max-height: 90vh;
+                border-radius: 12px;
+                box-shadow: 0 0 40px rgba(255,255,255,0.3);
+            }
+        }
+
+        /* Botón de cerrar con círculo de progreso */
+        #publicidadOverlay .cerrar-publicidad {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0,0,0,0.5);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.8rem;
+            cursor: pointer;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+            padding: 0;
+            line-height: 1;
+        }
+        #publicidadOverlay .cerrar-publicidad:hover {
+            background: rgba(255,0,0,0.7);
+            transform: scale(1.05);
+        }
+        /* SVG del círculo de progreso */
+        #publicidadOverlay .progress-ring {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            width: 58px;
+            height: 58px;
+            transform: rotate(-90deg);
+            pointer-events: none;
+        }
+        #publicidadOverlay .progress-ring .bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.2);
+            stroke-width: 3;
+        }
+        #publicidadOverlay .progress-ring .progress {
+            fill: none;
+            stroke: #fff;
+            stroke-width: 3;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s linear;
+        }
+
+        /* Texto neon (para modo texto, se mantiene) */
         #publicidadOverlay .texto-neon {
             font-weight: 900;
             color: #fff;
@@ -1236,24 +1318,7 @@
             padding: 4px 12px;
             border-radius: 8px;
         }
-        #publicidadOverlay .cerrar-publicidad {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 2.5rem;
-            color: #fff;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: 0.2s;
-            pointer-events: auto;
-            background: none;
-            border: none;
-            z-index: 10;
-        }
-        #publicidadOverlay .cerrar-publicidad:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
+
         @media (max-width: 768px) {
             #publicidadOverlay .texto-neon {
                 font-size: inherit;
@@ -1284,7 +1349,6 @@
             border-color: var(--primary);
             box-shadow: 0 0 8px var(--primary);
         }
-
         .carrusel-imagenes {
             position: relative;
             width: 100%;
@@ -1436,13 +1500,16 @@
             opacity: 1;
         }
 
+        /* Ocultar campos para dueño (excepto carrusel) */
         .owner-hidden {
             display: none !important;
         }
+        /* Asegurar que el carrusel siempre se muestre */
         #fieldCarrusel {
             display: block !important;
         }
 
+        /* ===== OVERLAY DE ESPERA ===== */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -1486,59 +1553,6 @@
         @media (max-width: 768px) {
             #loadingOverlay .spinner { font-size: 3.5rem; }
             #loadingOverlay { font-size: 1.4rem; }
-        }
-
-        /* ===== ESTILOS PARA LA LISTA DE IMÁGENES EN PUBLICIDAD ===== */
-        .pub-imagenes-lista {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin: 8px 0;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 4px 0;
-        }
-        .pub-imagen-item {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .pub-imagen-item input[type="url"] {
-            flex: 1;
-            min-width: 150px;
-        }
-        .pub-imagen-item button {
-            background: var(--red);
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .pub-imagen-item button:hover {
-            transform: scale(1.1);
-        }
-        .pub-agregar-imagen {
-            padding: 6px 16px;
-            border-radius: 30px;
-            border: 1px solid var(--border);
-            background: var(--primary-light);
-            color: var(--primary);
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
-            margin-top: 4px;
-        }
-        .pub-agregar-imagen:hover {
-            background: var(--primary);
-            color: #fff;
         }
     </style>
 </head>
@@ -1653,11 +1667,13 @@
             <form id="localForm">
                 <input type="hidden" id="editId" value="">
 
+                <!-- Sección: Nombre (siempre visible) -->
                 <div id="fieldNombre">
                     <label>Nombre *</label>
                     <input type="text" id="fNombre" required>
                 </div>
 
+                <!-- Sección: Rubro + botón editar (solo admin) -->
                 <div id="fieldRubro">
                     <label>Rubro *</label>
                     <div style="display:flex; gap:8px; align-items:center;">
@@ -1666,11 +1682,13 @@
                     </div>
                 </div>
 
+                <!-- Sección: Número de local (solo admin) -->
                 <div id="fieldNumero">
                     <label>Número de local *</label>
                     <input type="text" id="fNumero" required placeholder="Ej: S17, 12, A3">
                 </div>
 
+                <!-- Sección: Ubicación (solo admin) -->
                 <div id="fieldUbicacion">
                     <label>Ubicación</label>
                     <select id="fUbicacion">
@@ -1681,6 +1699,7 @@
                     </select>
                 </div>
 
+                <!-- Sección: Alquiler (solo admin) -->
                 <div id="fieldAlquiler">
                     <label>¿En alquiler?</label>
                     <div style="display:flex; align-items:center; gap:10px;">
@@ -1693,26 +1712,31 @@
                     </div>
                 </div>
 
+                <!-- Sección: WhatsApp (siempre visible para dueño y admin) -->
                 <div id="fieldWhatsapp">
                     <label>WhatsApp (con código país, ej: 5491112345678)</label>
                     <input type="text" id="fWhatsapp" placeholder="5491112345678">
                 </div>
 
+                <!-- Sección: Web (siempre visible para dueño y admin) -->
                 <div id="fieldWeb">
                     <label>Sitio web</label>
                     <input type="url" id="fWeb" placeholder="https://...">
                 </div>
 
+                <!-- Sección: Color de fondo (solo admin) -->
                 <div id="fieldColor">
                     <label>Color de fondo para logo</label>
                     <input type="color" id="fColorFondo" value="#2563eb">
                 </div>
 
+                <!-- Sección: Descripción (solo admin) -->
                 <div id="fieldDescripcion">
                     <label>Descripción</label>
                     <textarea id="fDescripcion" rows="2"></textarea>
                 </div>
 
+                <!-- Sección: Ajuste foto principal (solo admin) -->
                 <div id="fieldFotoAjuste">
                     <label>Ajuste de la foto principal</label>
                     <div class="image-adjust-group">
@@ -1739,6 +1763,7 @@
                     </div>
                 </div>
 
+                <!-- Sección: Ajuste logo (solo admin) -->
                 <div id="fieldLogoAjuste">
                     <label>Ajuste del logo</label>
                     <div class="image-adjust-group">
@@ -1765,6 +1790,7 @@
                     </div>
                 </div>
 
+                <!-- Sección: Horarios (siempre visible para dueño y admin) -->
                 <div id="fieldHorarios">
                     <label>Horarios (marcar cerrado si no atiende)</label>
                     <div class="horario-grid">
@@ -1780,11 +1806,13 @@
                     <input type="text" id="hFeriados" placeholder="25/12:10:00-14:00; 01/01:cerrado">
                 </div>
 
+                <!-- Sección: Imágenes adicionales (siempre visible para dueño y admin) -->
                 <div id="fieldImagenesExtra">
                     <label>Imágenes adicionales (URL o subir archivo)</label>
                     <div id="imagenesExtraContainer"></div>
                 </div>
 
+                <!-- Sección: Mostrar en página (solo admin) -->
                 <div id="fieldMostrarPagina">
                     <label style="display:flex; align-items:center; gap:10px; margin-top:12px;">
                         <input type="checkbox" id="fMostrarPagina" checked style="width:auto;">
@@ -1792,23 +1820,28 @@
                     </label>
                 </div>
 
+                <!-- Sección: Foto principal (solo admin) -->
                 <div id="fieldFoto">
                     <label>Foto (URL o subir archivo)</label>
                     <input type="file" id="fFotoFile" accept="image/*" capture="environment">
                     <input type="text" id="fFotoUrl" placeholder="O pegar URL de imagen" style="margin-top:6px;">
                 </div>
 
+                <!-- Sección: Logo (solo admin) -->
                 <div id="fieldLogo">
                     <label>Logo (URL o subir archivo)</label>
                     <input type="file" id="fLogoFile" accept="image/*" capture="environment">
                     <input type="text" id="fLogoUrl" placeholder="O pegar URL de logo" style="margin-top:6px;">
                 </div>
 
+                <!-- Controles del carrusel (visible para admin y dueño) -->
                 <div id="fieldCarrusel">
                     <div id="controlesCarrusel"></div>
                 </div>
 
-                <div class="btn-group" id="modalBotones"></div>
+                <div class="btn-group" id="modalBotones">
+                    <!-- Los botones se reemplazan dinámicamente (siempre iconos grandes) -->
+                </div>
             </form>
         </div>
     </div>
@@ -1933,7 +1966,7 @@
     <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
 
-    <!-- ===== OVERLAY DE PUBLICIDAD (se llena dinámicamente) ===== -->
+    <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente con el círculo de progreso) ===== -->
 </div>
 
 <script>
@@ -1968,21 +2001,20 @@
         bannerInterval: 4,
         backups: [],
         lastBackupDate: null,
-        adminClave: null,
+        // adminClave se obtiene solo de Firestore
         visitasTotales: 0,
         publicidad: {
             activo: false,
-            tipo: 'texto',          // 'texto' o 'imagen'
+            tipo: 'texto',
             contenido: '¡Gran Liquidación!',
             duracion: 5,
-            imagenUrl: '',          // se mantiene por compatibilidad
+            imagenes: [],         // lista de URLs de imágenes
             efecto: 'confeti',
             textos: [
                 { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
                 { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-            ],
-            imagenes: []            // <-- NUEVO: lista de URLs de imágenes
+            ]
         }
     };
 
@@ -1994,6 +2026,7 @@
     let ordenActual = 'abiertos';
     const estadoTemporalMap = new Map();
 
+    // Variables para dueño de local
     let ownerLocalId = null;
     let ownerNumero = null;
 
@@ -2206,7 +2239,6 @@
             bannerInterval: 4,
             backups: [],
             lastBackupDate: null,
-            adminClave: null,
             galeriaNombre: 'Galería Cinerama',
             galeriaDireccion: 'Colón 375',
             theme: 'default',
@@ -2217,20 +2249,19 @@
                 tipo: 'texto',
                 contenido: '¡Gran Liquidación!',
                 duracion: 5,
-                imagenUrl: '',
+                imagenes: [],
                 efecto: 'confeti',
                 textos: [
                     { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
                     { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
                     { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-                ],
-                imagenes: []
+                ]
             }
         };
     }
 
     // ============================================================
-    //  FUNCIONES AUXILIARES (imágenes, etc.)
+    //  FUNCIÓN PARA COMPRIMIR Y CONVERTIR IMAGEN A BASE64
     // ============================================================
     function comprimirImagen(file, maxWidth = 800, quality = 0.7) {
         return new Promise((resolve, reject) => {
@@ -2266,6 +2297,9 @@
         });
     }
 
+    // ============================================================
+    //  FUNCIONES PARA IMÁGENES EXTRA (con base64)
+    // ============================================================
     function normalizarImagenesExtra(imagenes) {
         if (!Array.isArray(imagenes)) return [];
         return imagenes.map(item => {
@@ -2412,14 +2446,14 @@
             selectFit.style.color = 'var(--text-color)';
             selectFit.style.flex = '0.5';
             selectFit.style.minWidth = '80px';
-            const fitOptions2 = [
+            const fitOptions = [
                 { value: 'cover', label: 'Cubrir' },
                 { value: 'contain', label: 'Contener' },
                 { value: 'none', label: 'Normal' },
                 { value: 'fill', label: 'Rellenar' },
                 { value: 'scale-down', label: 'Reducir' }
             ];
-            fitOptions2.forEach(opt => {
+            fitOptions.forEach(opt => {
                 const option = document.createElement('option');
                 option.value = opt.value;
                 option.textContent = opt.label;
@@ -2480,6 +2514,9 @@
         return result;
     }
 
+    // ============================================================
+    //  FUNCIÓN PARA SUBIR FOTO/LOGO PRINCIPAL (con base64)
+    // ============================================================
     async function procesarArchivoInput(fileInput, urlInput, mensajeExito = 'Imagen cargada') {
         const file = fileInput.files[0];
         if (!file) return;
@@ -2536,7 +2573,6 @@
                 for (let key in defaultData) {
                     data[key] = defaultData[key];
                 }
-                data.adminClave = null;
                 await docRef.set(data);
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             }
@@ -2579,7 +2615,6 @@
                 for (let key in defaultData) {
                     data[key] = defaultData[key];
                 }
-                data.adminClave = null;
                 await docRef.set(data);
                 localStorage.setItem('galeriaData', JSON.stringify(data));
             }
@@ -2889,7 +2924,7 @@
     }
 
     // ============================================================
-    //  ESTADO DEL LOCAL
+    //  ESTADO DEL LOCAL (con temporal)
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
@@ -2963,7 +2998,7 @@
     }
 
     // ============================================================
-    //  PUBLICIDAD (con imágenes múltiples y pantalla completa)
+    //  PUBLICIDAD (con lista de imágenes y círculo de progreso)
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -3090,9 +3125,11 @@
 
     function mostrarPublicidad() {
         if (!data.publicidad || !data.publicidad.activo) return;
-        
-        // Si es tipo imagen pero no hay imágenes, no mostrar
+        // Si es tipo imagen y no hay imágenes, no hacer nada
         if (data.publicidad.tipo === 'imagen' && (!data.publicidad.imagenes || data.publicidad.imagenes.length === 0)) {
+            // Desactivar temporalmente para no molestar
+            data.publicidad.activo = false;
+            saveData();
             return;
         }
 
@@ -3101,19 +3138,39 @@
             overlay = document.createElement('div');
             overlay.id = 'publicidadOverlay';
             overlay.innerHTML = `
-                <button class="cerrar-publicidad" onclick="cerrarPublicidad()">&times;</button>
+                <button class="cerrar-publicidad" id="cerrarPublicidadBtn">
+                    <i class="fas fa-times"></i>
+                    <svg class="progress-ring" viewBox="0 0 60 60">
+                        <circle class="bg" cx="30" cy="30" r="26" />
+                        <circle class="progress" id="progressCircle" cx="30" cy="30" r="26"
+                                stroke-dasharray="163.36" stroke-dashoffset="0" />
+                    </svg>
+                </button>
                 <div class="contenido" id="publicidadContenido"></div>
             `;
             document.body.appendChild(overlay);
+            // Evento para cerrar manualmente
+            document.getElementById('cerrarPublicidadBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                cerrarPublicidad();
+            });
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) cerrarPublicidad();
+            });
         }
 
         const contenido = document.getElementById('publicidadContenido');
-        if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
-            // Seleccionar imagen aleatoria
-            const imagenes = data.publicidad.imagenes.filter(u => u && u.trim() !== '');
-            if (imagenes.length === 0) return;
-            const randomImg = imagenes[Math.floor(Math.random() * imagenes.length)];
-            contenido.innerHTML = `<img src="${randomImg}" alt="Publicidad" class="imagen-publicidad">`;
+        // Elegir una imagen al azar de la lista
+        if (data.publicidad.tipo === 'imagen') {
+            const imagenes = data.publicidad.imagenes.filter(url => url && url.trim() !== '');
+            if (imagenes.length === 0) {
+                // No hay imágenes, desactivar y salir
+                data.publicidad.activo = false;
+                saveData();
+                return;
+            }
+            const urlAleatoria = imagenes[Math.floor(Math.random() * imagenes.length)];
+            contenido.innerHTML = `<img src="${urlAleatoria}" alt="Publicidad" class="imagen-publicidad" onerror="this.src='${DEFAULT_IMAGE_URL}'">`;
         } else {
             // Modo texto
             const textos = data.publicidad.textos || [
@@ -3134,10 +3191,33 @@
         overlay.classList.add('active');
         dispararConfeti(data.publicidad.efecto || 'confeti');
 
+        // Configurar el círculo de progreso
+        const duracion = data.publicidad.duracion || 5;
+        const progressCircle = document.getElementById('progressCircle');
+        if (progressCircle) {
+            const circumference = 2 * Math.PI * 26; // 163.36 aprox
+            progressCircle.style.strokeDasharray = circumference;
+            progressCircle.style.strokeDashoffset = 0;
+            let startTime = Date.now();
+            const totalTime = duracion * 1000;
+
+            function actualizarProgreso() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / totalTime, 1);
+                const offset = circumference * (1 - progress);
+                progressCircle.style.strokeDashoffset = offset;
+                if (progress < 1) {
+                    requestAnimationFrame(actualizarProgreso);
+                }
+            }
+            actualizarProgreso();
+        }
+
+        // Temporizador para cerrar automáticamente
         if (window._publicidadTimer) clearTimeout(window._publicidadTimer);
         window._publicidadTimer = setTimeout(() => {
             cerrarPublicidad();
-        }, (data.publicidad.duracion || 5) * 1000);
+        }, duracion * 1000);
     }
 
     function cerrarPublicidad() {
@@ -3147,6 +3227,7 @@
             clearTimeout(window._publicidadTimer);
             window._publicidadTimer = null;
         }
+        // Detener confeti si es necesario (no hay función, pero se detiene solo)
     }
 
     function dispararConfeti(effectName) {
@@ -3166,6 +3247,7 @@
             drift: drift
         });
 
+        // Efectos adicionales para algunos tipos
         if (['fuegoartificial', 'arcoiris', 'diadelnino'].includes(effectName)) {
             setTimeout(() => {
                 confetti({
@@ -3217,7 +3299,7 @@
     }
 
     // ============================================================
-    //  EVENTO DE CLIC LARGO EN EL TÍTULO PARA ACCESO ADMIN
+    //  ADMIN ACCESS (clic largo en título)
     // ============================================================
     function initAdminAccess() {
         const titulo = document.getElementById('galeriaNombre');
@@ -3247,7 +3329,7 @@
     }
 
     // ============================================================
-    //  FUNCIONES PARA CERRAR MODAL DE EDICIÓN Y BOTONES
+    //  MODALES Y BOTONES
     // ============================================================
     function cerrarModalEdicion() {
         closeModal('addLocalModal');
@@ -3523,7 +3605,7 @@
     });
 
     // ============================================================
-    //  RESTO DE FUNCIONES
+    //  RESTO DE FUNCIONES (sin cambios relevantes)
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
@@ -4556,7 +4638,7 @@
             <h3 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-edit"></i> Editar contador global de visitas</h3>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                 <label style="font-weight:600;">Visitante n°:</label>
-                <input type="number" id="inputVisitasTotales" value="${data.visitasTotales}" style="width:120px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg_card); color:var(--text-color);">
+                <input type="number" id="inputVisitasTotales" value="${data.visitasTotales}" style="width:120px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                 <button onclick="actualizarVisitasTotales()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Actualizar</button>
             </div>
         `;
@@ -4613,103 +4695,101 @@
                     <option value="texto" ${pub.tipo === 'texto' ? 'selected' : ''}>Texto</option>
                     <option value="imagen" ${pub.tipo === 'imagen' ? 'selected' : ''}>Imagen</option>
                 </select>
-                <input type="text" id="pubContenido" value="${pub.contenido}" placeholder="Texto o URL de imagen (opcional)" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <input type="text" id="pubContenido" value="${pub.contenido}" placeholder="Texto o URL de imagen (modo texto)" style="flex:1; min-width:150px; padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                 <label style="display:flex; align-items:center; gap:4px;">Duración (seg): <input type="number" id="pubDuracion" value="${pub.duracion}" style="width:60px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);"></label>
                 <select id="pubEfecto" style="padding:8px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                     ${Object.keys(EFECTOS_CONFETI).map(e => `<option value="${e}" ${pub.efecto === e ? 'selected' : ''}>${e}</option>`).join('')}
                 </select>
                 <button onclick="guardarPublicidad()" class="btn-primary" style="padding:8px 20px; border:none; border-radius:30px; background:var(--primary); color:#fff; cursor:pointer; font-weight:600;">Guardar</button>
             </div>
-            <div id="pubImagenesContainer" style="margin-top:10px;">
-                <label style="font-weight:600;">Lista de imágenes (URLs) <span style="font-weight:400; opacity:0.7;">(al menos una URL para modo imagen)</span></label>
-                <div class="pub-imagenes-lista" id="pubImagenesLista">
-                    ${imagenes.map((url, idx) => `
-                        <div class="pub-imagen-item">
-                            <input type="url" class="pub-imagen-url" value="${url}" placeholder="https://ejemplo.com/imagen.jpg">
-                            <button class="pub-eliminar-imagen" data-idx="${idx}">✕</button>
-                        </div>
-                    `).join('')}
-                    ${imagenes.length === 0 ? `
-                        <div class="pub-imagen-item">
-                            <input type="url" class="pub-imagen-url" value="" placeholder="https://ejemplo.com/imagen.jpg">
-                            <button class="pub-eliminar-imagen" data-idx="0" style="display:none;">✕</button>
-                        </div>
-                    ` : ''}
+        `;
+
+        // Sección de imágenes (solo visible cuando tipo es imagen)
+        html += `
+            <div id="publicidadImagenesSection" style="${pub.tipo === 'imagen' ? 'display:block;' : 'display:none;'} margin-top:10px;">
+                <label style="font-weight:600;">Lista de imágenes (URLs):</label>
+                <div id="publicidadImagenesList" style="display:flex; flex-direction:column; gap:6px; margin-top:6px;">
+        `;
+        if (imagenes.length === 0) {
+            html += `<div class="pub-imagen-item" style="display:flex; gap:6px; align-items:center;">
+                <input type="url" class="pub-imagen-url" placeholder="https://ejemplo.com/imagen.jpg" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <button type="button" class="pub-remove-imagen" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold; display:none;">×</button>
+            </div>`;
+        } else {
+            imagenes.forEach((url, idx) => {
+                html += `<div class="pub-imagen-item" style="display:flex; gap:6px; align-items:center;">
+                    <input type="url" class="pub-imagen-url" value="${url}" placeholder="https://ejemplo.com/imagen.jpg" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                    <button type="button" class="pub-remove-imagen" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold;">×</button>
+                </div>`;
+            });
+        }
+        html += `
                 </div>
-                <button type="button" class="pub-agregar-imagen" id="pubAgregarImagen">+ Agregar imagen</button>
+                <button type="button" id="pubAddImagenBtn" style="margin-top:6px; padding:4px 16px; border-radius:30px; border:1px solid var(--border); background:var(--primary-light); color:var(--primary); cursor:pointer; font-weight:600;"><i class="fas fa-plus"></i> Agregar imagen</button>
             </div>
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+        `;
+
+        // Textos para modo texto
+        html += `
+            <div id="publicidadTextosSection" style="${pub.tipo === 'texto' ? 'display:block;' : 'display:none;'} margin-top:10px;">
                 <label style="font-weight:600;">Textos (hasta 3 líneas):</label>
                 ${[0,1,2].map(i => `
-                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:4px;">
                         <input type="text" class="pub-texto" data-idx="${i}" value="${textos[i]?.texto || ''}" placeholder="Texto ${i+1}" style="flex:2; min-width:120px; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                         <select class="pub-fuente" data-idx="${i}" style="padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                             ${['Arial','Verdana','Georgia','Courier New','Impact','Comic Sans MS','Times New Roman'].map(f => `<option value="${f}" ${textos[i]?.fuente === f ? 'selected' : ''}>${f}</option>`).join('')}
                         </select>
                         <input type="number" class="pub-tamano" data-idx="${i}" value="${textos[i]?.tamaño || 36}" placeholder="Tamaño" style="width:70px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                         <input type="color" class="pub-color" data-idx="${i}" value="${textos[i]?.color || '#ffffff'}" style="width:40px; height:40px; padding:0; border-radius:50%; border:1px solid var(--border);">
-                        <input type="text" class="pub-fondo" data-idx="${i}" value="${textos[i]?.fondo || 'transparente'}" placeholder="Fondo (color o transparente)" style="width:100px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                        <input type="text" class="pub-fondo" data-idx="${i}" value="${textos[i]?.fondo || 'transparente'}" placeholder="Fondo" style="width:80px; padding:6px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
                     </div>
                 `).join('')}
             </div>
-            <p style="margin-top:8px; font-size:0.9rem; opacity:0.7;">Al activar, se mostrará al cargar la página con el efecto seleccionado.</p>
         `;
+
         container.innerHTML = html;
         backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
 
-        // Delegar eventos para agregar/eliminar imágenes
-        document.getElementById('pubAgregarImagen').addEventListener('click', function() {
-            const lista = document.getElementById('pubImagenesLista');
-            const item = document.createElement('div');
-            item.className = 'pub-imagen-item';
-            item.innerHTML = `
-                <input type="url" class="pub-imagen-url" value="" placeholder="https://ejemplo.com/imagen.jpg">
-                <button class="pub-eliminar-imagen">✕</button>
-            `;
-            lista.appendChild(item);
-            actualizarBotonesEliminarImagen();
-        });
-
-        function actualizarBotonesEliminarImagen() {
-            document.querySelectorAll('.pub-eliminar-imagen').forEach(btn => {
-                btn.removeEventListener('click', eliminarImagen);
-                btn.addEventListener('click', eliminarImagen);
-            });
-        }
-
-        function eliminarImagen(e) {
-            const btn = e.currentTarget;
-            const item = btn.closest('.pub-imagen-item');
-            const lista = document.getElementById('pubImagenesLista');
-            if (lista.querySelectorAll('.pub-imagen-item').length > 1) {
-                item.remove();
-            } else {
-                const input = item.querySelector('.pub-imagen-url');
-                input.value = '';
-                btn.style.display = 'none';
-            }
-            // Asegurar que todos los botones tengan el evento
-            actualizarBotonesEliminarImagen();
-        }
-
-        // Inicializar eventos
-        actualizarBotonesEliminarImagen();
-
-        // Mostrar/ocultar según tipo
+        // Event listeners para mostrar/ocultar secciones según tipo
         document.getElementById('pubTipo').addEventListener('change', function() {
             const tipo = this.value;
-            const containerImagenes = document.getElementById('pubImagenesContainer');
-            const containerTextos = container.querySelector('.pub-texto')?.closest('div')?.parentNode;
-            if (tipo === 'imagen') {
-                containerImagenes.style.display = 'block';
-                if (containerTextos) containerTextos.style.display = 'none';
-            } else {
-                containerImagenes.style.display = 'none';
-                if (containerTextos) containerTextos.style.display = 'block';
-            }
+            document.getElementById('publicidadImagenesSection').style.display = tipo === 'imagen' ? 'block' : 'none';
+            document.getElementById('publicidadTextosSection').style.display = tipo === 'texto' ? 'block' : 'none';
         });
-        // Trigger inicial
-        document.getElementById('pubTipo').dispatchEvent(new Event('change'));
+
+        // Agregar imagen
+        document.getElementById('pubAddImagenBtn').addEventListener('click', function() {
+            const list = document.getElementById('publicidadImagenesList');
+            const item = document.createElement('div');
+            item.className = 'pub-imagen-item';
+            item.style.cssText = 'display:flex; gap:6px; align-items:center;';
+            item.innerHTML = `
+                <input type="url" class="pub-imagen-url" placeholder="https://ejemplo.com/imagen.jpg" style="flex:1; padding:6px 12px; border-radius:30px; border:1px solid var(--border); background:var(--bg-card); color:var(--text-color);">
+                <button type="button" class="pub-remove-imagen" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-weight:bold;">×</button>
+            `;
+            list.appendChild(item);
+            // Evento para eliminar
+            item.querySelector('.pub-remove-imagen').addEventListener('click', function() {
+                if (list.children.length > 1) {
+                    item.remove();
+                } else {
+                    showToast('Debe quedar al menos una imagen');
+                }
+            });
+        });
+
+        // Eliminar imágenes existentes
+        document.querySelectorAll('.pub-remove-imagen').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const list = document.getElementById('publicidadImagenesList');
+                const item = this.closest('.pub-imagen-item');
+                if (list.children.length > 1) {
+                    item.remove();
+                } else {
+                    showToast('Debe quedar al menos una imagen');
+                }
+            });
+        });
     }
 
     async function guardarPublicidad() {
@@ -4723,6 +4803,7 @@
         const duracion = parseInt(document.getElementById('pubDuracion').value) || 5;
         const efecto = document.getElementById('pubEfecto').value;
 
+        // Recoger textos
         const textos = [];
         document.querySelectorAll('.pub-texto').forEach(inp => {
             const idx = parseInt(inp.dataset.idx);
@@ -4734,31 +4815,30 @@
             textos[idx] = { texto, fuente, tamaño, color, fondo };
         });
 
-        // Obtener imágenes
-        const imagenesUrls = [];
+        // Recoger imágenes
+        const imagenes = [];
         document.querySelectorAll('.pub-imagen-url').forEach(inp => {
             const url = inp.value.trim();
-            if (url) imagenesUrls.push(url);
+            if (url) imagenes.push(url);
         });
 
         if (tipo === 'texto' && textos.every(t => !t.texto)) {
             showToast('Al menos un texto debe tener contenido.');
             return;
         }
-        if (tipo === 'imagen' && imagenesUrls.length === 0) {
-            showToast('Agrega al menos una URL de imagen.');
+        if (tipo === 'imagen' && imagenes.length === 0) {
+            showToast('Agrega al menos una imagen.');
             return;
         }
 
         data.publicidad = {
             activo,
             tipo,
-            contenido: tipo === 'imagen' ? imagenesUrls[0] : textos[0]?.texto || '',
+            contenido: tipo === 'imagen' ? imagenes[0] : textos[0]?.texto || '',
             duracion,
-            imagenUrl: tipo === 'imagen' ? imagenesUrls[0] : '',
+            imagenes: imagenes,
             efecto,
-            textos,
-            imagenes: imagenesUrls
+            textos
         };
         await saveData();
         showToast('Configuración de publicidad guardada.');
@@ -5158,7 +5238,6 @@
                 });
                 if (data.visitasTotales === undefined) data.visitasTotales = 0;
                 if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
-                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
                 await saveData();
                 renderAll();
                 showToast('Datos importados correctamente');
@@ -5292,6 +5371,5 @@
     window.autenticarDueño = autenticarDueño;
     window.cerrarModalEdicion = cerrarModalEdicion;
 </script>
-
 </body>
 </html>
