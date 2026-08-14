@@ -3388,7 +3388,7 @@
     }
 
     // ============================================================
-    //  CAJITA DE SORPRESA (con evento para móvil)
+    //  CAJITA DE SORPRESA (con eventos click y touchstart para móvil)
     // ============================================================
     let sorpresaListenerAsignado = false;
 
@@ -3402,13 +3402,12 @@
         }
         btn.style.display = 'flex';
 
-        // Asignar evento solo una vez
+        // Asignar eventos solo una vez, con un pequeño retraso para asegurar el DOM
         if (!sorpresaListenerAsignado) {
-            // Usamos pointerdown para mejor respuesta táctil, y click como respaldo
+            // Usamos una función manejadora común que previene el doble disparo
             const handler = function(e) {
-                e.preventDefault(); // Evita eventos duplicados en móviles
-                abrirModalSorpresa();
-                // Disparar confeti
+                e.preventDefault(); // Evita duplicados en móviles
+                // Disparamos confeti
                 if (typeof confetti === 'function') {
                     confetti({
                         particleCount: 200,
@@ -3430,9 +3429,12 @@
                         });
                     }, 400);
                 }
+                abrirModalSorpresa();
             };
-            btn.addEventListener('pointerdown', handler);
-            btn.addEventListener('click', handler); // Por si acaso
+
+            // Eventos para click y touch
+            btn.addEventListener('click', handler);
+            btn.addEventListener('touchstart', handler, { passive: false });
             sorpresaListenerAsignado = true;
         }
     }
