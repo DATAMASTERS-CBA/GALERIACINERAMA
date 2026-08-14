@@ -1528,7 +1528,6 @@
             transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             will-change: transform, opacity;
         }
-        /* Explosión */
         .pub-effect-explosion {
             animation: explosion 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
@@ -1538,7 +1537,6 @@
             70% { transform: scale(0.95) rotate(-1deg); }
             100% { transform: scale(1) rotate(0deg); }
         }
-        /* Zoom */
         .pub-effect-zoom {
             animation: zoomInPub 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
@@ -1546,7 +1544,6 @@
             0% { transform: scale(0.2); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        /* Rotación */
         .pub-effect-rotate {
             animation: rotateIn 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
@@ -1554,7 +1551,6 @@
             0% { transform: rotate(-180deg) scale(0.3); opacity: 0; }
             100% { transform: rotate(0deg) scale(1); opacity: 1; }
         }
-        /* Desvanecido */
         .pub-effect-fade {
             animation: fadeInPub 0.6s ease forwards;
         }
@@ -1563,101 +1559,110 @@
             100% { opacity: 1; }
         }
 
-        /* ===== CAJITA DE SORPRESA FLOTANTE ===== */
-        #sorpresaBtn {
+        /* ===== CAJA SORPRESA FLOTANTE ===== */
+        #cajaSorpresa {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            z-index: 9998;
-            background: linear-gradient(145deg, #ff416c, #ff4b2b);
-            color: #fff;
-            padding: 15px 25px;
+            z-index: 99998;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #ff9ff3);
+            padding: 16px 24px;
             border-radius: 60px;
-            box-shadow: 0 8px 32px rgba(255, 75, 43, 0.5);
-            font-size: 1.8rem;
-            font-weight: 900;
+            box-shadow: 0 8px 32px rgba(255, 107, 107, 0.6);
             cursor: pointer;
             display: none;
             align-items: center;
             gap: 12px;
-            border: 3px solid #fff;
-            animation: pulseSorpresa 1.2s infinite alternate, flotar 2s ease-in-out infinite;
-            transition: transform 0.2s;
-            user-select: none;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #fff;
             text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 3px solid #fff;
+            animation: flotar 2s infinite alternate ease-in-out;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        #cajaSorpresa:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(255, 107, 107, 0.8);
+        }
+        #cajaSorpresa .cerrar-caja {
+            background: rgba(0,0,0,0.3);
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            margin-left: 8px;
             touch-action: manipulation;
         }
-        #sorpresaBtn:hover {
-            transform: scale(1.05);
-        }
-        #sorpresaBtn i {
-            font-size: 2.2rem;
-            animation: girar 3s linear infinite;
-        }
-        @keyframes pulseSorpresa {
-            0% { box-shadow: 0 8px 32px rgba(255, 75, 43, 0.5); transform: scale(1); }
-            100% { box-shadow: 0 8px 48px rgba(255, 75, 43, 0.9); transform: scale(1.02); }
+        #cajaSorpresa .cerrar-caja:hover {
+            background: rgba(0,0,0,0.6);
         }
         @keyframes flotar {
             0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
-        }
-        @keyframes girar {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            100% { transform: translateY(-12px); }
         }
         @media (max-width: 768px) {
-            #sorpresaBtn {
-                padding: 12px 18px;
+            #cajaSorpresa {
                 font-size: 1.4rem;
+                padding: 12px 18px;
                 bottom: 20px;
                 right: 20px;
             }
-            #sorpresaBtn i {
-                font-size: 1.6rem;
+            #cajaSorpresa .cerrar-caja {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
             }
         }
 
-        /* ===== MODAL DE SORPRESA (miniaturas) ===== */
-        #sorpresaModal .modal {
+        /* ===== MODAL DE PUBLICIDADES (todas las imágenes) ===== */
+        #modalPublicidades .modal {
             max-width: 800px;
         }
-        #sorpresaModal .galeria-sorpresa {
+        #modalPublicidades .galeria-miniaturas {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 15px;
-            margin: 20px 0;
+            margin: 15px 0;
             max-height: 60vh;
             overflow-y: auto;
-            padding: 10px;
+            padding: 5px;
         }
-        #sorpresaModal .galeria-sorpresa .miniatura {
+        #modalPublicidades .galeria-miniaturas img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
             border-radius: 12px;
-            overflow: hidden;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.2s, box-shadow 0.2s;
-            background: var(--bg-card);
             border: 2px solid var(--border);
+            transition: transform 0.2s, border-color 0.2s;
+            touch-action: manipulation;
         }
-        #sorpresaModal .galeria-sorpresa .miniatura:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        #modalPublicidades .galeria-miniaturas img:hover {
+            transform: scale(1.03);
             border-color: var(--primary);
         }
-        #sorpresaModal .galeria-sorpresa .miniatura img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            display: block;
+        #modalPublicidades .contador-imagenes {
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
         }
         @media (max-width: 600px) {
-            #sorpresaModal .galeria-sorpresa {
+            #modalPublicidades .galeria-miniaturas {
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             }
-            #sorpresaModal .galeria-sorpresa .miniatura img {
-                height: 100px;
+            #modalPublicidades .galeria-miniaturas img {
+                height: 90px;
             }
         }
     </style>
@@ -2072,23 +2077,24 @@
     <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
 
-    <!-- ===== CAJITA DE SORPRESA FLOTANTE ===== -->
-    <div id="sorpresaBtn" style="display:none;">
-        <i class="fas fa-gift"></i> ¡OFERTA!
+    <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente) ===== -->
+    <!-- ===== CAJA SORPRESA FLOTANTE ===== -->
+    <div id="cajaSorpresa">
+        <span>🎁 OFERTA!!!</span>
+        <button class="cerrar-caja" id="cerrarCajaBtn" title="Cerrar caja">✕</button>
     </div>
 
-    <!-- ===== MODAL DE SORPRESA (miniaturas) ===== -->
-    <div class="modal-overlay" id="sorpresaModal">
+    <!-- ===== MODAL DE PUBLICIDADES (todas las imágenes) ===== -->
+    <div class="modal-overlay" id="modalPublicidades">
         <div class="modal">
-            <h2><i class="fas fa-gift"></i> ¡Sorpresa! Todas las Ofertas</h2>
-            <div class="galeria-sorpresa" id="galeriaSorpresa"></div>
+            <h2><i class="fas fa-images"></i> Todas las ofertas</h2>
+            <div class="contador-imagenes" id="contadorPublicidades"></div>
+            <div class="galeria-miniaturas" id="galeriaMiniaturas"></div>
             <div class="btn-group">
-                <button class="btn-secondary" onclick="closeModal('sorpresaModal')">Cerrar</button>
+                <button class="btn-secondary" onclick="cerrarModalPublicidades()">Cerrar</button>
             </div>
         </div>
     </div>
-
-    <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente) ===== -->
 </div>
 
 <script>
@@ -2109,7 +2115,7 @@
     const docRef = db.collection('galeria').doc('datos');
 
     // ============================================================
-    //  DATA LAYER
+    //  DATA LAYER - Sin valores por defecto para adminClave
     // ============================================================
     let data = {
         locales: [],
@@ -2148,6 +2154,7 @@
     let ordenActual = 'abiertos';
     const estadoTemporalMap = new Map();
 
+    // Variables para dueño de local
     let ownerLocalId = null;
     let ownerNumero = null;
 
@@ -2752,8 +2759,9 @@
         initVisitCounter();
         await incrementarVisitaGlobal(true);
         initGlobalVisitListeners();
+        // Mostrar publicidad según la nueva lógica
         if (data.publicidad && data.publicidad.activo) {
-            mostrarPublicidad();
+            mostrarPublicidadSecuencial();
         }
 
         if (isAdmin) {
@@ -2858,7 +2866,7 @@
     }
 
     // ============================================================
-    //  LISTENERS
+    //  LISTENERS (con desactivación al abrir modal de edición)
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
@@ -2962,7 +2970,7 @@
     }
 
     // ============================================================
-    //  AUTENTICACIÓN DE DUEÑO
+    //  AUTENTICACIÓN DE DUEÑO (clave = WhatsApp)
     // ============================================================
     function autenticarDueño() {
         const clave = document.getElementById('ownerClave').value.trim();
@@ -3049,7 +3057,7 @@
     }
 
     // ============================================================
-    //  ESTADO DEL LOCAL
+    //  ESTADO DEL LOCAL (con temporal)
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
@@ -3123,7 +3131,7 @@
     }
 
     // ============================================================
-    //  PUBLICIDAD - CON SECUENCIA ALEATORIA SIN REPETICIÓN POR USUARIO
+    //  PUBLICIDAD - SECUENCIAL CON SHUFFLE Y CAJA SORPRESA
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -3248,53 +3256,91 @@
         }
     };
 
-    // --- Funciones de secuencia aleatoria por usuario ---
-    const STORAGE_KEY_IMAGES = 'pubImgsVistas';
-
-    function obtenerSiguienteIndicePublicidad() {
-        const imagenes = data.publicidad.imagenes || [];
-        if (imagenes.length === 0) return -1;
-
-        let vistas = JSON.parse(localStorage.getItem(STORAGE_KEY_IMAGES) || '[]');
-        // Limpiar índices inválidos por si cambiaron las imágenes
-        vistas = vistas.filter(i => i >= 0 && i < imagenes.length);
-
-        if (vistas.length === imagenes.length) {
-            // Ya vio todas, reiniciamos
-            vistas = [];
+    // Función para obtener el shuffle desde localStorage
+    function obtenerShuffle() {
+        const key = 'pub_shuffle';
+        let stored = localStorage.getItem(key);
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                // Verificar que sea un array y que tenga la misma cantidad de imágenes que data.publicidad.imagenes
+                if (Array.isArray(parsed) && parsed.length === data.publicidad.imagenes.length) {
+                    return parsed;
+                }
+            } catch(e) {}
         }
-
-        // Obtener índices no vistos
-        const disponibles = [];
-        for (let i = 0; i < imagenes.length; i++) {
-            if (!vistas.includes(i)) disponibles.push(i);
+        // Crear nuevo shuffle
+        const indices = data.publicidad.imagenes.map((_, i) => i);
+        // Mezclar (Fisher-Yates)
+        for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
         }
-
-        if (disponibles.length === 0) {
-            // Esto no debería pasar, pero por si acaso
-            vistas = [];
-            localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify(vistas));
-            return Math.floor(Math.random() * imagenes.length);
-        }
-
-        // Elegir uno al azar de los disponibles
-        const randomIndex = disponibles[Math.floor(Math.random() * disponibles.length)];
-        vistas.push(randomIndex);
-        localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify(vistas));
-        return randomIndex;
+        localStorage.setItem(key, JSON.stringify(indices));
+        return indices;
     }
 
-    function reiniciarSecuenciaPublicidad() {
-        localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify([]));
+    // Actualizar shuffle en localStorage (guardar el índice actual y el array)
+    function guardarShuffle(shuffle) {
+        localStorage.setItem('pub_shuffle', JSON.stringify(shuffle));
     }
 
-    // --- Mostrar publicidad ---
-    function mostrarPublicidad() {
+    // Obtener el índice actual de la imagen a mostrar (se guarda en localStorage aparte)
+    function obtenerIndiceActual() {
+        const key = 'pub_index';
+        const val = localStorage.getItem(key);
+        if (val !== null) {
+            const idx = parseInt(val, 10);
+            if (!isNaN(idx)) return idx;
+        }
+        return 0;
+    }
+
+    function guardarIndiceActual(idx) {
+        localStorage.setItem('pub_index', String(idx));
+    }
+
+    // Reiniciar el ciclo (cuando se han mostrado todas)
+    function reiniciarCiclo() {
+        const shuffle = obtenerShuffle(); // genera nuevo shuffle
+        guardarShuffle(shuffle);
+        guardarIndiceActual(0);
+        // Ocultar caja sorpresa si estaba visible
+        ocultarCajaSorpresa();
+    }
+
+    // Mostrar la siguiente imagen de publicidad (secuencial)
+    function mostrarPublicidadSecuencial() {
         if (!data.publicidad || !data.publicidad.activo) return;
-
-        if (data.publicidad.tipo === 'imagen' && (!data.publicidad.imagenes || data.publicidad.imagenes.length === 0)) {
+        if (data.publicidad.tipo !== 'imagen' || data.publicidad.imagenes.length === 0) {
+            // Si no hay imágenes, no mostramos nada
             return;
         }
+
+        // Obtener shuffle y índice actual
+        let shuffle = obtenerShuffle();
+        let idx = obtenerIndiceActual();
+
+        // Si ya se mostraron todas, reiniciar y mostrar la primera
+        if (idx >= shuffle.length) {
+            reiniciarCiclo();
+            shuffle = obtenerShuffle();
+            idx = 0;
+            guardarIndiceActual(0);
+        }
+
+        const imagenIndex = shuffle[idx];
+        const imagenUrl = data.publicidad.imagenes[imagenIndex];
+        if (!imagenUrl) {
+            // Si la imagen no existe, pasar a la siguiente
+            guardarIndiceActual(idx + 1);
+            mostrarPublicidadSecuencial();
+            return;
+        }
+
+        // Mostrar la imagen con efecto
+        const duracion = (data.publicidad.duracion || 5) * 1000;
+        const efecto = data.publicidad.efectoImagen || 'explosion';
 
         let overlay = document.getElementById('publicidadOverlay');
         if (!overlay) {
@@ -3310,47 +3356,24 @@
                 </svg>
             `;
             document.body.appendChild(overlay);
-            document.getElementById('cerrarPublicidadBtn').addEventListener('click', cerrarPublicidad);
+            document.getElementById('cerrarPublicidadBtn').addEventListener('click', function() {
+                cerrarPublicidad();
+                // Si se cierra manualmente, no avanzamos al siguiente? mejor no, solo cerramos.
+            });
             overlay.addEventListener('click', function(e) {
-                if (e.target === this) cerrarPublicidad();
+                if (e.target === this) {
+                    cerrarPublicidad();
+                }
             });
         }
 
         const contenido = document.getElementById('publicidadContenido');
-        let imagenUrl = '';
-        if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
-            const idx = obtenerSiguienteIndicePublicidad();
-            if (idx >= 0) {
-                imagenUrl = data.publicidad.imagenes[idx];
-            } else {
-                imagenUrl = '';
-            }
-        }
-
-        if (imagenUrl) {
-            const efecto = data.publicidad.efectoImagen || 'explosion';
-            contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad pub-img pub-effect-${efecto}" onerror="this.style.display='none'">`;
-        } else {
-            // Fallback a texto
-            const textos = data.publicidad.textos || [
-                { texto: data.publicidad.contenido, fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
-                { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
-                { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
-            ];
-            let html = '';
-            textos.forEach((t, idx) => {
-                if (t.texto && t.texto.trim() !== '') {
-                    const fondo = t.fondo && t.fondo !== 'transparente' ? t.fondo : 'transparent';
-                    html += `<div class="texto-neon" style="font-family:${t.fuente || 'Arial'} !important; font-size:${t.tamaño || '36'}px !important; color:${t.color || '#ffffff'} !important; background:${fondo}; padding:4px 12px; border-radius:8px; display:inline-block; margin:4px;">${t.texto}</div>`;
-                }
-            });
-            contenido.innerHTML = html || '<div class="texto-neon">¡Sin texto!</div>';
-        }
+        contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad pub-img pub-effect-${efecto}" onerror="this.style.display='none'">`;
 
         overlay.classList.add('active');
         dispararConfeti(data.publicidad.efecto || 'confeti');
 
-        const duracion = (data.publicidad.duracion || 5) * 1000;
+        // Círculo de progreso
         const circle = document.getElementById('progressCircle');
         if (circle) {
             const circumference = 2 * Math.PI * 20;
@@ -3370,9 +3393,20 @@
             requestAnimationFrame(actualizarProgreso);
         }
 
+        // Temporizador para cerrar y avanzar
         if (window._publicidadTimer) clearTimeout(window._publicidadTimer);
         window._publicidadTimer = setTimeout(() => {
             cerrarPublicidad();
+            // Avanzar al siguiente índice
+            const nuevoIdx = idx + 1;
+            guardarIndiceActual(nuevoIdx);
+            // Si ya se mostró la última, mostrar la caja sorpresa
+            if (nuevoIdx >= shuffle.length) {
+                // Mostrar caja sorpresa
+                mostrarCajaSorpresa();
+                // Reiniciar el ciclo para la próxima vez que se recargue la página
+                // No reiniciamos aquí para que la caja aparezca, pero al recargar la página se reiniciará.
+            }
         }, duracion);
     }
 
@@ -3383,77 +3417,72 @@
             clearTimeout(window._publicidadTimer);
             window._publicidadTimer = null;
         }
-        // Mostrar la cajita de sorpresa después de cerrar la publicidad
-        mostrarSorpresa();
     }
 
-    // ============================================================
-    //  CAJITA DE SORPRESA (con eventos click y touchstart para móvil)
-    // ============================================================
-    let sorpresaListenerAsignado = false;
+    // ===== CAJA SORPRESA =====
+    function mostrarCajaSorpresa() {
+        const caja = document.getElementById('cajaSorpresa');
+        if (caja) caja.style.display = 'flex';
+    }
 
-    function mostrarSorpresa() {
-        const btn = document.getElementById('sorpresaBtn');
-        if (!btn) return;
+    function ocultarCajaSorpresa() {
+        const caja = document.getElementById('cajaSorpresa');
+        if (caja) caja.style.display = 'none';
+    }
+
+    // Evento clic en la caja: abrir modal con todas las imágenes
+    function abrirModalPublicidades() {
         const imagenes = data.publicidad.imagenes || [];
         if (imagenes.length === 0) {
-            btn.style.display = 'none';
+            showToast('No hay imágenes publicitarias.');
             return;
         }
-        btn.style.display = 'flex';
 
-        // Asignar eventos solo una vez, con un pequeño retraso para asegurar el DOM
-        if (!sorpresaListenerAsignado) {
-            // Usamos una función manejadora común que previene el doble disparo
-            const handler = function(e) {
-                e.preventDefault(); // Evita duplicados en móviles
-                // Disparamos confeti
-                if (typeof confetti === 'function') {
-                    confetti({
-                        particleCount: 200,
-                        spread: 100,
-                        origin: { y: 0.5 }
-                    });
-                    setTimeout(() => {
-                        confetti({
-                            particleCount: 150,
-                            spread: 80,
-                            origin: { y: 0.3, x: 0.2 }
-                        });
-                    }, 200);
-                    setTimeout(() => {
-                        confetti({
-                            particleCount: 150,
-                            spread: 80,
-                            origin: { y: 0.3, x: 0.8 }
-                        });
-                    }, 400);
-                }
-                abrirModalSorpresa();
-            };
+        const modal = document.getElementById('modalPublicidades');
+        const contador = document.getElementById('contadorPublicidades');
+        const galeria = document.getElementById('galeriaMiniaturas');
+        contador.textContent = `Total: ${imagenes.length} ofertas`;
+        galeria.innerHTML = imagenes.map((url, i) => `
+            <img src="${url}" alt="Oferta ${i+1}" onclick="openImageZoom('${url}')" loading="lazy">
+        `).join('');
 
-            // Eventos para click y touch
-            btn.addEventListener('click', handler);
-            btn.addEventListener('touchstart', handler, { passive: false });
-            sorpresaListenerAsignado = true;
-        }
+        modal.classList.add('active');
+        // Confeti al abrir
+        dispararConfeti(data.publicidad.efecto || 'confeti');
+        // También lanzar más confeti con retardo
+        setTimeout(() => {
+            dispararConfeti(data.publicidad.efecto || 'confeti');
+        }, 500);
     }
 
-    function abrirModalSorpresa() {
-        const imagenes = data.publicidad.imagenes || [];
-        const galeria = document.getElementById('galeriaSorpresa');
-        if (!galeria) return;
-        if (imagenes.length === 0) {
-            galeria.innerHTML = '<p>No hay imágenes de publicidad.</p>';
-        } else {
-            galeria.innerHTML = imagenes.map((url, idx) => `
-                <div class="miniatura" onclick="openImageZoom('${url}')">
-                    <img src="${url}" alt="Publicidad ${idx+1}" onerror="this.src='${DEFAULT_IMAGE_URL}'">
-                </div>
-            `).join('');
-        }
-        openModal('sorpresaModal');
+    function cerrarModalPublicidades() {
+        document.getElementById('modalPublicidades').classList.remove('active');
     }
+
+    // Eventos para la caja sorpresa
+    document.addEventListener('DOMContentLoaded', function() {
+        const caja = document.getElementById('cajaSorpresa');
+        const cerrarCaja = document.getElementById('cerrarCajaBtn');
+        caja.addEventListener('click', function(e) {
+            if (e.target.closest('.cerrar-caja')) return;
+            abrirModalPublicidades();
+        });
+        cerrarCaja.addEventListener('click', function(e) {
+            e.stopPropagation();
+            ocultarCajaSorpresa();
+        });
+        // También cerrar modal al hacer clic fuera
+        document.getElementById('modalPublicidades').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalPublicidades();
+        });
+        // Cerrar con escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarModalPublicidades();
+                cerrarPublicidad();
+            }
+        });
+    });
 
     // ============================================================
     //  EVENTO DE CLIC LARGO EN EL TÍTULO PARA ACCESO ADMIN
@@ -3912,7 +3941,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES
+    //  RENDER LOCALES (sin cambios)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -4902,6 +4931,7 @@
         container.innerHTML = html;
         backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
 
+        // Mostrar/ocultar selector de efecto de imagen según tipo
         document.getElementById('pubTipo').addEventListener('change', function() {
             const efectoImg = document.getElementById('pubEfectoImagen');
             if (this.value === 'imagen') {
@@ -4911,6 +4941,7 @@
             }
         });
 
+        // Agregar imagen (con file input para compresión)
         document.getElementById('agregarImgPublicidad').addEventListener('click', function() {
             const lista = document.getElementById('listaImagenesPublicidad');
             const div = document.createElement('div');
@@ -4922,6 +4953,7 @@
                 <button class="btn-remove-img" style="background:var(--red); color:#fff; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer;"><i class="fas fa-times"></i></button>
             `;
             lista.appendChild(div);
+            // Evento para eliminar
             div.querySelector('.btn-remove-img').addEventListener('click', function() {
                 if (lista.children.length > 1) {
                     div.remove();
@@ -4929,6 +4961,7 @@
                     showToast('Debe quedar al menos una imagen');
                 }
             });
+            // Evento para comprimir archivo
             div.querySelector('.pub-img-file').addEventListener('change', async function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -4946,6 +4979,7 @@
             });
         });
 
+        // Asignar eventos a los botones eliminar existentes y a los inputs de archivo
         document.querySelectorAll('#listaImagenesPublicidad .btn-remove-img').forEach(btn => {
             btn.addEventListener('click', function() {
                 const lista = document.getElementById('listaImagenesPublicidad');
@@ -4988,6 +5022,7 @@
         const efecto = document.getElementById('pubEfecto').value;
         const efectoImagen = document.getElementById('pubEfectoImagen').value;
 
+        // Obtener lista de imágenes
         const imagenInputs = document.querySelectorAll('#listaImagenesPublicidad .pub-img-url');
         const imagenes = [];
         imagenInputs.forEach(inp => {
@@ -4995,6 +5030,7 @@
             if (url) imagenes.push(url);
         });
 
+        // Obtener textos
         const textos = [];
         document.querySelectorAll('.pub-texto').forEach(inp => {
             const idx = parseInt(inp.dataset.idx);
@@ -5006,6 +5042,7 @@
             textos[idx] = { texto, fuente, tamaño, color, fondo };
         });
 
+        // Validaciones
         if (tipo === 'imagen' && imagenes.length === 0) {
             showToast('Agrega al menos una imagen.');
             return;
@@ -5027,9 +5064,13 @@
         };
         await saveData();
         showToast('Configuración de publicidad guardada.');
+        // Reiniciar el shuffle para que empiece desde la primera imagen al guardar
+        localStorage.removeItem('pub_shuffle');
+        localStorage.removeItem('pub_index');
+        ocultarCajaSorpresa();
         if (activo) {
             cerrarPublicidad();
-            setTimeout(() => mostrarPublicidad(), 300);
+            setTimeout(() => mostrarPublicidadSecuencial(), 300);
         } else {
             cerrarPublicidad();
         }
@@ -5221,11 +5262,6 @@
         }
         if (document.getElementById('visitNumber')) {
             actualizarNumeroVisitante(data.visitasTotales || 0, false);
-        }
-        // Mostrar la cajita de sorpresa si hay imágenes y la publicidad no está activa (o ya se cerró)
-        const imagenes = data.publicidad.imagenes || [];
-        if (imagenes.length > 0 && !data.publicidad.activo) {
-            mostrarSorpresa();
         }
     }
 
@@ -5561,7 +5597,8 @@
     window.toggleTemporalEstado = toggleTemporalEstado;
     window.autenticarDueño = autenticarDueño;
     window.cerrarModalEdicion = cerrarModalEdicion;
-    window.abrirModalSorpresa = abrirModalSorpresa;
+    window.abrirModalPublicidades = abrirModalPublicidades;
+    window.cerrarModalPublicidades = cerrarModalPublicidades;
 </script>
 </body>
 </html>
