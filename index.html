@@ -1585,6 +1585,7 @@
             transition: transform 0.2s;
             user-select: none;
             text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            touch-action: manipulation; /* Mejora la respuesta táctil */
         }
         #sorpresaBtn:hover {
             transform: scale(1.05);
@@ -3402,11 +3403,13 @@
         // Si ya estaba visible, no hacer nada
     }
 
-    // Evento clic en la cajita
+    // Evento clic en la cajita (soporte táctil)
     document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('sorpresaBtn');
         if (btn) {
-            btn.addEventListener('click', function() {
+            // Función unificada para abrir la sorpresa
+            const abrirSorpresa = function(e) {
+                e.preventDefault();
                 // Explosión de confeti
                 if (typeof confetti === 'function') {
                     confetti({
@@ -3430,7 +3433,15 @@
                     }, 400);
                 }
                 abrirModalSorpresa();
-            });
+            };
+
+            // Asignar múltiples eventos para garantizar funcionamiento en táctil y ratón
+            btn.addEventListener('click', abrirSorpresa);
+            btn.addEventListener('touchstart', abrirSorpresa, { passive: false });
+            btn.addEventListener('pointerdown', abrirSorpresa, { passive: false });
+
+            // Mejora la respuesta táctil
+            btn.style.touchAction = 'manipulation';
         }
     });
 
