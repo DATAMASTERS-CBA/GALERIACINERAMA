@@ -1585,6 +1585,7 @@
             transition: transform 0.2s;
             user-select: none;
             text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            touch-action: manipulation;
         }
         #sorpresaBtn:hover {
             transform: scale(1.05);
@@ -3322,7 +3323,6 @@
             if (idx >= 0) {
                 imagenUrl = data.publicidad.imagenes[idx];
             } else {
-                // No hay imágenes, mostrar texto fallback
                 imagenUrl = '';
             }
         }
@@ -3388,8 +3388,10 @@
     }
 
     // ============================================================
-    //  CAJITA DE SORPRESA
+    //  CAJITA DE SORPRESA (con evento para móvil)
     // ============================================================
+    let sorpresaListenerAsignado = false;
+
     function mostrarSorpresa() {
         const btn = document.getElementById('sorpresaBtn');
         if (!btn) return;
@@ -3399,15 +3401,14 @@
             return;
         }
         btn.style.display = 'flex';
-        // Si ya estaba visible, no hacer nada
-    }
 
-    // Evento clic en la cajita
-    document.addEventListener('DOMContentLoaded', function() {
-        const btn = document.getElementById('sorpresaBtn');
-        if (btn) {
-            btn.addEventListener('click', function() {
-                // Explosión de confeti
+        // Asignar evento solo una vez
+        if (!sorpresaListenerAsignado) {
+            // Usamos pointerdown para mejor respuesta táctil, y click como respaldo
+            const handler = function(e) {
+                e.preventDefault(); // Evita eventos duplicados en móviles
+                abrirModalSorpresa();
+                // Disparar confeti
                 if (typeof confetti === 'function') {
                     confetti({
                         particleCount: 200,
@@ -3429,10 +3430,12 @@
                         });
                     }, 400);
                 }
-                abrirModalSorpresa();
-            });
+            };
+            btn.addEventListener('pointerdown', handler);
+            btn.addEventListener('click', handler); // Por si acaso
+            sorpresaListenerAsignado = true;
         }
-    });
+    }
 
     function abrirModalSorpresa() {
         const imagenes = data.publicidad.imagenes || [];
