@@ -1563,101 +1563,88 @@
             100% { opacity: 1; }
         }
 
-        /* ===== CAJITA DE SORPRESA FLOTANTE ===== */
-        #sorpresaBtn {
+        /* ===== GLOBITO FLOTANTE ===== */
+        #globitoPublicidad {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            z-index: 9998;
-            background: linear-gradient(145deg, #ff416c, #ff4b2b);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
             color: #fff;
-            padding: 15px 25px;
-            border-radius: 60px;
-            box-shadow: 0 8px 32px rgba(255, 75, 43, 0.5);
-            font-size: 1.8rem;
-            font-weight: 900;
-            cursor: pointer;
             display: none;
             align-items: center;
-            gap: 12px;
-            border: 3px solid #fff;
-            animation: pulseSorpresa 1.2s infinite alternate, flotar 2s ease-in-out infinite;
-            transition: transform 0.2s;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 9999;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid rgba(255,255,255,0.3);
             user-select: none;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            touch-action: manipulation; /* Mejora la respuesta táctil */
         }
-        #sorpresaBtn:hover {
-            transform: scale(1.05);
+        #globitoPublicidad:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.4);
         }
-        #sorpresaBtn i {
-            font-size: 2.2rem;
-            animation: girar 3s linear infinite;
-        }
-        @keyframes pulseSorpresa {
-            0% { box-shadow: 0 8px 32px rgba(255, 75, 43, 0.5); transform: scale(1); }
-            100% { box-shadow: 0 8px 48px rgba(255, 75, 43, 0.9); transform: scale(1.02); }
-        }
-        @keyframes flotar {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
-        }
-        @keyframes girar {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @media (max-width: 768px) {
-            #sorpresaBtn {
-                padding: 12px 18px;
-                font-size: 1.4rem;
-                bottom: 20px;
-                right: 20px;
-            }
-            #sorpresaBtn i {
-                font-size: 1.6rem;
-            }
+        #globitoPublicidad .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--red);
+            color: #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid #fff;
         }
 
-        /* ===== MODAL DE SORPRESA (miniaturas) ===== */
-        #sorpresaModal .modal {
-            max-width: 800px;
+        /* Modal de miniaturas de publicidad */
+        #miniaturasPublicidadModal .modal {
+            max-width: 700px;
         }
-        #sorpresaModal .galeria-sorpresa {
+        .miniaturas-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-            max-height: 60vh;
-            overflow-y: auto;
-            padding: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
         }
-        #sorpresaModal .galeria-sorpresa .miniatura {
-            border-radius: 12px;
+        .miniaturas-grid .miniatura-item {
+            border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.2s, box-shadow 0.2s;
-            background: var(--bg-card);
             border: 2px solid var(--border);
+            transition: transform 0.2s, border-color 0.2s;
+            background: #000;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #sorpresaModal .galeria-sorpresa .miniatura:hover {
+        .miniaturas-grid .miniatura-item:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
             border-color: var(--primary);
         }
-        #sorpresaModal .galeria-sorpresa .miniatura img {
+        .miniaturas-grid .miniatura-item img {
             width: 100%;
-            height: 150px;
+            height: 100%;
             object-fit: cover;
-            display: block;
+        }
+        .miniaturas-grid .miniatura-item .sin-imagen {
+            color: #fff;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 10px;
         }
         @media (max-width: 600px) {
-            #sorpresaModal .galeria-sorpresa {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
-            #sorpresaModal .galeria-sorpresa .miniatura img {
-                height: 100px;
+            .miniaturas-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
             }
         }
     </style>
@@ -2072,22 +2059,6 @@
     <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
 
-    <!-- ===== CAJITA DE SORPRESA FLOTANTE ===== -->
-    <div id="sorpresaBtn" style="display:none;">
-        <i class="fas fa-gift"></i> ¡OFERTA!
-    </div>
-
-    <!-- ===== MODAL DE SORPRESA (miniaturas) ===== -->
-    <div class="modal-overlay" id="sorpresaModal">
-        <div class="modal">
-            <h2><i class="fas fa-gift"></i> ¡Sorpresa! Todas las Ofertas</h2>
-            <div class="galeria-sorpresa" id="galeriaSorpresa"></div>
-            <div class="btn-group">
-                <button class="btn-secondary" onclick="closeModal('sorpresaModal')">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- ===== OVERLAY DE PUBLICIDAD (se crea dinámicamente) ===== -->
 </div>
 
@@ -2109,7 +2080,7 @@
     const docRef = db.collection('galeria').doc('datos');
 
     // ============================================================
-    //  DATA LAYER
+    //  DATA LAYER - Sin valores por defecto para adminClave
     // ============================================================
     let data = {
         locales: [],
@@ -2148,6 +2119,7 @@
     let ordenActual = 'abiertos';
     const estadoTemporalMap = new Map();
 
+    // Variables para dueño de local
     let ownerLocalId = null;
     let ownerNumero = null;
 
@@ -2858,7 +2830,7 @@
     }
 
     // ============================================================
-    //  LISTENERS
+    //  LISTENERS (con desactivación al abrir modal de edición)
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
@@ -2962,7 +2934,7 @@
     }
 
     // ============================================================
-    //  AUTENTICACIÓN DE DUEÑO
+    //  AUTENTICACIÓN DE DUEÑO (clave = WhatsApp)
     // ============================================================
     function autenticarDueño() {
         const clave = document.getElementById('ownerClave').value.trim();
@@ -3049,7 +3021,7 @@
     }
 
     // ============================================================
-    //  ESTADO DEL LOCAL
+    //  ESTADO DEL LOCAL (con temporal)
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
@@ -3123,7 +3095,7 @@
     }
 
     // ============================================================
-    //  PUBLICIDAD - CON SECUENCIA ALEATORIA SIN REPETICIÓN POR USUARIO
+    //  PUBLICIDAD - CON MÚLTIPLES IMÁGENES, ROTACIÓN POR USUARIO Y GLOBITO
     // ============================================================
     const EFECTOS_CONFETI = {
         'confeti': {
@@ -3248,47 +3220,152 @@
         }
     };
 
-    // --- Funciones de secuencia aleatoria por usuario ---
-    const STORAGE_KEY_IMAGES = 'pubImgsVistas';
+    // ---------- ROTACIÓN DE IMÁGENES POR USUARIO ----------
+    const STORAGE_KEY_SECUENCIA = 'pub_secuencia_usuario';
 
-    function obtenerSiguienteIndicePublicidad() {
+    function obtenerSecuenciaUsuario() {
+        let secuencia = localStorage.getItem(STORAGE_KEY_SECUENCIA);
+        if (secuencia) {
+            try {
+                return JSON.parse(secuencia);
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    function guardarSecuenciaUsuario(secuencia) {
+        localStorage.setItem(STORAGE_KEY_SECUENCIA, JSON.stringify(secuencia));
+    }
+
+    function generarSecuenciaAleatoria(longitud) {
+        const indices = Array.from({ length: longitud }, (_, i) => i);
+        // Fisher-Yates
+        for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+        return indices;
+    }
+
+    function obtenerSiguienteIndiceImagen() {
         const imagenes = data.publicidad.imagenes || [];
         if (imagenes.length === 0) return -1;
 
-        let vistas = JSON.parse(localStorage.getItem(STORAGE_KEY_IMAGES) || '[]');
-        // Limpiar índices inválidos por si cambiaron las imágenes
-        vistas = vistas.filter(i => i >= 0 && i < imagenes.length);
-
-        if (vistas.length === imagenes.length) {
-            // Ya vio todas, reiniciamos
-            vistas = [];
+        let secuencia = obtenerSecuenciaUsuario();
+        if (!secuencia || secuencia.length !== imagenes.length || !Array.isArray(secuencia)) {
+            // Generar nueva secuencia aleatoria
+            secuencia = generarSecuenciaAleatoria(imagenes.length);
+            guardarSecuenciaUsuario(secuencia);
+            return secuencia[0];
         }
 
-        // Obtener índices no vistos
-        const disponibles = [];
-        for (let i = 0; i < imagenes.length; i++) {
-            if (!vistas.includes(i)) disponibles.push(i);
-        }
+        // Buscar el índice actual (el último mostrado)
+        let idxActual = localStorage.getItem('pub_indice_actual');
+        idxActual = idxActual !== null ? parseInt(idxActual) : -1;
 
-        if (disponibles.length === 0) {
-            // Esto no debería pasar, pero por si acaso
-            vistas = [];
-            localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify(vistas));
-            return Math.floor(Math.random() * imagenes.length);
+        let nuevoIdx = idxActual + 1;
+        if (nuevoIdx >= secuencia.length) {
+            nuevoIdx = 0; // reiniciar ciclo
         }
-
-        // Elegir uno al azar de los disponibles
-        const randomIndex = disponibles[Math.floor(Math.random() * disponibles.length)];
-        vistas.push(randomIndex);
-        localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify(vistas));
-        return randomIndex;
+        localStorage.setItem('pub_indice_actual', nuevoIdx);
+        return secuencia[nuevoIdx];
     }
 
-    function reiniciarSecuenciaPublicidad() {
-        localStorage.setItem(STORAGE_KEY_IMAGES, JSON.stringify([]));
+    // ---------- GLOBITO FLOTANTE ----------
+    function mostrarGlobitoPublicidad() {
+        const imagenes = data.publicidad.imagenes || [];
+        if (imagenes.length === 0) return;
+        if (!data.publicidad.activo) return;
+
+        let globito = document.getElementById('globitoPublicidad');
+        if (!globito) {
+            globito = document.createElement('div');
+            globito.id = 'globitoPublicidad';
+            globito.innerHTML = `
+                <i class="fas fa-images"></i>
+                <span class="badge">${imagenes.length}</span>
+            `;
+            document.body.appendChild(globito);
+            globito.addEventListener('click', function() {
+                abrirModalMiniaturasPublicidad();
+            });
+        }
+        // Actualizar badge (por si cambió el número)
+        const badge = globito.querySelector('.badge');
+        if (badge) badge.textContent = imagenes.length;
+        globito.style.display = 'flex';
     }
 
-    // --- Mostrar publicidad ---
+    function ocultarGlobitoPublicidad() {
+        const globito = document.getElementById('globitoPublicidad');
+        if (globito) globito.style.display = 'none';
+    }
+
+    // ---------- MODAL DE MINIATURAS ----------
+    function abrirModalMiniaturasPublicidad() {
+        const imagenes = data.publicidad.imagenes || [];
+        if (imagenes.length === 0) {
+            showToast('No hay imágenes publicitarias');
+            return;
+        }
+
+        // Crear modal si no existe
+        let modal = document.getElementById('miniaturasPublicidadModal');
+        if (!modal) {
+            const overlay = document.createElement('div');
+            overlay.id = 'miniaturasPublicidadModal';
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal">
+                    <h2><i class="fas fa-images"></i> Publicidades <span class="cerrar-modal" style="float:right; cursor:pointer; font-size:1.8rem; color:var(--red);">&times;</span></h2>
+                    <div class="miniaturas-grid" id="miniaturasGrid"></div>
+                    <div class="btn-group">
+                        <button class="btn-secondary" onclick="cerrarMiniaturasPublicidad()">Cerrar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) cerrarMiniaturasPublicidad();
+            });
+            overlay.querySelector('.cerrar-modal').addEventListener('click', cerrarMiniaturasPublicidad);
+            modal = overlay;
+        }
+
+        const grid = document.getElementById('miniaturasGrid');
+        grid.innerHTML = '';
+        imagenes.forEach((url, idx) => {
+            const item = document.createElement('div');
+            item.className = 'miniatura-item';
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = `Publicidad ${idx+1}`;
+            img.onerror = function() {
+                this.style.display = 'none';
+                const span = document.createElement('span');
+                span.className = 'sin-imagen';
+                span.textContent = 'Error';
+                item.appendChild(span);
+            };
+            item.appendChild(img);
+            item.addEventListener('click', function() {
+                openImageZoom(url);
+            });
+            grid.appendChild(item);
+        });
+
+        // Abrir modal
+        modal.classList.add('active');
+    }
+
+    function cerrarMiniaturasPublicidad() {
+        const modal = document.getElementById('miniaturasPublicidadModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    // ---------- MOSTRAR PUBLICIDAD PRINCIPAL ----------
     function mostrarPublicidad() {
         if (!data.publicidad || !data.publicidad.activo) return;
 
@@ -3310,7 +3387,9 @@
                 </svg>
             `;
             document.body.appendChild(overlay);
-            document.getElementById('cerrarPublicidadBtn').addEventListener('click', cerrarPublicidad);
+            document.getElementById('cerrarPublicidadBtn').addEventListener('click', function() {
+                cerrarPublicidad();
+            });
             overlay.addEventListener('click', function(e) {
                 if (e.target === this) cerrarPublicidad();
             });
@@ -3319,18 +3398,25 @@
         const contenido = document.getElementById('publicidadContenido');
         let imagenUrl = '';
         if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
-            const idx = obtenerSiguienteIndicePublicidad();
-            if (idx >= 0) {
+            const idx = obtenerSiguienteIndiceImagen();
+            if (idx >= 0 && idx < data.publicidad.imagenes.length) {
                 imagenUrl = data.publicidad.imagenes[idx];
             } else {
-                // No hay imágenes, mostrar texto fallback
-                imagenUrl = '';
+                // fallback: primera imagen
+                imagenUrl = data.publicidad.imagenes[0];
             }
         }
 
         if (imagenUrl) {
             const efecto = data.publicidad.efectoImagen || 'explosion';
-            contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad pub-img pub-effect-${efecto}" onerror="this.style.display='none'">`;
+            // Limpiar animación anterior removiendo la clase y forzando reflow
+            contenido.innerHTML = `<img src="${imagenUrl}" alt="Publicidad" class="imagen-publicidad pub-img" onerror="this.style.display='none'">`;
+            const img = contenido.querySelector('img');
+            if (img) {
+                // Forzar reflow para reiniciar animación
+                void img.offsetWidth;
+                img.classList.add('pub-effect-' + efecto);
+            }
         } else {
             // Fallback a texto
             const textos = data.publicidad.textos || [
@@ -3384,81 +3470,77 @@
             clearTimeout(window._publicidadTimer);
             window._publicidadTimer = null;
         }
-        // Mostrar la cajita de sorpresa después de cerrar la publicidad
-        mostrarSorpresa();
+        // Mostrar globito después de cerrar la publicidad (si hay imágenes)
+        if (data.publicidad.tipo === 'imagen' && data.publicidad.imagenes.length > 0) {
+            mostrarGlobitoPublicidad();
+        }
     }
 
-    // ============================================================
-    //  CAJITA DE SORPRESA
-    // ============================================================
-    function mostrarSorpresa() {
-        const btn = document.getElementById('sorpresaBtn');
-        if (!btn) return;
-        const imagenes = data.publicidad.imagenes || [];
-        if (imagenes.length === 0) {
-            btn.style.display = 'none';
-            return;
+    function dispararConfeti(effectName) {
+        if (typeof confetti !== 'function') return;
+        const config = EFECTOS_CONFETI[effectName] || EFECTOS_CONFETI['confeti'];
+        const { colors, shapes, scalar, spread, particleCount, startVelocity, gravity, drift } = config;
+
+        confetti({
+            particleCount: particleCount,
+            spread: spread,
+            origin: { y: 0.6 },
+            startVelocity: startVelocity,
+            colors: colors,
+            shapes: shapes,
+            scalar: scalar,
+            gravity: gravity,
+            drift: drift
+        });
+
+        if (['fuegoartificial', 'arcoiris', 'diadelnino'].includes(effectName)) {
+            setTimeout(() => {
+                confetti({
+                    particleCount: Math.floor(particleCount * 0.6),
+                    spread: spread * 0.8,
+                    origin: { y: 0.4, x: 0.3 },
+                    startVelocity: startVelocity * 0.8,
+                    colors: colors,
+                    shapes: shapes,
+                    scalar: scalar * 0.9,
+                    gravity: gravity * 0.8,
+                    drift: drift
+                });
+            }, 300);
+            setTimeout(() => {
+                confetti({
+                    particleCount: Math.floor(particleCount * 0.6),
+                    spread: spread * 0.8,
+                    origin: { y: 0.4, x: 0.7 },
+                    startVelocity: startVelocity * 0.8,
+                    colors: colors,
+                    shapes: shapes,
+                    scalar: scalar * 0.9,
+                    gravity: gravity * 0.8,
+                    drift: drift
+                });
+            }, 500);
         }
-        btn.style.display = 'flex';
-        // Si ya estaba visible, no hacer nada
-    }
 
-    // Evento clic en la cajita (soporte táctil)
-    document.addEventListener('DOMContentLoaded', function() {
-        const btn = document.getElementById('sorpresaBtn');
-        if (btn) {
-            // Función unificada para abrir la sorpresa
-            const abrirSorpresa = function(e) {
-                e.preventDefault();
-                // Explosión de confeti
-                if (typeof confetti === 'function') {
-                    confetti({
-                        particleCount: 200,
-                        spread: 100,
-                        origin: { y: 0.5 }
-                    });
-                    setTimeout(() => {
-                        confetti({
-                            particleCount: 150,
-                            spread: 80,
-                            origin: { y: 0.3, x: 0.2 }
-                        });
-                    }, 200);
-                    setTimeout(() => {
-                        confetti({
-                            particleCount: 150,
-                            spread: 80,
-                            origin: { y: 0.3, x: 0.8 }
-                        });
-                    }, 400);
-                }
-                abrirModalSorpresa();
-            };
-
-            // Asignar múltiples eventos para garantizar funcionamiento en táctil y ratón
-            btn.addEventListener('click', abrirSorpresa);
-            btn.addEventListener('touchstart', abrirSorpresa, { passive: false });
-            btn.addEventListener('pointerdown', abrirSorpresa, { passive: false });
-
-            // Mejora la respuesta táctil
-            btn.style.touchAction = 'manipulation';
-        }
-    });
-
-    function abrirModalSorpresa() {
-        const imagenes = data.publicidad.imagenes || [];
-        const galeria = document.getElementById('galeriaSorpresa');
-        if (!galeria) return;
-        if (imagenes.length === 0) {
-            galeria.innerHTML = '<p>No hay imágenes de publicidad.</p>';
-        } else {
-            galeria.innerHTML = imagenes.map((url, idx) => `
-                <div class="miniatura" onclick="openImageZoom('${url}')">
-                    <img src="${url}" alt="Publicidad ${idx+1}" onerror="this.src='${DEFAULT_IMAGE_URL}'">
-                </div>
-            `).join('');
-        }
-        openModal('sorpresaModal');
+        const duracion = (data.publicidad.duracion || 5) * 1000;
+        const interval = setInterval(() => {
+            if (!document.getElementById('publicidadOverlay') || !document.getElementById('publicidadOverlay').classList.contains('active')) {
+                clearInterval(interval);
+                return;
+            }
+            confetti({
+                particleCount: Math.floor(particleCount * 0.3),
+                spread: spread * 0.6,
+                origin: { y: 0, x: Math.random() },
+                startVelocity: startVelocity * 0.5,
+                colors: colors,
+                shapes: shapes,
+                scalar: scalar * 0.8,
+                gravity: gravity * 0.9,
+                drift: drift * 0.5
+            });
+        }, 500);
+        setTimeout(() => clearInterval(interval), duracion);
     }
 
     // ============================================================
@@ -3918,7 +4000,7 @@
     }
 
     // ============================================================
-    //  RENDER LOCALES
+    //  RENDER LOCALES (sin cambios)
     // ============================================================
     function renderLocales(filteredLocales) {
         const grid = document.getElementById('localsGrid');
@@ -4908,6 +4990,7 @@
         container.innerHTML = html;
         backupDiv.parentNode.insertBefore(container, backupDiv.nextSibling);
 
+        // Mostrar/ocultar selector de efecto de imagen según tipo
         document.getElementById('pubTipo').addEventListener('change', function() {
             const efectoImg = document.getElementById('pubEfectoImagen');
             if (this.value === 'imagen') {
@@ -4917,6 +5000,7 @@
             }
         });
 
+        // Agregar imagen (con file input para compresión)
         document.getElementById('agregarImgPublicidad').addEventListener('click', function() {
             const lista = document.getElementById('listaImagenesPublicidad');
             const div = document.createElement('div');
@@ -4952,6 +5036,7 @@
             });
         });
 
+        // Asignar eventos a los botones eliminar existentes y a los inputs de archivo
         document.querySelectorAll('#listaImagenesPublicidad .btn-remove-img').forEach(btn => {
             btn.addEventListener('click', function() {
                 const lista = document.getElementById('listaImagenesPublicidad');
@@ -4994,6 +5079,7 @@
         const efecto = document.getElementById('pubEfecto').value;
         const efectoImagen = document.getElementById('pubEfectoImagen').value;
 
+        // Obtener lista de imágenes (desde los campos URL, que pueden ser base64 o URLs)
         const imagenInputs = document.querySelectorAll('#listaImagenesPublicidad .pub-img-url');
         const imagenes = [];
         imagenInputs.forEach(inp => {
@@ -5001,6 +5087,7 @@
             if (url) imagenes.push(url);
         });
 
+        // Obtener textos
         const textos = [];
         document.querySelectorAll('.pub-texto').forEach(inp => {
             const idx = parseInt(inp.dataset.idx);
@@ -5012,6 +5099,7 @@
             textos[idx] = { texto, fuente, tamaño, color, fondo };
         });
 
+        // Validaciones
         if (tipo === 'imagen' && imagenes.length === 0) {
             showToast('Agrega al menos una imagen.');
             return;
@@ -5038,6 +5126,7 @@
             setTimeout(() => mostrarPublicidad(), 300);
         } else {
             cerrarPublicidad();
+            ocultarGlobitoPublicidad();
         }
     }
 
@@ -5227,11 +5316,6 @@
         }
         if (document.getElementById('visitNumber')) {
             actualizarNumeroVisitante(data.visitasTotales || 0, false);
-        }
-        // Mostrar la cajita de sorpresa si hay imágenes y la publicidad no está activa (o ya se cerró)
-        const imagenes = data.publicidad.imagenes || [];
-        if (imagenes.length > 0 && !data.publicidad.activo) {
-            mostrarSorpresa();
         }
     }
 
@@ -5567,7 +5651,7 @@
     window.toggleTemporalEstado = toggleTemporalEstado;
     window.autenticarDueño = autenticarDueño;
     window.cerrarModalEdicion = cerrarModalEdicion;
-    window.abrirModalSorpresa = abrirModalSorpresa;
+    window.cerrarMiniaturasPublicidad = cerrarMiniaturasPublicidad;
 </script>
 </body>
 </html>
