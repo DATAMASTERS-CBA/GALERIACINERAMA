@@ -3220,24 +3220,9 @@
         }
     };
 
-    // ---------- ROTACIÓN DE IMÁGENES POR USUARIO ----------
+    // ---------- ROTACIÓN DE IMÁGENES POR USUARIO (con secuencia aleatoria y reinicio al final) ----------
     const STORAGE_KEY_SECUENCIA = 'pub_secuencia_usuario';
-
-    function obtenerSecuenciaUsuario() {
-        let secuencia = localStorage.getItem(STORAGE_KEY_SECUENCIA);
-        if (secuencia) {
-            try {
-                return JSON.parse(secuencia);
-            } catch (e) {
-                return null;
-            }
-        }
-        return null;
-    }
-
-    function guardarSecuenciaUsuario(secuencia) {
-        localStorage.setItem(STORAGE_KEY_SECUENCIA, JSON.stringify(secuencia));
-    }
+    const STORAGE_INDEX_KEY = 'pub_indice_actual';
 
     function generarSecuenciaAleatoria(longitud) {
         const indices = Array.from({ length: longitud }, (_, i) => i);
@@ -3253,24 +3238,60 @@
         const imagenes = data.publicidad.imagenes || [];
         if (imagenes.length === 0) return -1;
 
-        let secuencia = obtenerSecuenciaUsuario();
-        if (!secuencia || secuencia.length !== imagenes.length || !Array.isArray(secuencia)) {
-            // Generar nueva secuencia aleatoria
+        let secuencia = localStorage.getItem(STORAGE_KEY_SECUENCIA);
+        let idxActual = localStorage.getItem(STORAGE_INDEX_KEY);
+
+        // Si no hay secuencia o la longitud no coincide, generar nueva
+        if (!secuencia) {
             secuencia = generarSecuenciaAleatoria(imagenes.length);
-            guardarSecuenciaUsuario(secuencia);
+            localStorage.setItem(STORAGE_KEY_SECUENCIA, JSON.stringify(secuencia));
+            idxActual = 0;
+            localStorage.setItem(STORAGE_INDEX_KEY, String(idxActual));
             return secuencia[0];
         }
 
-        // Buscar el índice actual (el último mostrado)
-        let idxActual = localStorage.getItem('pub_indice_actual');
-        idxActual = idxActual !== null ? parseInt(idxActual) : -1;
-
-        let nuevoIdx = idxActual + 1;
-        if (nuevoIdx >= secuencia.length) {
-            nuevoIdx = 0; // reiniciar ciclo
+        try {
+            secuencia = JSON.parse(secuencia);
+        } catch (e) {
+            secuencia = generarSecuenciaAleatoria(imagenes.length);
+            localStorage.setItem(STORAGE_KEY_SECUENCIA, JSON.stringify(secuencia));
+            idxActual = 0;
+            localStorage.setItem(STORAGE_INDEX_KEY, String(idxActual));
+            return secuencia[0];
         }
-        localStorage.setItem('pub_indice_actual', nuevoIdx);
-        return secuencia[nuevoIdx];
+
+        // Verificar si la cantidad de imágenes cambió
+        if (secuencia.length !== imagenes.length) {
+            secuencia = generarSecuenciaAleatoria(imagenes.length);
+            localStorage.setItem(STORAGE_KEY_SECUENCIA, JSON.stringify(secuencia));
+            idxActual = 0;
+            localStorage.setItem(STORAGE_INDEX_KEY, String(idxActual));
+            return secuencia[0];
+        }
+
+        // Obtener índice actual, si no existe o es inválido, empezar desde 0
+        let current = parseInt(idxActual);
+        if (isNaN(current) || current < 0 || current >= secuencia.length) {
+            current = 0;
+        }
+
+        // Avanzar al siguiente
+        let next = current + 1;
+        if (next >= secuencia.length) {
+            // Llegó al final, generar nueva secuencia aleatoria y reiniciar
+            secuencia = generarSecuenciaAleatoria(imagenes.length);
+            localStorage.setItem(STORAGE_KEY_SECUENCIA, JSON.stringify(secuencia));
+            next = 0;
+        }
+
+        localStorage.setItem(STORAGE_INDEX_KEY, String(next));
+        return secuencia[next];
+    }
+
+    // Función para reiniciar la secuencia (cuando se modifica la lista de imágenes)
+    function reiniciarSecuenciaPublicidad() {
+        localStorage.removeItem(STORAGE_KEY_SECUENCIA);
+        localStorage.removeItem(STORAGE_INDEX_KEY);
     }
 
     // ---------- GLOBITO FLOTANTE ----------
@@ -3284,7 +3305,7 @@
             globito = document.createElement('div');
             globito.id = 'globitoPublicidad';
             globito.innerHTML = `
-                <i class="fas fa-images"></i>
+                <i class="fas fa-gift"></i>
                 <span class="badge">${imagenes.length}</span>
             `;
             document.body.appendChild(globito);
@@ -5119,6 +5140,10 @@
             efectoImagen: tipo === 'imagen' ? efectoImagen : 'explosion',
             textos
         };
+
+        // Reiniciar la secuencia de usuario al modificar las imágenes
+        reiniciarSecuenciaPublicidad();
+
         await saveData();
         showToast('Configuración de publicidad guardada.');
         if (activo) {
