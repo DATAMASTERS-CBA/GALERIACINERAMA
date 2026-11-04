@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        /* ===== ESTILOS BASE (sin cambios) ===== */
+        /* ===== ESTILOS BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.2s; }
         body { background: var(--bg-body); color: var(--text-color); min-height: 100vh; padding: 20px; }
         :root {
@@ -22,7 +22,7 @@
         body.colorful { --bg-body: #fdf6e3; --bg-card: #fef9ef; --text-color: #2d1b4e; --primary: #d946ef; --primary-light: #f3e8ff; --border: #f0d6b0; --shadow: 0 4px 12px rgba(217, 70, 239, 0.15); --header-bg: #fef9ef; --input-bg: #ffffff; --admin-bg: #fdf6e3; }
         body.festive { --bg-body: #f0f4f0; --bg-card: #ffffff; --text-color: #1a3a1a; --primary: #c53030; --primary-light: #fce4e4; --border: #b2d8b2; --shadow: 0 4px 12px rgba(197, 48, 48, 0.2); --header-bg: #ffffff; --input-bg: #ffffff; --admin-bg: #f0f4f0; }
 
-        /* ===== NAVIDAD: variables + fondo con árboles ===== */
+        /* ===== NAVIDAD ===== */
         body.christmas {
             --bg-body: #071a0e; --bg-card: #10291a; --text-color: #e8f5e9; --primary: #e53935;
             --primary-light: #2e7d32; --border: #4caf50; --shadow: 0 4px 15px rgba(198,40,40,0.35);
@@ -39,8 +39,6 @@
         }
         body.christmas::before { left: 10px; }
         body.christmas::after { right: 10px; font-size: 110px; }
-
-        /* ===== NAVIDAD: guirnalda superior animada ===== */
         .christmas-garland {
             position: fixed; top: 0; left: 0; right: 0; height: 44px; z-index: 9998; pointer-events: none;
             background: repeating-linear-gradient(90deg,
@@ -65,8 +63,6 @@
         .christmas-garland .bola:nth-child(even) { background: radial-gradient(circle at 30% 30%, #fff, #0c0 60%, #050 100%); box-shadow: 0 0 10px rgba(0,200,0,0.9); }
         .christmas-garland .bola:nth-child(3n) { background: radial-gradient(circle at 30% 30%, #fff, #fd0 60%, #850 100%); box-shadow: 0 0 12px rgba(255,215,0,0.95); }
         @keyframes bolaTwinkle { from { opacity: 0.45; transform: scale(0.85); } to { opacity: 1; transform: scale(1.15); } }
-
-        /* ===== NAVIDAD: moños rojos en botones/contenedores ===== */
         body.christmas .header,
         body.christmas .search-section,
         body.christmas .card,
@@ -85,42 +81,25 @@
             z-index: 20; pointer-events: none; transform: rotate(15deg);
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
-        body.christmas button,
-        body.christmas .card-actions a,
-        body.christmas .theme-btn {
-            position: relative;
-        }
-        body.christmas button::after,
-        body.christmas .card-actions a::after {
+        body.christmas button, body.christmas .card-actions a, body.christmas .theme-btn { position: relative; }
+        body.christmas button::after, body.christmas .card-actions a::after {
             content: '🎀'; position: absolute; top: -9px; right: -9px; font-size: 0.85rem;
             pointer-events: none; z-index: 5; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));
         }
-
-        /* ===== NAVIDAD: regalos cayendo ===== */
         .christmas-gift {
             position: fixed; top: -70px; font-size: 2rem; pointer-events: none; z-index: 9997;
             animation: giftFall linear forwards;
             filter: drop-shadow(0 3px 5px rgba(0,0,0,0.55));
         }
-        @keyframes giftFall {
-            0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(115vh) rotate(720deg); opacity: 0.75; }
-        }
-
-        /* ===== NAVIDAD: Papa Noel en trineo con renos ===== */
+        @keyframes giftFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(115vh) rotate(720deg); opacity: 0.75; } }
         .christmas-santa {
             position: fixed; top: 70px; left: -320px; font-size: 3.4rem; pointer-events: none;
             z-index: 9999; white-space: nowrap;
             animation: santaFly linear forwards;
             filter: drop-shadow(0 5px 9px rgba(0,0,0,0.6));
         }
-        @keyframes santaFly {
-            0%   { left: -320px; transform: translateY(0)    scaleX(1); }
-            50%  { transform: translateY(-18px) scaleX(1); }
-            100% { left: 110vw;  transform: translateY(0)    scaleX(1); }
-        }
+        @keyframes santaFly { 0% { left: -320px; transform: translateY(0) scaleX(1); } 50% { transform: translateY(-18px) scaleX(1); } 100% { left: 110vw; transform: translateY(0) scaleX(1); } }
 
-        /* resto de estilos originales sin cambios */
         .container { max-width: 1400px; margin: 0 auto; }
         .header { background: var(--header-bg); padding: 20px 30px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 30px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; }
         .header-left { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
@@ -612,7 +591,6 @@
                 <button class="theme-btn" data-theme="dark" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🌙 Oscuro</button>
                 <button class="theme-btn" data-theme="colorful" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🌈 Colorido</button>
                 <button class="theme-btn" data-theme="festive" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🎄 Festivo</button>
-                <!-- FIX/NAVIDAD: botón agregado por JS en DOMContentLoaded -->
                 <button id="autoThemeBtn" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🔁 Automático</button>
             </div>
             <p id="themeStatus" style="font-weight:600;"></p>
@@ -701,7 +679,6 @@
     let _visitSaveTimer = null;
     let _currentEditId = null;
 
-    // NAVIDAD: estado de los intervalos de animación
     let _christmasGiftsInterval = null;
     let _christmasSantaInterval = null;
     let _christmasGarlandEl = null;
@@ -793,7 +770,7 @@
             const div = document.createElement('div');
             div.className = 'image-extra-item';
             const inputUrl = document.createElement('input');
-            inputUrl.type = 'text'; // FIX: era url
+            inputUrl.type = 'text';
             inputUrl.className = 'img-extra-input';
             inputUrl.placeholder = `URL imagen extra ${index + 1}`;
             inputUrl.value = item.url || ''; inputUrl.style.flex = '2'; inputUrl.style.minWidth = '120px';
@@ -953,19 +930,21 @@
     }
 
     // ============================================================
-    //  SAVE DATA
+    //  SAVE DATA  (FIX 7: devuelve true/false)
     // ============================================================
     async function saveData() {
-        if (!isAdmin && !ownerLocalId) { console.warn('Sin permisos'); showToast('No tienes permisos para modificar la base de datos.'); return; }
-        if (_saving) { _savePending = true; return; }
+        if (!isAdmin && !ownerLocalId) { console.warn('Sin permisos'); return false; }
+        if (_saving) { _savePending = true; return true; }
         _saving = true;
         try {
             await docRef.set(data);
             try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
+            return true;
         } catch (error) {
             console.error('Error guardando en Firestore:', error);
             try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
             showToast('Error de conexión: los datos se guardaron localmente');
+            return false;
         } finally {
             _saving = false;
             if (_savePending) { _savePending = false; setTimeout(() => saveData(), 150); }
@@ -973,7 +952,7 @@
     }
 
     // ============================================================
-    //  LOAD DATA
+    //  LOAD DATA  (FIX 4 y 8)
     // ============================================================
     async function loadData() {
         try {
@@ -982,7 +961,7 @@
                 const firestoreData = doc.data();
                 const defaultData = getDefaultData();
                 for (let key in defaultData) { data[key] = firestoreData[key] !== undefined ? firestoreData[key] : defaultData[key]; }
-                data.adminClave = firestoreData.adminClave;
+                data.adminClave = firestoreData.adminClave || data.adminClave || '';
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
@@ -1048,10 +1027,11 @@
             if (_unsubSnapshot) { try { _unsubSnapshot(); } catch(e){} _unsubSnapshot = null; }
             _unsubSnapshot = docRef.onSnapshot(function(doc) {
                 if (!doc.exists || !dataLoaded) return;
+                if (_saving || _savePending) return; // FIX 8: no pisar cambios locales pendientes
                 const firestoreData = doc.data();
                 const defaultData = getDefaultData();
                 for (let key in defaultData) { if (firestoreData[key] !== undefined) data[key] = firestoreData[key]; }
-                data.adminClave = firestoreData.adminClave;
+                data.adminClave = firestoreData.adminClave || data.adminClave || '';
                 data.locales.forEach(l => {
                     l.numeroLocal = String(l.numeroLocal);
                     if (l.visitas === undefined) l.visitas = 0;
@@ -1538,10 +1518,8 @@
         crearOverlayEspera();
         initAdminAccess();
 
-        // ===== FIX 1: neutralizar validación nativa HTML5 en el form de banners =====
         const bannerFormEl = document.getElementById('bannerForm');
         if (bannerFormEl) bannerFormEl.setAttribute('novalidate', '');
-        // Por si el navegador ignora novalidate en type=url, cambiamos a text por JS (no toca el HTML fuente)
         const bannerUrlEl = document.getElementById('bannerUrl');
         if (bannerUrlEl) bannerUrlEl.type = 'text';
         const bannerLinkEl = document.getElementById('bannerLink');
@@ -1549,7 +1527,6 @@
         const fWebEl = document.getElementById('fWeb');
         if (fWebEl) fWebEl.type = 'text';
 
-        // ===== NAVIDAD: agregar botón de tema (sin tocar el HTML fuente) =====
         const temasContainer = document.getElementById('temasContainer');
         const autoThemeBtn = document.getElementById('autoThemeBtn');
         if (temasContainer && autoThemeBtn && !document.querySelector('.theme-btn[data-theme="christmas"]')) {
@@ -1778,22 +1755,22 @@
     });
 
     // ============================================================
-    //  TEMAS
+    //  TEMAS  (FIX 1: applyTheme con save opcional)
     // ============================================================
-    function applyTheme(theme) {
+    function applyTheme(theme, save = false) {
         const body = document.body;
         body.className = '';
         if (theme === 'dark') body.classList.add('dark');
         else if (theme === 'colorful') body.classList.add('colorful');
         else if (theme === 'festive') body.classList.add('festive');
-        else if (theme === 'christmas') body.classList.add('christmas'); // NAVIDAD
+        else if (theme === 'christmas') body.classList.add('christmas');
 
-        // NAVIDAD: activar/desactivar animaciones
         if (theme === 'christmas') iniciarNavidad();
         else detenerNavidad();
 
         data.theme = theme;
-        saveData();
+        if (save) saveData();
+
         const statusEl = document.getElementById('themeStatus');
         if (statusEl) statusEl.textContent = `Tema actual: ${theme}`;
     }
@@ -1812,11 +1789,11 @@
     }
 
     // ============================================================
-    //  NAVIDAD: animaciones
+    //  NAVIDAD  (FIX 2: idempotente)
     // ============================================================
     function iniciarNavidad() {
+        if (_christmasGarlandEl && _christmasGarlandEl.isConnected) return;
         detenerNavidad();
-        // Guirnalda + bolas
         _christmasGarlandEl = document.createElement('div');
         _christmasGarlandEl.className = 'christmas-garland';
         for (let i = 0; i < 14; i++) {
@@ -1827,12 +1804,9 @@
         }
         document.body.appendChild(_christmasGarlandEl);
 
-        // Primer regalo inmediato
         setTimeout(crearRegaloNavidad, 400);
-        // Regalos cayendo cada ~2.5s
         _christmasGiftsInterval = setInterval(crearRegaloNavidad, 2500);
 
-        // Papá Noel lejos, luego cada 18s
         setTimeout(crearSantaNavidad, 2500);
         _christmasSantaInterval = setInterval(crearSantaNavidad, 18000);
     }
@@ -2343,9 +2317,8 @@
     }
 
     // ============================================================
-    //  BANNERS
+    //  BANNERS  (FIX 6: verifica guardado real)
     // ============================================================
-    // FIX 1: submit handler ahora awaitea processImage y valida mejor la URL
     document.getElementById('bannerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         if (!isAdmin) { showToast('Solo el administrador puede gestionar banners.'); return; }
@@ -2366,19 +2339,19 @@
                 const index = data.banners.findIndex(b => b.id === parseInt(editId));
                 if (index !== -1) {
                     data.banners[index] = { ...data.banners[index], ...bannerData };
-                    await saveData();
+                    const ok = await saveData();
                     renderAll();
                     renderBannersAdmin();
                     resetBannerForm();
-                    showToast('Banner actualizado');
+                    showToast(ok ? 'Banner actualizado' : '⚠️ Actualizado localmente (sin nube)');
                 } else showToast('Error: banner no encontrado');
             } else {
                 data.banners.push({ id: Date.now(), ...bannerData });
-                await saveData();
+                const ok = await saveData();
                 renderAll();
                 renderBannersAdmin();
                 resetBannerForm();
-                showToast('✅ Banner agregado y guardado');
+                showToast(ok ? '✅ Banner agregado y guardado' : '⚠️ Banner agregado localmente (sin nube)');
             }
         };
 
@@ -2391,7 +2364,6 @@
                 showToast('Error al procesar banner');
             }
         } else {
-            // FIX: await explícito + validación suave de URL
             try {
                 await processImage(url);
             } catch (err) {
@@ -2512,17 +2484,15 @@
     });
 
     // ============================================================
-    //  TEMAS
+    //  TEMAS  (FIX 3: applyTheme con save explícito)
     // ============================================================
     function initThemeButtons() {
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (!isAdmin) { showToast('Solo el administrador puede cambiar temas.'); return; }
-                const theme = this.dataset.theme;
-                data.autoTheme = false; data.theme = theme;
-                saveData(); applyTheme(theme);
-                document.getElementById('themeStatus').textContent = `Tema actual: ${theme}`;
-                showToast(`Tema cambiado a ${theme}`);
+                data.autoTheme = false;
+                applyTheme(this.dataset.theme, true);
+                showToast(`Tema cambiado a ${this.dataset.theme}`);
             });
         });
         document.getElementById('autoThemeBtn').addEventListener('click', function() {
@@ -2883,13 +2853,16 @@
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') document.getElementById('imageZoomModal').classList.remove('active'); });
 
     // ============================================================
-    //  BACKUPS
+    //  BACKUPS  (FIX 5: no anidar backups)
     // ============================================================
     async function crearBackup() {
         if (!isAdmin) return;
-        const backup = { timestamp: new Date().toISOString(), data: JSON.parse(JSON.stringify(data)) };
+        const backupData = JSON.parse(JSON.stringify(data));
+        delete backupData.backups;
+        delete backupData.lastBackupDate;
+        const backup = { timestamp: new Date().toISOString(), data: backupData };
         data.backups.push(backup);
-        if (data.backups.length > 20) data.backups.shift();
+        if (data.backups.length > 10) data.backups.shift();
         data.lastBackupDate = backup.timestamp;
         await saveData();
         actualizarInfoBackup();
@@ -2929,7 +2902,7 @@
         data.bannerInterval = backupData.bannerInterval || 4;
         data.visitasTotales = backupData.visitasTotales || 0;
         data.publicidad = backupData.publicidad || getDefaultData().publicidad;
-        data.adminClave = backupData.adminClave;
+        data.adminClave = backupData.adminClave || data.adminClave || '';
         data.locales.forEach(l => {
             l.numeroLocal = String(l.numeroLocal);
             if (l.visitas === undefined) l.visitas = 0;
@@ -3040,10 +3013,11 @@
         if (_unsubSnapshot) { try { _unsubSnapshot(); } catch(e){} _unsubSnapshot = null; }
         _unsubSnapshot = docRef.onSnapshot(function(doc) {
             if (!doc.exists || !dataLoaded) return;
+            if (_saving || _savePending) return; // FIX 8
             const firestoreData = doc.data();
             const defaultData = getDefaultData();
             for (let key in defaultData) { if (firestoreData[key] !== undefined) data[key] = firestoreData[key]; }
-            data.adminClave = firestoreData.adminClave;
+            data.adminClave = firestoreData.adminClave || data.adminClave || '';
             data.locales.forEach(l => {
                 l.numeroLocal = String(l.numeroLocal);
                 if (l.visitas === undefined) l.visitas = 0;
