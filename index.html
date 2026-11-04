@@ -9,8 +9,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <style>
-        /* ===== ESTILOS BASE (sin cambios) ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.2s; }
+        /* ===== ESTILOS BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.2s;
+        }
         body { background: var(--bg-body); color: var(--text-color); min-height: 100vh; padding: 20px; }
         :root {
             --bg-body: #f4f7fc; --bg-card: #ffffff; --text-color: #1e293b; --primary: #2563eb;
@@ -18,156 +24,21 @@
             --radius: 16px; --green: #22c55e; --red: #ef4444; --header-bg: #ffffff;
             --input-bg: #ffffff; --admin-bg: #f1f5f9;
         }
-        body.dark { --bg-body: #0f172a; --bg-card: #1e293b; --text-color: #f1f5f9; --primary: #3b82f6; --primary-light: #1e293b; --border: #334155; --shadow: 0 4px 12px rgba(0,0,0,0.4); --header-bg: #1e293b; --input-bg: #2d3748; --admin-bg: #1e293b; }
-        body.colorful { --bg-body: #fdf6e3; --bg-card: #fef9ef; --text-color: #2d1b4e; --primary: #d946ef; --primary-light: #f3e8ff; --border: #f0d6b0; --shadow: 0 4px 12px rgba(217, 70, 239, 0.15); --header-bg: #fef9ef; --input-bg: #ffffff; --admin-bg: #fdf6e3; }
-        body.festive { --bg-body: #f0f4f0; --bg-card: #ffffff; --text-color: #1a3a1a; --primary: #c53030; --primary-light: #fce4e4; --border: #b2d8b2; --shadow: 0 4px 12px rgba(197, 48, 48, 0.2); --header-bg: #ffffff; --input-bg: #ffffff; --admin-bg: #f0f4f0; }
-
-        /* ============================================================
-           ===== TEMA NAVIDAD =====
-           ============================================================ */
-        body.christmas {
-            --bg-body: #0a1f0f; --bg-card: #10291a; --text-color: #f0f8f0; --primary: #e63946;
-            --primary-light: #1a3a24; --border: #2d5a3d; --shadow: 0 4px 20px rgba(0,0,0,0.5);
-            --header-bg: #10291a; --input-bg: #1a3a24; --admin-bg: #0a1f0f;
-            --green: #2ecc71; --red: #e63946;
-            background: radial-gradient(ellipse at top, #10291a 0%, #0a1f0f 60%, #061009 100%) fixed;
+        body.dark {
+            --bg-body: #0f172a; --bg-card: #1e293b; --text-color: #f1f5f9; --primary: #3b82f6;
+            --primary-light: #1e293b; --border: #334155; --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --header-bg: #1e293b; --input-bg: #2d3748; --admin-bg: #1e293b;
         }
-        body.christmas::before {
-            content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
-            background-image: radial-gradient(circle at 20% 30%, rgba(255,215,0,0.05) 0%, transparent 50%),
-                              radial-gradient(circle at 80% 70%, rgba(230,57,70,0.05) 0%, transparent 50%);
+        body.colorful {
+            --bg-body: #fdf6e3; --bg-card: #fef9ef; --text-color: #2d1b4e; --primary: #d946ef;
+            --primary-light: #f3e8ff; --border: #f0d6b0; --shadow: 0 4px 12px rgba(217, 70, 239, 0.15);
+            --header-bg: #fef9ef; --input-bg: #ffffff; --admin-bg: #fdf6e3;
         }
-        body.christmas .card {
-            border: 2px solid #2d5a3d;
-            box-shadow: 0 0 0 1px rgba(230,57,70,0.3), 0 8px 24px rgba(0,0,0,0.5), 0 0 40px rgba(46,204,113,0.08);
-            position: relative; background: linear-gradient(160deg, #10291a 0%, #0d2215 100%);
+        body.festive {
+            --bg-body: #f0f4f0; --bg-card: #ffffff; --text-color: #1a3a1a; --primary: #c53030;
+            --primary-light: #fce4e4; --border: #b2d8b2; --shadow: 0 4px 12px rgba(197, 48, 48, 0.2);
+            --header-bg: #ffffff; --input-bg: #ffffff; --admin-bg: #f0f4f0;
         }
-        body.christmas .card::before {
-            content: '🎄'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-            font-size: 22px; background: #10291a; padding: 0 8px; z-index: 3; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-        }
-        body.christmas .card::after {
-            content: '🎁'; position: absolute; bottom: 6px; right: 10px; font-size: 16px; opacity: 0.5; pointer-events: none; z-index: 3;
-        }
-        body.christmas .card:hover { box-shadow: 0 0 0 2px rgba(255,215,0,0.4), 0 12px 40px rgba(0,0,0,0.6), 0 0 60px rgba(255,215,0,0.15); }
-        body.christmas .header {
-            border: 2px solid #2d5a3d; background: linear-gradient(135deg, #10291a 0%, #183020 100%);
-            position: relative; overflow: visible; box-shadow: 0 4px 24px rgba(230,57,70,0.15);
-        }
-        body.christmas .header::before {
-            content: '🎅'; position: absolute; top: -22px; left: 24px; font-size: 32px; z-index: 5;
-            animation: xmasBounce 2.5s ease-in-out infinite; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
-        }
-        body.christmas .header::after {
-            content: '🦌'; position: absolute; top: -20px; right: 24px; font-size: 28px; z-index: 5;
-            animation: xmasBounce 2.5s ease-in-out infinite 0.5s; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
-        }
-        @keyframes xmasBounce { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-6px) rotate(5deg); } }
-        body.christmas .header-left h1 { color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.4), 0 2px 4px rgba(0,0,0,0.6); }
-        body.christmas .header-left h1::after { content: ' 🎄'; }
-        body.christmas .clock {
-            background: linear-gradient(135deg, #e63946, #8b0000); color: #fff;
-            border: 2px solid #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.3);
-        }
-        body.christmas .visit-counter { background: linear-gradient(135deg, #1a3a24, #2d5a3d); border: 2px solid #2ecc71; color: #f0f8f0; }
-        body.christmas .visit-counter i { color: #2ecc71; }
-        body.christmas .banner-carousel {
-            border: 3px solid #e63946; box-shadow: 0 0 25px rgba(230,57,70,0.3), inset 0 0 25px rgba(0,0,0,0.3);
-            position: relative;
-        }
-        body.christmas .banner-carousel::before { content: '🎁'; position: absolute; top: -16px; left: 18px; font-size: 26px; z-index: 7; animation: xmasBounce 3s ease-in-out infinite; }
-        body.christmas .banner-carousel::after { content: '🎁'; position: absolute; top: -16px; right: 18px; font-size: 26px; z-index: 7; animation: xmasBounce 3s ease-in-out infinite 1s; }
-        body.christmas .search-section {
-            border: 2px solid #2d5a3d; background: linear-gradient(135deg, #10291a 0%, #183020 100%);
-            box-shadow: 0 0 20px rgba(46,204,113,0.08);
-        }
-        body.christmas .search-section input:focus, body.christmas .search-section select:focus {
-            border-color: #ffd700; box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
-        }
-        body.christmas .card-actions a, body.christmas .card-actions button {
-            position: relative; border-radius: 10px !important;
-            background: linear-gradient(135deg, #e63946 0%, #a01620 100%) !important;
-            box-shadow: 0 3px 0 #6d0f16, 0 0 12px rgba(230,57,70,0.4);
-            border: 1px solid rgba(255,215,0,0.4) !important;
-        }
-        body.christmas .card-actions a:hover, body.christmas .card-actions button:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #6d0f16, 0 0 20px rgba(255,215,0,0.6); }
-        body.christmas .card-actions a::before, body.christmas .card-actions button::before {
-            content: '🎀'; position: absolute; top: -10px; right: -8px; font-size: 16px;
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); animation: bowWiggle 2s ease-in-out infinite;
-        }
-        @keyframes bowWiggle { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
-        body.christmas .card-actions .whatsapp { background: linear-gradient(135deg, #2ecc71 0%, #1a8a4a 100%) !important; box-shadow: 0 3px 0 #0f5c30, 0 0 12px rgba(46,204,113,0.4); }
-        body.christmas .card-actions .share { background: linear-gradient(135deg, #8b4513 0%, #5c2e0a 100%) !important; box-shadow: 0 3px 0 #3d1f06, 0 0 12px rgba(139,69,19,0.4); }
-        body.christmas .btn-logout {
-            background: linear-gradient(135deg, #e63946, #8b0000) !important;
-            border: 2px solid #ffd700; box-shadow: 0 0 15px rgba(230,57,70,0.4);
-            position: relative;
-        }
-        body.christmas .btn-logout::before { content: '🎀'; position: absolute; top: -8px; right: -8px; font-size: 14px; animation: bowWiggle 2s ease-in-out infinite; }
-        body.christmas .status-badge.open { background: linear-gradient(135deg, #2ecc71, #1a8a4a); box-shadow: 0 0 10px rgba(46,204,113,0.5); }
-        body.christmas .status-badge.closed { background: linear-gradient(135deg, #e63946, #8b0000); box-shadow: 0 0 10px rgba(230,57,70,0.5); }
-        body.christmas .modal { border: 2px solid #2d5a3d; background: linear-gradient(160deg, #10291a, #0d2215); box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(230,57,70,0.15); }
-        body.christmas .modal h2 { color: #ffd700; text-shadow: 0 0 15px rgba(255,215,0,0.3); }
-        body.christmas .modal h2::before { content: '🎄 '; }
-        body.christmas .card-img-overlay, body.christmas .carrusel-imagenes .overlay-numero {
-            background: linear-gradient(0deg, rgba(0,0,0,0.85), rgba(139,0,0,0.5)); border-top: 2px solid #ffd700;
-        }
-        body.christmas .card-logo { box-shadow: 0 0 15px rgba(255,215,0,0.3); border: 2px solid #ffd700; }
-        body.christmas .card-rubro { background: linear-gradient(135deg, #e63946, #8b0000); color: #fff; box-shadow: 0 0 8px rgba(230,57,70,0.3); }
-        body.christmas .theme-btn { border-color: #2d5a3d !important; }
-        body.christmas .card-alquiler { background: linear-gradient(135deg, #ffd700, #b8860b) !important; color: #0a1f0f !important; box-shadow: 0 0 10px rgba(255,215,0,0.4); }
-        body.christmas .toast { background: linear-gradient(135deg, #2ecc71, #1a8a4a); border: 2px solid #ffd700; }
-        
-        /* ===== Luces de Navidad (guirnalda superior) ===== */
-        .xmas-lights-bar { position: fixed; top: 0; left: 0; right: 0; height: 70px; z-index: 9990; pointer-events: none; overflow: hidden; }
-        .xmas-wire { position: absolute; top: 8px; left: -5%; right: -5%; height: 30px; border-bottom: 3px solid #1a1a1a; border-radius: 0 0 50% 50% / 0 0 100% 100%; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
-        .xmas-bulb { position: absolute; top: 24px; width: 14px; height: 22px; border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%; transform-origin: top center; animation: bulbGlow 1.6s ease-in-out infinite alternate; }
-        .xmas-bulb::before { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: #333; border-radius: 2px; }
-        @keyframes bulbGlow {
-            0% { filter: brightness(0.4) drop-shadow(0 0 2px currentColor); opacity: 0.5; transform: scaleY(0.95); }
-            100% { filter: brightness(1.4) drop-shadow(0 0 10px currentColor) drop-shadow(0 0 20px currentColor); opacity: 1; transform: scaleY(1.05); }
-        }
-
-        /* ===== Nieve ===== */
-        .xmas-snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9989; overflow: hidden; }
-        .xmas-flake { position: absolute; top: -30px; color: #fff; text-shadow: 0 0 4px rgba(255,255,255,0.8); animation: xmasSnowFall linear infinite; user-select: none; }
-        @keyframes xmasSnowFall {
-            0% { transform: translateY(-30px) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(105vh) translateX(60px) rotate(360deg); opacity: 0; }
-        }
-
-        /* ===== Árboles en esquinas ===== */
-        .xmas-tree { position: fixed; bottom: -10px; z-index: 9988; pointer-events: none; font-size: 80px; filter: drop-shadow(0 0 20px rgba(46,204,113,0.5)) drop-shadow(0 4px 8px rgba(0,0,0,0.7)); animation: treeSway 3.5s ease-in-out infinite alternate; }
-        .xmas-tree.tl { left: -10px; }
-        .xmas-tree.tr { right: -10px; animation-delay: 0.6s; }
-        @keyframes treeSway { 0% { transform: rotate(-4deg) scale(0.98); } 100% { transform: rotate(4deg) scale(1.02); } }
-
-        /* ===== Santa con renos ===== */
-        .xmas-santa { position: fixed; top: 12%; left: -350px; z-index: 9992; pointer-events: none; font-size: 60px; filter: drop-shadow(0 0 15px rgba(255,215,0,0.6)) drop-shadow(0 6px 12px rgba(0,0,0,0.7)); animation: santaFly 18s linear infinite; white-space: nowrap; }
-        @keyframes santaFly {
-            0% { transform: translateX(-350px) translateY(0) rotate(-5deg); }
-            25% { transform: translateX(25vw) translateY(-15px) rotate(3deg); }
-            50% { transform: translateX(50vw) translateY(10px) rotate(-3deg); }
-            75% { transform: translateX(75vw) translateY(-20px) rotate(4deg); }
-            100% { transform: translateX(calc(100vw + 350px)) translateY(0) rotate(-5deg); }
-        }
-
-        /* ===== Regalos que pasan ===== */
-        .xmas-gift { position: fixed; z-index: 9989; pointer-events: none; font-size: 44px; animation: giftPass linear forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
-        @keyframes giftPass {
-            0% { transform: translateX(-120px) translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateX(calc(100vw + 120px)) translateY(0) rotate(720deg); opacity: 0; }
-        }
-
-        /* ===== Estrellas brillantes ===== */
-        .xmas-star { position: fixed; z-index: 9987; pointer-events: none; color: #ffd700; animation: starTwinkle 2s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); }
-        @keyframes starTwinkle { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
-
-        /* ===== ESENCIA BASE (sin cambios) ===== */
         .container { max-width: 1400px; margin: 0 auto; }
         .header { background: var(--header-bg); padding: 20px 30px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 30px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; }
         .header-left { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
@@ -287,9 +158,9 @@
         @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .image-zoom-overlay .close-zoom { position: absolute; top: 20px; right: 30px; font-size: 2.5rem; color: #fff; cursor: pointer; opacity: 0.7; transition: 0.2s; }
         .image-zoom-overlay .close-zoom:hover { opacity: 1; transform: scale(1.1); }
-        .toast { position: fixed; bottom: 30px; right: 30px; background: #1e293b; color: #fff; padding: 16px 28px; border-radius: 40px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); font-weight: 600; z-index: 99999; opacity: 0; transform: translateY(20px); transition: 0.3s; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #1e293b; color: #fff; padding: 16px 28px; border-radius: 40px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); font-weight: 600; z-index: 9999; opacity: 0; transform: translateY(20px); transition: 0.3s; }
         .toast.show { opacity: 1; transform: translateY(0); }
-        @media (max-width: 768px) { .header { flex-direction: column; align-items: stretch; gap: 10px; } .header-left { justify-content: center; } .header-right { justify-content: center; } .search-section { flex-direction: column; align-items: stretch; } .search-section .filter-group { flex-direction: column; } .search-section .filter-group select, .search-section input, .search-section #ordenSelect { flex: 1 1 auto; width: 100%; } .grid { grid-template-columns: 1fr; } .banner-slide { height: 160px; } .modal { padding: 20px; } .card-img-wrap { height: 160px; } .xmas-tree { font-size: 50px; } .xmas-santa { font-size: 40px; } .xmas-gift { font-size: 32px; } }
+        @media (max-width: 768px) { .header { flex-direction: column; align-items: stretch; gap: 10px; } .header-left { justify-content: center; } .header-right { justify-content: center; } .search-section { flex-direction: column; align-items: stretch; } .search-section .filter-group { flex-direction: column; } .search-section .filter-group select, .search-section input, .search-section #ordenSelect { flex: 1 1 auto; width: 100%; } .grid { grid-template-columns: 1fr; } .banner-slide { height: 160px; } .modal { padding: 20px; } .card-img-wrap { height: 160px; } }
         #loadingMsg { text-align: center; padding: 40px; font-size: 1.2rem; color: var(--primary); }
         .visitas-container { margin-top: 20px; padding: 15px; background: var(--input-bg); border-radius: var(--radius); border: 1px solid var(--border); }
         .visitas-container h3 { margin-bottom: 10px; color: var(--primary); }
@@ -535,7 +406,13 @@
                     <div class="image-adjust-group">
                         <div style="display:flex; flex-wrap:wrap; gap:8px; width:100%;">
                             <label style="min-width:50px;">Fit:</label>
-                            <select id="fFotoFit"><option value="cover">Cubrir</option><option value="contain">Contener</option><option value="fill">Rellenar</option><option value="none">Original</option><option value="scale-down">Reducir</option></select>
+                            <select id="fFotoFit">
+                                <option value="cover">Cubrir</option>
+                                <option value="contain">Contener</option>
+                                <option value="fill">Rellenar</option>
+                                <option value="none">Original</option>
+                                <option value="scale-down">Reducir</option>
+                            </select>
                         </div>
                         <div class="range-group"><label>Posición X:</label><input type="range" id="fFotoPosX" min="0" max="100" value="50"><span id="fFotoPosXVal">50%</span></div>
                         <div class="range-group"><label>Posición Y:</label><input type="range" id="fFotoPosY" min="0" max="100" value="50"><span id="fFotoPosYVal">50%</span></div>
@@ -546,7 +423,13 @@
                     <div class="image-adjust-group">
                         <div style="display:flex; flex-wrap:wrap; gap:8px; width:100%;">
                             <label style="min-width:50px;">Fit:</label>
-                            <select id="fLogoFit"><option value="cover">Cubrir</option><option value="contain">Contener</option><option value="fill">Rellenar</option><option value="none">Original</option><option value="scale-down">Reducir</option></select>
+                            <select id="fLogoFit">
+                                <option value="cover">Cubrir</option>
+                                <option value="contain">Contener</option>
+                                <option value="fill">Rellenar</option>
+                                <option value="none">Original</option>
+                                <option value="scale-down">Reducir</option>
+                            </select>
                         </div>
                         <div class="range-group"><label>Posición X:</label><input type="range" id="fLogoPosX" min="0" max="100" value="50"><span id="fLogoPosXVal">50%</span></div>
                         <div class="range-group"><label>Posición Y:</label><input type="range" id="fLogoPosY" min="0" max="100" value="50"><span id="fLogoPosYVal">50%</span></div>
@@ -616,7 +499,13 @@
                 <div class="image-adjust-group">
                     <div style="display:flex; flex-wrap:wrap; gap:8px; width:100%;">
                         <label style="min-width:50px;">Fit:</label>
-                        <select id="bannerFit"><option value="cover">Cubrir</option><option value="contain">Contener</option><option value="fill">Rellenar</option><option value="none">Original</option><option value="scale-down">Reducir</option></select>
+                        <select id="bannerFit">
+                            <option value="cover">Cubrir</option>
+                            <option value="contain">Contener</option>
+                            <option value="fill">Rellenar</option>
+                            <option value="none">Original</option>
+                            <option value="scale-down">Reducir</option>
+                        </select>
                     </div>
                     <div class="range-group"><label>Posición X:</label><input type="range" id="bannerPosX" min="0" max="100" value="50"><span id="bannerPosXVal">50%</span></div>
                     <div class="range-group"><label>Posición Y:</label><input type="range" id="bannerPosY" min="0" max="100" value="50"><span id="bannerPosYVal">50%</span></div>
@@ -641,7 +530,6 @@
                 <button class="theme-btn" data-theme="dark" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🌙 Oscuro</button>
                 <button class="theme-btn" data-theme="colorful" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🌈 Colorido</button>
                 <button class="theme-btn" data-theme="festive" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🎄 Festivo</button>
-                <button class="theme-btn" data-theme="christmas" style="padding:10px 20px; border-radius:30px; border:2px solid #e63946; background:linear-gradient(135deg, #0a1f0f, #1a3a24); color:#ffd700; cursor:pointer; font-weight:700; box-shadow:0 0 15px rgba(230,57,70,0.4);">🎅 Navidad</button>
                 <button id="autoThemeBtn" style="padding:10px 20px; border-radius:30px; border:2px solid var(--border); background:var(--bg-card); cursor:pointer; font-weight:600;">🔁 Automático</button>
             </div>
             <p id="themeStatus" style="font-weight:600;"></p>
@@ -724,15 +612,12 @@
     let ownerLocalId = null;
     let ownerNumero = null;
 
+    // ===== FIX: variables de control =====
     let _saving = false;
     let _savePending = false;
     let _unsubSnapshot = null;
     let _visitSaveTimer = null;
-    let _currentEditId = null;
-
-    // ===== NAVIDAD =====
-    let _xmasIntervals = [];
-    let _xmasTimeouts = [];
+    let _currentEditId = null;   // ← NUEVO: id del local en edición (robusto ante DOM stale)
 
     const DEFAULT_IMAGE_URL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJ73cI3U8MetwEpIsEQH93kxhoRI2q4zT33x2ZWgkHQ&s';
 
@@ -744,126 +629,32 @@
         { value: 'slide-fade', label: 'Deslizar y desvanecer' }, { value: 'wipe', label: 'Cortina' }
     ];
 
-    // ============================================================
-    //  ===== FUNCIONES DE NAVIDAD =====
-    // ============================================================
-    function activarNavidad() {
-        if (!document.body.classList.contains('christmas')) return;
-        limpiarNavidad();
-        crearLucesNavidad();
-        crearNieveNavidad();
-        crearArbolesNavidad();
-        crearSantaNavidad();
-        iniciarRegalosNavidad();
-        iniciarEstrellasNavidad();
-    }
-
-    function limpiarNavidad() {
-        ['#xmasLightsBar', '#xmasSnowContainer', '#xmasSanta', '.xmas-tree', '.xmas-gift', '.xmas-star'].forEach(sel => {
-            document.querySelectorAll(sel).forEach(el => el.remove());
-        });
-        _xmasIntervals.forEach(i => clearInterval(i));
-        _xmasTimeouts.forEach(t => clearTimeout(t));
-        _xmasIntervals = [];
-        _xmasTimeouts = [];
-    }
-
-    function crearLucesNavidad() {
-        if (document.getElementById('xmasLightsBar')) return;
-        const bar = document.createElement('div');
-        bar.id = 'xmasLightsBar';
-        bar.className = 'xmas-lights-bar';
-        const wire = document.createElement('div');
-        wire.className = 'xmas-wire';
-        bar.appendChild(wire);
-        const colores = ['#ff0000','#00ff00','#ffff00','#ff00ff','#00ffff','#ffa500','#ff69b4'];
-        const numLuces = Math.floor(window.innerWidth / 40);
-        for (let i = 0; i < numLuces; i++) {
-            const bulb = document.createElement('div');
-            bulb.className = 'xmas-bulb';
-            const color = colores[i % colores.length];
-            bulb.style.left = (i * (100 / numLuces)) + '%';
-            bulb.style.background = color;
-            bulb.style.color = color;
-            bulb.style.animationDelay = (i * 0.12) + 's';
-            bulb.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
-            bar.appendChild(bulb);
-        }
-        document.body.appendChild(bar);
-    }
-
-    function crearNieveNavidad() {
-        if (document.getElementById('xmasSnowContainer')) return;
-        const cont = document.createElement('div');
-        cont.id = 'xmasSnowContainer';
-        cont.className = 'xmas-snow-container';
-        const copos = ['❄','❅','❆','✻','•','*','❉'];
-        const num = 40;
-        for (let i = 0; i < num; i++) {
-            const f = document.createElement('div');
-            f.className = 'xmas-flake';
-            f.textContent = copos[Math.floor(Math.random() * copos.length)];
-            f.style.left = Math.random() * 100 + 'vw';
-            f.style.fontSize = (Math.random() * 18 + 10) + 'px';
-            f.style.animationDuration = (Math.random() * 10 + 6) + 's';
-            f.style.animationDelay = (Math.random() * 10) + 's';
-            f.style.opacity = Math.random() * 0.6 + 0.4;
-            cont.appendChild(f);
-        }
-        document.body.appendChild(cont);
-    }
-
-    function crearArbolesNavidad() {
-        if (document.querySelector('.xmas-tree')) return;
-        const tl = document.createElement('div');
-        tl.className = 'xmas-tree tl';
-        tl.textContent = '🎄';
-        document.body.appendChild(tl);
-        const tr = document.createElement('div');
-        tr.className = 'xmas-tree tr';
-        tr.textContent = '🎄';
-        document.body.appendChild(tr);
-    }
-
-    function crearSantaNavidad() {
-        if (document.getElementById('xmasSanta')) return;
-        const santa = document.createElement('div');
-        santa.id = 'xmasSanta';
-        santa.className = 'xmas-santa';
-        santa.textContent = '🎅🦌🦌🦌';
-        document.body.appendChild(santa);
-    }
-
-    function iniciarRegalosNavidad() {
-        const regalar = () => {
-            if (!document.body.classList.contains('christmas')) return;
-            const g = document.createElement('div');
-            g.className = 'xmas-gift';
-            const regalos = ['🎁','🎀','🧸','🍬','⭐','🔔','🎄','🧦'];
-            g.textContent = regalos[Math.floor(Math.random() * regalos.length)];
-            g.style.top = (Math.random() * 75 + 10) + '%';
-            g.style.animationDuration = (Math.random() * 4 + 5) + 's';
-            document.body.appendChild(g);
-            setTimeout(() => g.remove(), 10000);
+    function getDefaultData() {
+        return {
+            rubros: ['Librería', 'Gastronomía', 'Indumentaria', 'Joyería', 'Electrónica'],
+            locales: [
+                { id: 1, nombre: "Librería El Saber", rubro: "Librería", numeroLocal: "5", ubicacion: "Primer Piso", enAlquiler: false, inmobiliaria: "", descripcion: "Libros, útiles y material de oficina. Amplio catálogo.", whatsapp: "5491112345678", web: "https://libreriaelsaber.com", colorFondo: "#8B5A2B", foto: "https://picsum.photos/seed/libro/400/300", logo: null, fotoFit: "cover", fotoPosX: 50, fotoPosY: 50, logoFit: "cover", logoPosX: 50, logoPosY: 50, horarios: { lunes: { ini: "09:00", fin: "18:00", cerrado: false }, martes: { ini: "09:00", fin: "18:00", cerrado: false }, miercoles: { ini: "09:00", fin: "18:00", cerrado: false }, jueves: { ini: "09:00", fin: "18:00", cerrado: false }, viernes: { ini: "09:00", fin: "18:00", cerrado: false }, sabado: { ini: "10:00", fin: "14:00", cerrado: false }, domingo: { ini: "10:00", fin: "14:00", cerrado: true }, feriados: "25/12:cerrado; 01/01:cerrado" }, visitas: 0, mostrarPagina: true, imagenesExtra: [], intervaloCarrusel: 3, animacionCarrusel: 'fade' },
+                { id: 2, nombre: "Café Central", rubro: "Gastronomía", numeroLocal: "12", ubicacion: "PB", enAlquiler: false, inmobiliaria: "", descripcion: "Café de especialidad, pastelería y desayunos.", whatsapp: "5491123456789", web: "https://cafecentral.com", colorFondo: "#D97706", foto: "https://picsum.photos/seed/cafe/400/300", logo: null, fotoFit: "cover", fotoPosX: 50, fotoPosY: 50, logoFit: "cover", logoPosX: 50, logoPosY: 50, horarios: { lunes: { ini: "08:00", fin: "20:00", cerrado: false }, martes: { ini: "08:00", fin: "20:00", cerrado: false }, miercoles: { ini: "08:00", fin: "20:00", cerrado: false }, jueves: { ini: "08:00", fin: "20:00", cerrado: false }, viernes: { ini: "08:00", fin: "20:00", cerrado: false }, sabado: { ini: "09:00", fin: "18:00", cerrado: false }, domingo: { ini: "10:00", fin: "14:00", cerrado: false }, feriados: "25/12:cerrado; 01/01:cerrado" }, visitas: 0, mostrarPagina: true, imagenesExtra: [], intervaloCarrusel: 3, animacionCarrusel: 'fade' },
+                { id: 3, nombre: "Indumentaria Sport", rubro: "Indumentaria", numeroLocal: "8", ubicacion: "Subsuelo", enAlquiler: true, inmobiliaria: "5491134567890", descripcion: "Ropa deportiva de primeras marcas.", whatsapp: "5491134567890", web: "https://sportwear.com", colorFondo: "#2563EB", foto: "https://picsum.photos/seed/sport/400/300", logo: null, fotoFit: "cover", fotoPosX: 50, fotoPosY: 50, logoFit: "cover", logoPosX: 50, logoPosY: 50, horarios: { lunes: { ini: "10:00", fin: "19:00", cerrado: false }, martes: { ini: "10:00", fin: "19:00", cerrado: false }, miercoles: { ini: "10:00", fin: "19:00", cerrado: false }, jueves: { ini: "10:00", fin: "19:00", cerrado: false }, viernes: { ini: "10:00", fin: "19:00", cerrado: false }, sabado: { ini: "10:00", fin: "15:00", cerrado: false }, domingo: { ini: "10:00", fin: "15:00", cerrado: true }, feriados: "25/12:cerrado; 01/01:cerrado" }, visitas: 0, mostrarPagina: true, imagenesExtra: [], intervaloCarrusel: 3, animacionCarrusel: 'fade' },
+                { id: 4, nombre: "Joyas D'Luz", rubro: "Joyería", numeroLocal: "3", ubicacion: "Primer Piso", enAlquiler: false, inmobiliaria: "", descripcion: "Joyas de oro y plata, diseños exclusivos.", whatsapp: "5491145678901", web: "https://joyasdluz.com", colorFondo: "#B45309", foto: "https://picsum.photos/seed/joyas/400/300", logo: null, fotoFit: "cover", fotoPosX: 50, fotoPosY: 50, logoFit: "cover", logoPosX: 50, logoPosY: 50, horarios: { lunes: { ini: "10:00", fin: "17:00", cerrado: false }, martes: { ini: "10:00", fin: "17:00", cerrado: false }, miercoles: { ini: "10:00", fin: "17:00", cerrado: false }, jueves: { ini: "10:00", fin: "17:00", cerrado: false }, viernes: { ini: "10:00", fin: "17:00", cerrado: false }, sabado: { ini: "10:00", fin: "13:00", cerrado: false }, domingo: { ini: "10:00", fin: "13:00", cerrado: true }, feriados: "25/12:cerrado; 01/01:cerrado" }, visitas: 0, mostrarPagina: true, imagenesExtra: [], intervaloCarrusel: 3, animacionCarrusel: 'fade' },
+                { id: 5, nombre: "Tecno Store", rubro: "Electrónica", numeroLocal: "20", ubicacion: "Cochera", enAlquiler: false, inmobiliaria: "", descripcion: "Computadoras, celulares y accesorios.", whatsapp: "5491167890123", web: "https://tecnostore.com", colorFondo: "#DC2626", foto: "https://picsum.photos/seed/tecnologia/400/300", logo: null, fotoFit: "cover", fotoPosX: 50, fotoPosY: 50, logoFit: "cover", logoPosX: 50, logoPosY: 50, horarios: { lunes: { ini: "09:00", fin: "20:00", cerrado: false }, martes: { ini: "09:00", fin: "20:00", cerrado: false }, miercoles: { ini: "09:00", fin: "20:00", cerrado: false }, jueves: { ini: "09:00", fin: "20:00", cerrado: false }, viernes: { ini: "09:00", fin: "20:00", cerrado: false }, sabado: { ini: "10:00", fin: "18:00", cerrado: false }, domingo: { ini: "12:00", fin: "16:00", cerrado: false }, feriados: "25/12:cerrado; 01/01:cerrado" }, visitas: 0, mostrarPagina: true, imagenesExtra: [], intervaloCarrusel: 3, animacionCarrusel: 'fade' }
+            ],
+            banners: [
+                { id: 1, imagen: "https://picsum.photos/seed/banner1/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 },
+                { id: 2, imagen: "https://picsum.photos/seed/banner2/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 },
+                { id: 3, imagen: "https://picsum.photos/seed/banner3/1200/400", link: "#", fit: "cover", posX: 50, posY: 50 }
+            ],
+            nextId: 6, bannerInterval: 4, backups: [], lastBackupDate: null,
+            galeriaNombre: 'Galería Cinerama', galeriaDireccion: 'Colón 375',
+            theme: 'default', autoTheme: false, visitasTotales: 0,
+            publicidad: { activo: false, tipo: 'texto', contenido: '¡Gran Liquidación!', duracion: 5, imagenes: [], efecto: 'confeti', efectoImagen: 'explosion',
+                textos: [
+                    { texto: '¡Gran Liquidación!', fuente: 'Arial', tamaño: '48', color: '#ffffff', fondo: 'transparente' },
+                    { texto: '', fuente: 'Arial', tamaño: '36', color: '#ffffff', fondo: 'transparente' },
+                    { texto: '', fuente: 'Arial', tamaño: '28', color: '#ffffff', fondo: 'transparente' }
+                ]
+            }
         };
-        _xmasTimeouts.push(setTimeout(regalar, 2000));
-        _xmasIntervals.push(setInterval(regalar, 7000));
-    }
-
-    function iniciarEstrellasNavidad() {
-        const crearEstrella = () => {
-            if (!document.body.classList.contains('christmas')) return;
-            const est = document.createElement('div');
-            est.className = 'xmas-star';
-            est.textContent = '✦';
-            est.style.left = (Math.random() * 95 + 2) + '%';
-            est.style.top = (Math.random() * 80 + 5) + '%';
-            est.style.fontSize = (Math.random() * 12 + 8) + 'px';
-            est.style.animationDelay = (Math.random() * 2) + 's';
-            document.body.appendChild(est);
-            setTimeout(() => est.remove(), 6000);
-        };
-        _xmasIntervals.push(setInterval(crearEstrella, 1500));
     }
 
     // ============================================================
@@ -894,7 +685,7 @@
     }
 
     // ============================================================
-    //  IMÁGENES EXTRA (sin cambios)
+    //  IMÁGENES EXTRA
     // ============================================================
     function normalizarImagenesExtra(imagenes) {
         if (!Array.isArray(imagenes)) return [];
@@ -986,7 +777,7 @@
     }
 
     // ============================================================
-    //  HORARIOS CORTADOS
+    //  ===== NUEVO: HORARIOS CORTADOS (inyección dinámica) =====
     // ============================================================
     function inyectarControlesCortado() {
         const dias = ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'];
@@ -995,12 +786,14 @@
             if (!ini) return;
             const item = ini.closest('.horario-item');
             if (!item) return;
-            if (item.querySelector(`#h${cap}Cortado`)) return;
+            if (item.querySelector(`#h${cap}Cortado`)) return; // ya inyectado
+
             const cortadoLabel = document.createElement('label');
             cortadoLabel.className = 'cerrado-label';
             cortadoLabel.style.marginLeft = '4px';
             cortadoLabel.innerHTML = `<input type="checkbox" id="h${cap}Cortado" onchange="toggleCortado('${cap}')"> Cortado`;
             item.appendChild(cortadoLabel);
+
             const segundoBloque = document.createElement('span');
             segundoBloque.id = `h${cap}SegundoBloque`;
             segundoBloque.style.cssText = 'display:none; width:100%; margin-top:6px; padding-left:4px;';
@@ -1072,34 +865,17 @@
     }
 
     // ============================================================
-    //  ===== SAVE DATA (FIX CRÍTICO) =====
+    //  SAVE DATA
     // ============================================================
     async function saveData() {
         if (!isAdmin && !ownerLocalId) { console.warn('Sin permisos'); showToast('No tienes permisos para modificar la base de datos.'); return; }
         if (_saving) { _savePending = true; return; }
         _saving = true;
-
-        // ===== FIX 1: NO enviar backups a Firestore (se guardan solo en localStorage) =====
-        // Los backups anidados estaban haciendo crecer el documento exponencialmente
-        // hasta superar el límite de 1MB de Firestore.
-        const dataToSave = JSON.parse(JSON.stringify(data));
-        delete dataToSave.backups;
-        dataToSave._lastSaved = new Date().toISOString();
-
         try {
-            await docRef.set(dataToSave);
+            await docRef.set(data);
             try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
         } catch (error) {
             console.error('Error guardando en Firestore:', error);
-            // ===== FIX 2: Detectar error por tamaño y limpiar backups =====
-            const esErrorTamaño = error.code === 'invalid-argument' ||
-                (error.message && (error.message.includes('size') || error.message.includes('exceed') || error.message.includes('1048576')));
-            if (esErrorTamaño && data.backups && data.backups.length > 0) {
-                data.backups = [];
-                showToast('Documento demasiado grande. Se limpiaron backups. Reintentando...');
-                _saving = false;
-                return saveData();
-            }
             try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
             showToast('Error de conexión: los datos se guardaron localmente');
         } finally {
@@ -1109,80 +885,67 @@
     }
 
     // ============================================================
-    //  ===== LOAD DATA (FIX CRÍTICO) =====
+    //  LOAD DATA
     // ============================================================
     async function loadData() {
-        let firestoreData = null;
-        let firestoreError = false;
         try {
             const doc = await docRef.get();
-            if (doc.exists) firestoreData = doc.data();
+            if (doc.exists) {
+                const firestoreData = doc.data();
+                const defaultData = getDefaultData();
+                for (let key in defaultData) { data[key] = firestoreData[key] !== undefined ? firestoreData[key] : defaultData[key]; }
+                data.adminClave = firestoreData.adminClave;
+                data.locales.forEach(l => {
+                    l.numeroLocal = String(l.numeroLocal);
+                    if (l.visitas === undefined) l.visitas = 0;
+                    if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                    l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                    if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                    if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                });
+                if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
+                if (!data.publicidad.textos || data.publicidad.textos.length < 3) data.publicidad.textos = defaultData.publicidad.textos;
+                if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
+                try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
+            } else {
+                const defaultData = getDefaultData();
+                for (let key in defaultData) data[key] = defaultData[key];
+                await docRef.set(data);
+                try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
+            }
         } catch (error) {
             console.error('Error cargando desde Firestore:', error);
-            firestoreError = true;
-        }
-
-        // Leer localStorage (incluye backups que no van a Firestore)
-        let localData = null;
-        const stored = localStorage.getItem('galeriaData');
-        if (stored) {
-            try { localData = JSON.parse(stored); } catch(e) {}
-        }
-
-        // ===== FIX 3: Preferir el que tenga timestamp más nuevo =====
-        let usarLocal = false;
-        if (localData && firestoreData) {
-            const fsTime = firestoreData._lastSaved ? new Date(firestoreData._lastSaved).getTime() : 0;
-            const lsTime = localData._lastSaved ? new Date(localData._lastSaved).getTime() : 0;
-            if (lsTime > fsTime) usarLocal = true;
-        } else if (localData && !firestoreData) {
-            usarLocal = true;
-        }
-
-        const sourceData = usarLocal ? localData : firestoreData;
-
-        if (sourceData) {
-            const defaultData = getDefaultData();
-            for (let key in defaultData) {
-                data[key] = sourceData[key] !== undefined ? sourceData[key] : defaultData[key];
+            const stored = localStorage.getItem('galeriaData');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    for (let key in parsed) data[key] = parsed[key];
+                    data.locales.forEach(l => {
+                        l.numeroLocal = String(l.numeroLocal);
+                        if (l.visitas === undefined) l.visitas = 0;
+                        if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                        l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                        if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                        if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                    });
+                    if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                    if (!data.publicidad) data.publicidad = getDefaultData().publicidad;
+                    if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
+                    if (!data.publicidad.textos || data.publicidad.textos.length < 3) data.publicidad.textos = getDefaultData().publicidad.textos;
+                    if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
+                } catch (e) {
+                    if (!isAdmin) { document.getElementById('loadingMsg').textContent = 'No se pudieron cargar los datos. Contacta al administrador.'; return; }
+                }
+            } else {
+                if (!isAdmin) { document.getElementById('loadingMsg').textContent = 'No hay datos disponibles. Contacta al administrador.'; return; }
+                const defaultData = getDefaultData();
+                for (let key in defaultData) data[key] = defaultData[key];
+                await docRef.set(data);
+                try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
             }
-            data.adminClave = sourceData.adminClave;
-            // Backups siempre de localStorage (no están en Firestore)
-            if (usarLocal && localData.backups) data.backups = localData.backups;
-            else if (localData && localData.backups) data.backups = localData.backups;
-            else data.backups = [];
-
-            data.locales.forEach(l => {
-                l.numeroLocal = String(l.numeroLocal);
-                if (l.visitas === undefined) l.visitas = 0;
-                if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
-                if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
-                if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
-            });
-            if (data.visitasTotales === undefined) data.visitasTotales = 0;
-            if (!data.publicidad) data.publicidad = defaultData.publicidad;
-            if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
-            if (!data.publicidad.textos || data.publicidad.textos.length < 3) data.publicidad.textos = defaultData.publicidad.textos;
-            if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
-            try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
-        } else {
-            // No hay datos en ningún lado
-            if (!isAdmin && !firestoreError) {
-                document.getElementById('loadingMsg').textContent = 'No hay datos disponibles. Contacta al administrador.';
-                return;
-            }
-            const defaultData = getDefaultData();
-            for (let key in defaultData) data[key] = defaultData[key];
-            try {
-                const dataToSave = JSON.parse(JSON.stringify(data));
-                delete dataToSave.backups;
-                dataToSave._lastSaved = new Date().toISOString();
-                await docRef.set(dataToSave);
-            } catch(e) {}
-            try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
         }
-
         dataLoaded = true;
         document.getElementById('loadingMsg').style.display = 'none';
         document.getElementById('localsGrid').style.display = 'grid';
@@ -1193,38 +956,32 @@
         initGlobalVisitListeners();
         if (data.publicidad && data.publicidad.activo) mostrarPublicidad();
 
-        if (isAdmin) iniciarSnapshotAdmin();
-    }
-
-    function iniciarSnapshotAdmin() {
-        if (_unsubSnapshot) { try { _unsubSnapshot(); } catch(e){} _unsubSnapshot = null; }
-        _unsubSnapshot = docRef.onSnapshot(function(doc) {
-            if (!doc.exists || !dataLoaded) return;
-            const firestoreData = doc.data();
-            // Ignorar si el snapshot es más viejo que nuestros datos locales
-            if (firestoreData._lastSaved && data._lastSaved) {
-                if (new Date(firestoreData._lastSaved) < new Date(data._lastSaved)) return;
-            }
-            const defaultData = getDefaultData();
-            for (let key in defaultData) { if (firestoreData[key] !== undefined) data[key] = firestoreData[key]; }
-            data.adminClave = firestoreData.adminClave;
-            data.locales.forEach(l => {
-                l.numeroLocal = String(l.numeroLocal);
-                if (l.visitas === undefined) l.visitas = 0;
-                if (l.mostrarPagina === undefined) l.mostrarPagina = true;
-                l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
-                if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
-                if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+        if (isAdmin) {
+            if (_unsubSnapshot) { try { _unsubSnapshot(); } catch(e){} _unsubSnapshot = null; }
+            _unsubSnapshot = docRef.onSnapshot(function(doc) {
+                if (!doc.exists || !dataLoaded) return;
+                const firestoreData = doc.data();
+                const defaultData = getDefaultData();
+                for (let key in defaultData) { if (firestoreData[key] !== undefined) data[key] = firestoreData[key]; }
+                data.adminClave = firestoreData.adminClave;
+                data.locales.forEach(l => {
+                    l.numeroLocal = String(l.numeroLocal);
+                    if (l.visitas === undefined) l.visitas = 0;
+                    if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                    l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                    if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                    if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+                });
+                if (data.visitasTotales === undefined) data.visitasTotales = 0;
+                if (!data.publicidad) data.publicidad = defaultData.publicidad;
+                if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
+                if (!data.publicidad.textos || data.publicidad.textos.length < 3) data.publicidad.textos = defaultData.publicidad.textos;
+                if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
+                try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
+                renderAll();
+                if (document.getElementById('visitNumber')) actualizarNumeroVisitante(data.visitasTotales || 0, false);
             });
-            if (data.visitasTotales === undefined) data.visitasTotales = 0;
-            if (!data.publicidad) data.publicidad = defaultData.publicidad;
-            if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
-            if (!data.publicidad.textos || data.publicidad.textos.length < 3) data.publicidad.textos = defaultData.publicidad.textos;
-            if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
-            try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
-            renderAll();
-            if (document.getElementById('visitNumber')) actualizarNumeroVisitante(data.visitasTotales || 0, false);
-        });
+        }
     }
 
     // ============================================================
@@ -1257,7 +1014,7 @@
     }
 
     // ============================================================
-    //  LISTENERS (sin cambios)
+    //  LISTENERS
     // ============================================================
     function initGlobalVisitListeners() {
         const container = document.getElementById('app');
@@ -1392,7 +1149,7 @@
     }
 
     // ============================================================
-    //  getLocalStatus
+    //  ===== getLocalStatus CON HORARIOS CORTADOS =====
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
@@ -1402,6 +1159,7 @@
         let horarioHoy = '';
         let isOpen = false;
         let esFeriado = false;
+
         const feriadosRaw = local.horarios.feriados || '';
         const feriadosList = feriadosRaw.split(';').map(f => f.trim()).filter(f => f);
         for (let f of feriadosList) {
@@ -1418,11 +1176,15 @@
                 }
             }
         }
+
         if (!esFeriado) {
             const dia = local.horarios[dayKey];
             if (dia) {
-                if (dia.cerrado) { horarioHoy = 'Cerrado'; isOpen = false; }
-                else if (dia.cortado && dia.ini2 && dia.fin2) {
+                if (dia.cerrado) {
+                    horarioHoy = 'Cerrado';
+                    isOpen = false;
+                } else if (dia.cortado && dia.ini2 && dia.fin2) {
+                    // ===== NUEVO: horario cortado =====
                     horarioHoy = `${dia.ini} - ${dia.fin} y ${dia.ini2} - ${dia.fin2}`;
                     isOpen = isInTimeRange(dia.ini, dia.fin) || isInTimeRange(dia.ini2, dia.fin2);
                 } else {
@@ -1431,6 +1193,7 @@
                 }
             } else { horarioHoy = 'Cerrado'; isOpen = false; }
         }
+
         const temporal = getEstadoTemporal(local.id);
         if (temporal !== null) { isOpen = temporal; horarioHoy = horarioHoy + ' (temporal)'; }
         return { isOpen, horarioHoy, esFeriado };
@@ -1641,7 +1404,7 @@
     }
 
     // ============================================================
-    //  ACCESO ADMIN
+    //  ACCESO ADMIN (long press)
     // ============================================================
     function initAdminAccess() {
         const titulo = document.getElementById('galeriaNombre');
@@ -1707,26 +1470,31 @@
         const newForm = localForm.cloneNode(true);
         localForm.parentNode.replaceChild(newForm, localForm);
 
+        // ===== NUEVO: inyectar controles de horario cortado =====
         inyectarControlesCortado();
 
+        // ===== FORM SUBMIT REESCRITO =====
         newForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             if (!isAdmin && !ownerLocalId) { showToast('No tienes permisos para guardar cambios.'); return; }
             mostrarEspera();
 
+            // ===== FIX: usar _currentEditId (más robusto) con fallback al DOM =====
             const domIdValue = document.getElementById('editId').value;
             const idValue = (_currentEditId !== null && _currentEditId !== undefined && _currentEditId !== '') ? _currentEditId : domIdValue;
             const isNew = !idValue;
 
             let localExistente = null;
             if (!isNew) {
+                // FIX: String comparison para soportar id número o string
                 localExistente = data.locales.find(l => String(l.id) === String(idValue));
+                // FIX: fallback por nombre si el id no matchea (por si cambió el tipo)
                 if (!localExistente) {
                     const nombreActual = document.getElementById('fNombre').value.trim();
                     if (nombreActual) localExistente = data.locales.find(l => l.nombre === nombreActual);
                 }
                 if (!localExistente) {
-                    console.error('[SAVE] Local no encontrado. idValue=', idValue);
+                    console.error('[SAVE] Local no encontrado. idValue=', idValue, 'tipo=', typeof idValue, 'ids disponibles=', data.locales.map(l => ({ id: l.id, tipo: typeof l.id, nombre: l.nombre })));
                     showToast('Local no encontrado (id: ' + idValue + ')');
                     ocultarEspera(); return;
                 }
@@ -1738,6 +1506,7 @@
             const intervalo = parseInt(document.getElementById('intervaloCarrusel')?.value) || 3;
             const animacion = document.getElementById('animacionCarrusel')?.value || 'fade';
 
+            // ===== NUEVO: guardar horarios con campos cortado/ini2/fin2 =====
             const horarios = {};
             const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
             dias.forEach(d => {
@@ -1749,10 +1518,15 @@
                 const ini2El = document.getElementById(`h${cap}Ini2`);
                 const fin2El = document.getElementById(`h${cap}Fin2`);
                 const cortado = cortadoCb ? cortadoCb.checked : false;
-                horarios[d] = { ini, fin, cerrado, cortado, ini2: ini2El ? ini2El.value : '', fin2: fin2El ? fin2El.value : '' };
+                horarios[d] = {
+                    ini, fin, cerrado, cortado,
+                    ini2: ini2El ? ini2El.value : '',
+                    fin2: fin2El ? fin2El.value : ''
+                };
             });
             horarios.feriados = document.getElementById('hFeriados').value.trim();
 
+            // ========== NUEVO LOCAL ==========
             if (isNew) {
                 if (!isAdmin) { showToast('Solo el administrador puede agregar locales.'); ocultarEspera(); return; }
                 const nombre = document.getElementById('fNombre').value.trim();
@@ -1775,14 +1549,16 @@
                 data.nextId = nuevoId + 1;
 
                 const localData = {
-                    id: nuevoId, nombre, rubro, numeroLocal: numero,
+                    id: nuevoId, nombre, rubro,
+                    numeroLocal: numero,
                     ubicacion: document.getElementById('fUbicacion').value,
                     enAlquiler: document.getElementById('fAlquiler').checked,
                     inmobiliaria: document.getElementById('fInmobiliaria').value.trim(),
                     descripcion: document.getElementById('fDescripcion').value.trim(),
                     whatsapp, web,
                     colorFondo: document.getElementById('fColorFondo').value,
-                    foto: foto || DEFAULT_IMAGE_URL, logo: logo || null,
+                    foto: foto || DEFAULT_IMAGE_URL,
+                    logo: logo || null,
                     fotoFit: document.getElementById('fFotoFit').value,
                     fotoPosX: parseInt(document.getElementById('fFotoPosX').value),
                     fotoPosY: parseInt(document.getElementById('fFotoPosY').value),
@@ -1808,7 +1584,7 @@
                 return;
             }
 
-            // Editar existente
+            // ========== EDITAR EXISTENTE ==========
             let nombre = localExistente.nombre;
             let rubro = localExistente.rubro;
             let numero = localExistente.numeroLocal;
@@ -1852,12 +1628,15 @@
             }
 
             const localData = {
-                id: localExistente.id, nombre, rubro, numeroLocal: numero,
-                ubicacion, enAlquiler, inmobiliaria, descripcion,
+                id: localExistente.id,  // ← FIX: usar el id real del local existente
+                nombre, rubro,
+                numeroLocal: numero, ubicacion, enAlquiler, inmobiliaria, descripcion,
                 whatsapp, web, colorFondo,
-                foto: foto || DEFAULT_IMAGE_URL, logo: logo || null,
+                foto: foto || DEFAULT_IMAGE_URL,
+                logo: logo || null,
                 fotoFit, fotoPosX, fotoPosY, logoFit, logoPosX, logoPosY,
-                horarios, visitas: localExistente.visitas || 0,
+                horarios,
+                visitas: localExistente.visitas || 0,
                 mostrarPagina, imagenesExtra,
                 intervaloCarrusel: intervalo, animacionCarrusel: animacion
             };
@@ -1906,20 +1685,14 @@
     });
 
     // ============================================================
-    //  TEMAS (FIX: incluye christmas)
+    //  TEMAS
     // ============================================================
     function applyTheme(theme) {
         const body = document.body;
-        const eraChristmas = body.classList.contains('christmas');
-        body.classList.remove('dark', 'colorful', 'festive', 'christmas');
+        body.className = '';
         if (theme === 'dark') body.classList.add('dark');
         else if (theme === 'colorful') body.classList.add('colorful');
         else if (theme === 'festive') body.classList.add('festive');
-        else if (theme === 'christmas') {
-            body.classList.add('christmas');
-            setTimeout(() => activarNavidad(), 50);
-        }
-        if (eraChristmas && theme !== 'christmas') limpiarNavidad();
         data.theme = theme;
         saveData();
         const statusEl = document.getElementById('themeStatus');
@@ -1931,19 +1704,11 @@
         if ((mes === 12 && dia >= 20 && dia <= 31) || (mes === 1 && dia <= 2)) return 'festive';
         return null;
     }
-    function detectNavidadTheme() {
-        const now = new Date();
-        const mes = now.getMonth() + 1, dia = now.getDate();
-        if (mes === 12 || (mes === 1 && dia <= 6)) return 'christmas';
-        return null;
-    }
     function checkAutoTheme() {
         if (data.autoTheme) {
-            const navidad = detectNavidadTheme();
             const festive = detectFestiveTheme();
-            if (navidad) { applyTheme(navidad); const s = document.getElementById('themeStatus'); if (s) s.textContent += ' (navidad automática)'; }
-            else if (festive) { applyTheme(festive); const s = document.getElementById('themeStatus'); if (s) s.textContent += ' (festivo automático)'; }
-            else { if (data.theme !== 'festive' && data.theme !== 'christmas') applyTheme(data.theme); else applyTheme('default'); }
+            if (festive) { applyTheme(festive); document.getElementById('themeStatus').textContent += ' (festivo automático)'; }
+            else { if (data.theme !== 'festive') applyTheme(data.theme); else applyTheme('default'); }
         } else applyTheme(data.theme);
     }
 
@@ -1969,10 +1734,13 @@
         }
         if (id === 'addLocalModal') {
             updateRubroSelectInForm();
+            // Asegurar que los controles de cortado estén inyectados
             inyectarControlesCortado();
             const editId = document.getElementById('editId').value;
             const effectiveId = (_currentEditId !== null && _currentEditId !== undefined) ? _currentEditId : editId;
-            if (!effectiveId) resetLocalForm();
+            if (!effectiveId) {
+                resetLocalForm();
+            }
             inyectarControlesCarrusel();
             if (effectiveId) {
                 const loc = data.locales.find(l => String(l.id) === String(effectiveId));
@@ -2201,6 +1969,9 @@
         });
     }
 
+    // ============================================================
+    //  ===== mostrarHorariosCompletos CON CORTADOS =====
+    // ============================================================
     function mostrarHorariosCompletos(localId) {
         const local = data.locales.find(l => String(l.id) === String(localId));
         if (!local) return;
@@ -2242,7 +2013,7 @@
     }
 
     // ============================================================
-    //  EDIT / DELETE LOCAL
+    //  EDIT LOCAL
     // ============================================================
     function editLocal(id) {
         const local = data.locales.find(l => String(l.id) === String(id));
@@ -2250,6 +2021,7 @@
         if (ownerLocalId && String(ownerLocalId) !== String(id)) { showToast('No tienes permisos para editar este local'); return; }
         if (!isAdmin && !ownerLocalId) { showToast('No tienes permisos para editar'); return; }
 
+        // FIX: guardar en variable interna
         _currentEditId = local.id;
         document.getElementById('editId').value = local.id;
         document.getElementById('fNombre').value = local.nombre;
@@ -2279,6 +2051,7 @@
             document.getElementById(`h${cap}Ini`).value = dia.ini || '09:00';
             document.getElementById(`h${cap}Fin`).value = dia.fin || '18:00';
             document.getElementById(`h${cap}Cerrado`).checked = dia.cerrado || false;
+            // NUEVO: cortado
             const cortado = document.getElementById(`h${cap}Cortado`);
             const ini2 = document.getElementById(`h${cap}Ini2`);
             const fin2 = document.getElementById(`h${cap}Fin2`);
@@ -2422,7 +2195,7 @@
     }
 
     // ============================================================
-    //  ===== BANNERS (FIX CRÍTICO) =====
+    //  BANNERS
     // ============================================================
     document.getElementById('bannerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -2435,52 +2208,23 @@
         const posX = parseInt(document.getElementById('bannerPosX').value);
         const posY = parseInt(document.getElementById('bannerPosY').value);
         if (!file && !url) { showToast('Seleccione un archivo o ingrese una URL de imagen.'); return; }
-
         const processImage = async (imagen) => {
             const bannerData = { imagen, link: link || '#', fit, posX, posY };
             if (editId) {
-                const index = data.banners.findIndex(b => String(b.id) === String(editId));
+                const index = data.banners.findIndex(b => b.id === parseInt(editId));
                 if (index !== -1) {
                     data.banners[index] = { ...data.banners[index], ...bannerData };
-                    try {
-                        await saveData();
-                        renderAll();
-                        renderBannersAdmin();
-                        resetBannerForm();
-                        showToast('✅ Banner actualizado');
-                    } catch(err) {
-                        console.error('[BANNER UPDATE]', err);
-                        showToast('⚠️ Banner actualizado localmente. Reintentando subir...');
-                    }
+                    await saveData(); renderAll(); renderBannersAdmin(); resetBannerForm();
+                    showToast('Banner actualizado');
                 } else showToast('Error: banner no encontrado');
             } else {
-                const newBanner = { id: Date.now(), ...bannerData };
-                data.banners.push(newBanner);
-                try {
-                    await saveData();
-                    renderAll();
-                    renderBannersAdmin();
-                    resetBannerForm();
-                    showToast('✅ Banner agregado');
-                } catch(err) {
-                    console.error('[BANNER ADD]', err);
-                    showToast('⚠️ Banner agregado localmente. Reintentando subir...');
-                }
+                data.banners.push({ id: Date.now(), ...bannerData });
+                await saveData(); renderAll(); renderBannersAdmin(); resetBannerForm();
+                showToast('Banner agregado');
             }
         };
-
-        if (file) {
-            try {
-                // ===== FIX: compresión más agresiva para banners (900px / 0.55) =====
-                const base64 = await comprimirImagen(file, 900, 0.55);
-                await processImage(base64);
-            } catch (err) {
-                console.error(err);
-                showToast('Error al procesar banner');
-            }
-        } else {
-            await processImage(url);
-        }
+        if (file) { try { const base64 = await comprimirImagen(file, 1200, 0.8); processImage(base64); } catch (err) { showToast('Error al procesar banner'); } }
+        else processImage(url);
     });
     function resetBannerForm() {
         document.getElementById('editBannerId').value = '';
@@ -2496,9 +2240,9 @@
     }
     function editBanner(id) {
         if (!isAdmin) return;
-        const banner = data.banners.find(b => String(b.id) === String(id));
+        const banner = data.banners.find(b => b.id === id);
         if (!banner) return;
-        document.getElementById('editBannerId').value = banner.id;
+        document.getElementById('editBannerId').value = id;
         document.getElementById('bannerUrl').value = banner.imagen;
         document.getElementById('bannerLink').value = banner.link || '';
         document.getElementById('bannerFit').value = banner.fit || 'cover';
@@ -2513,10 +2257,8 @@
     async function deleteBanner(id) {
         if (!isAdmin) return;
         if (!confirm('Eliminar banner?')) return;
-        data.banners = data.banners.filter(b => String(b.id) !== String(id));
-        await saveData();
-        renderAll();
-        renderBannersAdmin();
+        data.banners = data.banners.filter(b => b.id !== id);
+        await saveData(); renderAll(); renderBannersAdmin();
         showToast('Banner eliminado');
     }
     function renderBannersAdmin() {
@@ -2596,17 +2338,15 @@
     });
 
     // ============================================================
-    //  TEMAS - BOTONES
+    //  TEMAS
     // ============================================================
     function initThemeButtons() {
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 if (!isAdmin) { showToast('Solo el administrador puede cambiar temas.'); return; }
                 const theme = this.dataset.theme;
-                data.autoTheme = false;
-                data.theme = theme;
-                saveData();
-                applyTheme(theme);
+                data.autoTheme = false; data.theme = theme;
+                saveData(); applyTheme(theme);
                 document.getElementById('themeStatus').textContent = `Tema actual: ${theme}`;
                 showToast(`Tema cambiado a ${theme}`);
             });
@@ -2723,9 +2463,6 @@
         showToast('Contador actualizado a ' + nuevo);
     }
 
-    // ============================================================
-    //  PUBLICIDAD ADMIN (sin cambios)
-    // ============================================================
     function agregarSeccionPublicidad() {
         if (!isAdmin) return;
         const modal = document.getElementById('adminMainModal');
@@ -2786,7 +2523,7 @@
                 if (!file) return;
                 const status = div.querySelector('.pub-upload-status');
                 status.textContent = '⏳ Comprimiendo...';
-                try { const base64 = await comprimirImagen(file, 800, 0.6); div.querySelector('.pub-img-url').value = base64; status.textContent = '✅'; showToast('Imagen cargada'); }
+                try { const base64 = await comprimirImagen(file, 800, 0.7); div.querySelector('.pub-img-url').value = base64; status.textContent = '✅'; showToast('Imagen cargada'); }
                 catch (err) { status.textContent = '❌ Error'; showToast('Error al procesar imagen'); }
             });
         });
@@ -2803,7 +2540,7 @@
                 const div = this.closest('div');
                 const status = div.querySelector('.pub-upload-status');
                 status.textContent = '⏳ Comprimiendo...';
-                try { const base64 = await comprimirImagen(file, 800, 0.6); div.querySelector('.pub-img-url').value = base64; status.textContent = '✅'; showToast('Imagen cargada'); }
+                try { const base64 = await comprimirImagen(file, 800, 0.7); div.querySelector('.pub-img-url').value = base64; status.textContent = '✅'; showToast('Imagen cargada'); }
                 catch (err) { status.textContent = '❌ Error'; showToast('Error al procesar imagen'); }
             });
         });
@@ -2927,7 +2664,7 @@
         t.textContent = msg;
         t.classList.add('show');
         clearTimeout(t._timeout);
-        t._timeout = setTimeout(() => t.classList.remove('show'), 3500);
+        t._timeout = setTimeout(() => t.classList.remove('show'), 3000);
     }
 
     function renderAll() {
@@ -2972,20 +2709,17 @@
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') document.getElementById('imageZoomModal').classList.remove('active'); });
 
     // ============================================================
-    //  BACKUPS (FIX: sin anidamiento)
+    //  BACKUPS
     // ============================================================
     async function crearBackup() {
         if (!isAdmin) return;
-        // ===== FIX: crear copia SIN backups para evitar crecimiento exponencial =====
-        const dataSnapshot = JSON.parse(JSON.stringify(data));
-        delete dataSnapshot.backups;
-        const backup = { timestamp: new Date().toISOString(), data: dataSnapshot };
+        const backup = { timestamp: new Date().toISOString(), data: JSON.parse(JSON.stringify(data)) };
         data.backups.push(backup);
-        if (data.backups.length > 10) data.backups.shift(); // límite reducido de 20 a 10
+        if (data.backups.length > 20) data.backups.shift();
         data.lastBackupDate = backup.timestamp;
         await saveData();
         actualizarInfoBackup();
-        showToast('Backup creado (' + data.backups.length + ' guardados)');
+        showToast('Backup creado');
         renderAll();
     }
     function abrirModalRestaurar() {
@@ -3052,9 +2786,7 @@
 
     function exportarJSON() {
         if (!isAdmin) return;
-        const exportData = JSON.parse(JSON.stringify(data));
-        delete exportData.backups; // no exportar backups
-        const jsonStr = JSON.stringify(exportData, null, 2);
+        const jsonStr = JSON.stringify(data, null, 2);
         const blob = new Blob([jsonStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -3130,7 +2862,31 @@
         openModal('adminMainModal');
         document.getElementById('themeStatus').textContent = data.autoTheme ? 'Modo automático activado' : `Tema actual: ${data.theme}`;
         renderAll();
-        iniciarSnapshotAdmin();
+
+        if (_unsubSnapshot) { try { _unsubSnapshot(); } catch(e){} _unsubSnapshot = null; }
+        _unsubSnapshot = docRef.onSnapshot(function(doc) {
+            if (!doc.exists || !dataLoaded) return;
+            const firestoreData = doc.data();
+            const defaultData = getDefaultData();
+            for (let key in defaultData) { if (firestoreData[key] !== undefined) data[key] = firestoreData[key]; }
+            data.adminClave = firestoreData.adminClave;
+            data.locales.forEach(l => {
+                l.numeroLocal = String(l.numeroLocal);
+                if (l.visitas === undefined) l.visitas = 0;
+                if (l.mostrarPagina === undefined) l.mostrarPagina = true;
+                l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
+                if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
+            });
+            if (data.visitasTotales === undefined) data.visitasTotales = 0;
+            if (!data.publicidad) data.publicidad = defaultData.publicidad;
+            if (!data.publicidad.imagenes) data.publicidad.imagenes = [];
+            if (!data.publicidad.textos || data.publicidad.textos.length < 3) data.publicidad.textos = defaultData.publicidad.textos;
+            if (!data.publicidad.efectoImagen) data.publicidad.efectoImagen = 'explosion';
+            try { localStorage.setItem('galeriaData', JSON.stringify(data)); } catch(e){}
+            renderAll();
+            if (document.getElementById('visitNumber')) actualizarNumeroVisitante(data.visitasTotales || 0, false);
+        });
     }
 
     // ============================================================
@@ -3166,7 +2922,7 @@
     window.autenticarDueño = autenticarDueño;
     window.cerrarModalEdicion = cerrarModalEdicion;
     window.cerrarMiniaturasPublicidad = cerrarMiniaturasPublicidad;
-    window.toggleCortado = toggleCortado;
+    window.toggleCortado = toggleCortado;  // ← NUEVO
 </script>
 </body>
 </html>
