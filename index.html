@@ -782,6 +782,28 @@
         }).filter(item => item.url && item.url.trim() !== '');
     }
 
+    // ============================================================
+    //  HORARIOS: normalización robusta desde Firestore
+    // ============================================================
+    function normalizarHorarios(horarios) {
+        if (!horarios || typeof horarios !== 'object') return { feriados: '' };
+        const dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+        const result = {};
+        dias.forEach(function (d) {
+            const dia = horarios[d] || {};
+            result[d] = {
+                ini: dia.ini || '',
+                fin: dia.fin || '',
+                cerrado: dia.cerrado === true,
+                cortado: dia.cortado === true,
+                ini2: dia.ini2 || '',
+                fin2: dia.fin2 || ''
+            };
+        });
+        result.feriados = horarios.feriados || '';
+        return result;
+    }
+
     function renderizarImagenesExtra(imagenes = []) {
         const container = document.getElementById('imagenesExtraContainer');
         if (!container) return;
@@ -988,6 +1010,7 @@
                     if (l.visitas === undefined) l.visitas = 0;
                     if (l.mostrarPagina === undefined) l.mostrarPagina = true;
                     l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                    l.horarios = normalizarHorarios(l.horarios);
                     if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
                     if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                 });
@@ -1015,6 +1038,7 @@
                         if (l.visitas === undefined) l.visitas = 0;
                         if (l.mostrarPagina === undefined) l.mostrarPagina = true;
                         l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                        l.horarios = normalizarHorarios(l.horarios);
                         if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
                         if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                     });
@@ -1058,6 +1082,7 @@
                 if (l.visitas === undefined) l.visitas = 0;
                 if (l.mostrarPagina === undefined) l.mostrarPagina = true;
                 l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                l.horarios = normalizarHorarios(l.horarios);
                 if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
                 if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
             });
@@ -1237,7 +1262,7 @@
     }
 
     // ============================================================
-    //  getLocalStatus
+    //  getLocalStatus (CORREGIDO: cortado + feriados robustos)
     // ============================================================
     function getLocalStatus(local) {
         const now = new Date();
@@ -1248,32 +1273,60 @@
         let isOpen = false;
         let esFeriado = false;
 
-        const feriadosRaw = local.horarios.feriados || '';
-        const feriadosList = feriadosRaw.split(';').map(f => f.trim()).filter(f => f);
-        for (let f of feriadosList) {
-            const parts = f.split(':');
-            if (parts.length === 2) {
-                const fecha = parts[0].trim(), horario = parts[1].trim();
-                if (fecha === dateStr) {
-                    esFeriado = true; horarioHoy = horario;
-                    if (horario !== 'cerrado' && horario.includes('-')) {
-                        const [desde, hasta] = horario.split('-');
-                        isOpen = isInTimeRange(desde, hasta);
-                    } else isOpen = false;
-                    break;
+        const horarios = local.horarios || {};
+        const feriadosRaw = horarios.feriados || '';
+        const feriadosList = feriadosRaw.split(';').map(function (f) { return f.trim(); }).filter(function (f) { return f; });
+
+        for (let i = 0; i < feriadosList.length; i++) {
+            const f = feriadosList[i];
+            const colonIdx = f.indexOf(':');
+            if (colonIdx === -1) continue;
+            const fecha = f.substring(0, colonIdx).trim();
+            const horario = f.substring(colonIdx + 1).trim();
+            if (fecha === dateStr) {
+                esFeriado = true;
+                horarioHoy = horario;
+                if (horario.toLowerCase() === 'cerrado') {
+                    isOpen = false;
+                } else if (horario.indexOf('-') !== -1) {
+                    const dashIdx = horario.indexOf('-');
+                    const desde = horario.substring(0, dashIdx).trim();
+                    const hasta = horario.substring(dashIdx + 1).trim();
+                    isOpen = isInTimeRange(desde, hasta);
+                } else {
+                    isOpen = false;
                 }
+                break;
             }
         }
 
         if (!esFeriado) {
-            const dia = local.horarios[dayKey];
+            const dia = horarios[dayKey];
             if (dia) {
-                if (dia.cerrado) { horarioHoy = 'Cerrado'; isOpen = false; }
-                else if (dia.cortado && dia.ini2 && dia.fin2) {
-                    horarioHoy = `${dia.ini} - ${dia.fin} y ${dia.ini2} - ${dia.fin2}`;
-                    isOpen = isInTimeRange(dia.ini, dia.fin) || isInTimeRange(dia.ini2, dia.fin2);
-                } else { horarioHoy = `${dia.ini} - ${dia.fin}`; isOpen = isInTimeRange(dia.ini, dia.fin); }
-            } else { horarioHoy = 'Cerrado'; isOpen = false; }
+                if (dia.cerrado) {
+                    horarioHoy = 'Cerrado';
+                    isOpen = false;
+                } else {
+                    const iniStr = (dia.ini || '').toString().trim();
+                    const finStr = (dia.fin || '').toString().trim();
+                    const ini2Str = (dia.ini2 || '').toString().trim();
+                    const fin2Str = (dia.fin2 || '').toString().trim();
+                    const tieneCortado = dia.cortado === true && ini2Str !== '' && fin2Str !== '';
+
+                    const primeraAbierto = isInTimeRange(iniStr, finStr);
+                    const segundaAbierto = tieneCortado ? isInTimeRange(ini2Str, fin2Str) : false;
+
+                    if (tieneCortado) {
+                        horarioHoy = `${iniStr} - ${finStr} y ${ini2Str} - ${fin2Str}`;
+                    } else {
+                        horarioHoy = `${iniStr} - ${finStr}`;
+                    }
+                    isOpen = primeraAbierto || segundaAbierto;
+                }
+            } else {
+                horarioHoy = 'Cerrado';
+                isOpen = false;
+            }
         }
 
         const temporal = getEstadoTemporal(local.id);
@@ -1281,14 +1334,38 @@
         return { isOpen, horarioHoy, esFeriado };
     }
 
+    // ============================================================
+    //  isInTimeRange (CORREGIDO: robusto + nocturno)
+    // ============================================================
     function isInTimeRange(desdeStr, hastaStr) {
         try {
+            if (desdeStr === undefined || desdeStr === null || String(desdeStr).trim() === '') return false;
+            if (hastaStr === undefined || hastaStr === null || String(hastaStr).trim() === '') return false;
+
+            const parseTime = function (str) {
+                const parts = String(str).trim().split(':');
+                const h = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10);
+                if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) return null;
+                return h * 60 + m;
+            };
+
+            const desde = parseTime(desdeStr);
+            const hasta = parseTime(hastaStr);
+            if (desde === null || hasta === null) return false;
+
             const ahora = new Date();
-            const [hDesde, mDesde] = desdeStr.split(':').map(Number);
-            const [hHasta, mHasta] = hastaStr.split(':').map(Number);
             const nowMinutes = ahora.getHours() * 60 + ahora.getMinutes();
-            return nowMinutes >= hDesde * 60 + mDesde && nowMinutes <= hHasta * 60 + mHasta;
-        } catch (e) { return false; }
+
+            if (desde <= hasta) {
+                return nowMinutes >= desde && nowMinutes <= hasta;
+            } else {
+                // Horario que cruza medianoche (ej: 22:00 → 02:00)
+                return nowMinutes >= desde || nowMinutes <= hasta;
+            }
+        } catch (e) {
+            return false;
+        }
     }
 
     // ============================================================
@@ -2154,9 +2231,15 @@
         dias.forEach((d, idx) => {
             const dia = local.horarios[d] || { ini: '--:--', fin: '--:--', cerrado: true };
             let horario;
-            if (dia.cerrado) horario = '<span class="cerrado">Cerrado</span>';
-            else if (dia.cortado && dia.ini2 && dia.fin2) horario = `${dia.ini} - ${dia.fin} y ${dia.ini2} - ${dia.fin2}`;
-            else horario = `${dia.ini} - ${dia.fin}`;
+            if (dia.cerrado) {
+                horario = '<span class="cerrado">Cerrado</span>';
+            } else {
+                const ini2 = (dia.ini2 || '').toString().trim();
+                const fin2 = (dia.fin2 || '').toString().trim();
+                const tieneCortado = dia.cortado === true && ini2 !== '' && fin2 !== '';
+                if (tieneCortado) horario = `${dia.ini} - ${dia.fin} y ${ini2} - ${fin2}`;
+                else horario = `${dia.ini} - ${dia.fin}`;
+            }
             html += `<tr><td class="dia">${nombresDias[idx]}</td><td class="hora">${horario}</td></tr>`;
         });
         if (local.horarios.feriados) {
@@ -2947,6 +3030,7 @@
             if (l.visitas === undefined) l.visitas = 0;
             if (l.mostrarPagina === undefined) l.mostrarPagina = true;
             l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+            l.horarios = normalizarHorarios(l.horarios);
             if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
             if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
         });
@@ -3002,6 +3086,7 @@
                     if (l.visitas === undefined) l.visitas = 0;
                     if (l.mostrarPagina === undefined) l.mostrarPagina = true;
                     l.imagenesExtra = normalizarImagenesExtra(l.imagenesExtra || []);
+                    l.horarios = normalizarHorarios(l.horarios);
                     if (l.intervaloCarrusel === undefined) l.intervaloCarrusel = 3;
                     if (l.animacionCarrusel === undefined) l.animacionCarrusel = 'fade';
                 });
